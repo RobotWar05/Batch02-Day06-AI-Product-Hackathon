@@ -1,0 +1,6 @@
+{
+  "name": "Demo Nemo",
+  "description": "A pixel-perfect, highly interactive clone of the Vietnamese version of Trip.demo (vn.trip.demo). Features hotels, flights, trains search, filtering, and a live virtual checkout booking workflow.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
