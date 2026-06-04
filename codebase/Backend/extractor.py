@@ -160,11 +160,10 @@ Hãy dùng mốc thời gian này để tính chính xác các cụm từ thời
 {
   "intent": "search_trip" hoặc "other",
   "entities": {
-    "departure": "Tên thành phố xuất phát (đã chuẩn hóa thành TP.HCM, Hà Nội, Đà Nẵng...) hoặc null",
-    "destination": "Tên thành phố đích đến (đã chuẩn hóa) hoặc null",
     "date": "Ngày đi dạng YYYY-MM-DD hoặc null",
     "return_date": "Ngày về dạng YYYY-MM-DD hoặc null (nếu khứ hồi)",
     "is_round_trip": "boolean (true nếu là khứ hồi, false nếu một chiều)",
+    "time": "Thời gian/buổi đi (morning | afternoon | evening | night | HH:MM | null)",
     "transport": "plane" (máy bay), "train" (tàu hỏa), "coach" (xe khách/limousine) hoặc null,
     "passengers": "số lượng hành khách dưới dạng số nguyên (mặc định là 1 nếu không nhắc tới). Dịch các từ số lượng như 'một', 'hai', 'ba', 'bốn' -> 1, 2, 3, 4; các cụm từ ẩn ý như 'chỉ mình tôi', 'một mình' -> 1; 'cặp đôi', 'hai vợ chồng', 'hai đứa' -> 2"
   },
@@ -224,6 +223,7 @@ def _extract_entities_core(user_prompt: str) -> dict:
             "date": None,
             "return_date": None,
             "is_round_trip": False,
+            "time": None,
             "transport": None,
             "passengers": 1
         },
@@ -416,6 +416,35 @@ def _extract_entities_core(user_prompt: str) -> dict:
     result["entities"]["date"] = date_dep
     result["entities"]["return_date"] = date_ret
     result["entities"]["is_round_trip"] = is_round_trip
+    
+    # Nhận diện thời gian trong ngày (time)
+    time_found = None
+    hour_match = re.search(r'(\d{1,2})\s*(?:h|giờ)\s*(\d{1,2})?\s*(sáng|chiều|tối|đêm)?', cleaned)
+    if hour_match:
+        hour = int(hour_match.group(1))
+        minute = int(hour_match.group(2)) if hour_match.group(2) else 0
+        period = hour_match.group(3)
+        if period:
+            if period in ["chiều", "tối"] and hour < 12:
+                hour += 12
+            elif period == "đêm" and hour == 12:
+                hour = 0
+            elif period == "sáng" and hour == 12:
+                hour = 0
+        time_found = f"{hour:02d}:{minute:02d}"
+    else:
+        if "sáng" in cleaned:
+            time_found = "morning"
+        elif "trưa" in cleaned:
+            time_found = "noon"
+        elif "chiều" in cleaned:
+            time_found = "afternoon"
+        elif "tối" in cleaned:
+            time_found = "evening"
+        elif "đêm" in cleaned:
+            time_found = "night"
+            
+    result["entities"]["time"] = time_found
         
     # Phân loại Intent và Trình bày
     has_travel_entities = len(found_cities) > 0 or transport_found is not None or passengers_detected is not None or date_dep is not None or date_ret is not None or has_family_phrase
@@ -470,6 +499,8 @@ def extract_entities(user_prompt: str) -> dict:
             result["entities"]["return_date"] = None
         if "is_round_trip" not in result["entities"]:
             result["entities"]["is_round_trip"] = False
+        if "time" not in result["entities"]:
+            result["entities"]["time"] = None
             
     _write_log(user_prompt, result)
     return result
