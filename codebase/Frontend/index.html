@@ -309,12 +309,13 @@
     function parseUserMessage(message) {
       const raw = normalize(message);
       const isFailureDemo = raw.includes("ha noi") && raw.includes("da nang") && raw.includes("tau");
+      const hasJune10 = raw.includes("10/6") || raw.includes("10 thang 6") || raw.includes("ngay 10");
       const slots = {
         intent: raw.includes("huy") ? "cancel" : "search_trip",
         origin: null,
         destination: null,
-        date: raw.includes("10/6") ? "2026-06-10" : null,
-        date_label: raw.includes("10/6") ? "10/06/2026" : null,
+        date: hasJune10 ? "2026-06-10" : null,
+        date_label: hasJune10 ? "10/06/2026" : null,
         transport_mode: null,
         passengers: raw.match(/\b2\b|2 ve|hai ve/) ? 2 : 1,
         confidence: 0.96,
@@ -440,17 +441,32 @@
     function renderClarification(slots) {
       const needOrigin = slots.missing_fields.includes("origin");
       const needTransport = slots.missing_fields.includes("transport_mode");
+      const needDate = slots.missing_fields.includes("date");
+      const missingLabels = slots.missing_fields.map((field) => ({
+        origin: "điểm đi",
+        destination: "điểm đến",
+        date: "ngày đi",
+        transport_mode: "phương tiện"
+      }[field] || field)).join(", ");
       return `
-        <div class="ml-0 md:ml-11 max-w-[620px] rounded-2xl border border-outline bg-surface p-5 shadow-ambient">
+        <div class="ml-0 md:ml-11 max-w-[620px] rounded-2xl border-2 border-primary/20 bg-surface p-5 shadow-ambient">
           <div class="mb-4 flex items-center gap-3">
             <div class="grid h-9 w-9 place-items-center rounded-xl bg-secondary-container text-secondary">
               <span class="material-symbols-outlined">help</span>
             </div>
             <div>
               <h3 class="font-bold text-text">Tôi cần thêm thông tin</h3>
-              <p class="text-sm text-muted">Bot không đoán bừa khi thiếu slot quan trọng.</p>
+              <p class="text-sm text-muted">Bot không đoán bừa khi thiếu slot quan trọng: ${escapeHtml(missingLabels)}.</p>
             </div>
           </div>
+          ${needDate ? `
+          <div class="mb-4">
+            <p class="mb-2 text-sm font-semibold text-text">Bạn muốn đi ngày nào?</p>
+            <div class="flex flex-wrap gap-2">
+              ${quickButton("date", "2026-06-10", "10/06/2026")}
+              ${quickButton("date", "2026-06-11", "11/06/2026")}
+            </div>
+          </div>` : ""}
           ${needOrigin ? `
           <div class="mb-4">
             <p class="mb-2 text-sm font-semibold text-text">Bạn muốn khởi hành từ đâu?</p>
@@ -461,7 +477,7 @@
             </div>
           </div>` : ""}
           ${needTransport ? `
-          <div>
+          <div class="mb-1">
             <p class="mb-2 text-sm font-semibold text-text">Bạn muốn đi bằng gì?</p>
             <div class="flex flex-wrap gap-2">
               ${quickButton("transport_mode", "flight", "Máy bay")}
