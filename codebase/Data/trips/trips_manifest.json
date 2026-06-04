@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-04",
+  "note": "Split mock trip data by transport mode and provider. Backend should read this manifest, load provider files, then apply config files for ranking, query validation, response shape, and fallback handling.",
+  "aggregate_file": "../trips.json",
+  "files": {
+    "flights": {
+      "Vietnam Airlines": "flights/vietnam_airlines.json",
+      "Vietjet Air": "flights/vietjet_air.json",
+      "Bamboo Airways": "flights/bamboo_airways.json",
+      "Vietravel Airlines": "flights/vietravel_airlines.json",
+      "Sun PhuQuoc Airways": "flights/sun_phuquoc_airways.json"
+    },
+    "trains": {
+      "Vietnam Railways": "trains/vietnam_railways.json"
+    }
+  },
+  "counts": {
+    "total": 42,
+    "flights": {
+      "Vietravel Airlines": 2,
+      "Vietjet Air": 14,
+      "Bamboo Airways": 6,
+      "Vietnam Airlines": 7,
+      "Sun PhuQuoc Airways": 1
+    },
+    "trains": {
+      "Vietnam Railways": 12
+    }
+  },
+  "config_files": {
+    "provider_profiles": "../provider_profiles.json",
+    "ranking_rules": "../ranking_rules.json",
+    "query_schema": "../query_schema.json",
+    "response_schema": "../response_schema.json",
+    "fallback_rules": "../fallback_rules.json"
+  }
+}

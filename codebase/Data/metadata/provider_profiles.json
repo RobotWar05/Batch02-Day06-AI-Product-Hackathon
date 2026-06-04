@@ -1,0 +1,117 @@
+[
+  {
+    "provider": "Vietjet Air",
+    "type": "airline",
+    "category": "low_cost",
+    "display_name": "Vietjet Air",
+    "strengths": [
+      "Giá thường tốt",
+      "Nhiều chuyến bay"
+    ],
+    "tradeoffs": [
+      "Dịch vụ cơ bản",
+      "Hành lý ký gửi có thể phát sinh phí"
+    ],
+    "best_for": [
+      "cheap",
+      "flexible_time"
+    ],
+    "default_priority": 1,
+    "recommendation_style": "Ưu tiên khi người dùng muốn giá rẻ hoặc không chỉ định hãng."
+  },
+  {
+    "provider": "Vietnam Airlines",
+    "type": "airline",
+    "category": "full_service",
+    "display_name": "Vietnam Airlines",
+    "strengths": [
+      "Hãng truyền thống",
+      "Độ ổn định và trải nghiệm tốt"
+    ],
+    "tradeoffs": [
+      "Giá thường cao hơn nhóm giá rẻ"
+    ],
+    "best_for": [
+      "premium",
+      "reliable",
+      "business"
+    ],
+    "default_priority": 3,
+    "recommendation_style": "Ưu tiên khi người dùng nói rõ hãng, cần độ ổn định, hoặc không quá nhạy cảm về giá."
+  },
+  {
+    "provider": "Bamboo Airways",
+    "type": "airline",
+    "category": "balanced",
+    "display_name": "Bamboo Airways",
+    "strengths": [
+      "Cân bằng giữa giá và trải nghiệm",
+      "Tạo thêm lựa chọn để so sánh"
+    ],
+    "tradeoffs": [
+      "Số chuyến trong demo còn ít"
+    ],
+    "best_for": [
+      "balanced",
+      "comfort"
+    ],
+    "default_priority": 2,
+    "recommendation_style": "Dùng như lựa chọn cân bằng hoặc lựa chọn xem thêm sau nhóm rẻ nhất."
+  },
+  {
+    "provider": "Vietravel Airlines",
+    "type": "airline",
+    "category": "value",
+    "display_name": "Vietravel Airlines",
+    "strengths": [
+      "Giá thường tốt",
+      "Tạo thêm lựa chọn để so sánh"
+    ],
+    "tradeoffs": [
+      "Số chuyến trong demo còn ít"
+    ],
+    "best_for": [
+      "cheap",
+      "more_options"
+    ],
+    "default_priority": 2,
+    "recommendation_style": "Dùng để bổ sung lựa chọn giá tốt ở một số tuyến."
+  },
+  {
+    "provider": "Sun PhuQuoc Airways",
+    "type": "airline",
+    "category": "secondary_option",
+    "display_name": "Sun PhuQuoc Airways",
+    "strengths": [
+      "Tạo thêm lựa chọn để so sánh"
+    ],
+    "tradeoffs": [
+      "Số chuyến trong demo còn ít"
+    ],
+    "best_for": [
+      "more_options"
+    ],
+    "default_priority": 4,
+    "recommendation_style": "Chỉ nên hiện khi người dùng bấm xem thêm hoặc muốn tham khảo nhiều hãng."
+  },
+  {
+    "provider": "Vietnam Railways",
+    "type": "railway",
+    "category": "rail_operator",
+    "display_name": "Vietnam Railways",
+    "strengths": [
+      "Đi thẳng từ ga, không cần ra sân bay",
+      "Giá thường thấp hơn máy bay"
+    ],
+    "tradeoffs": [
+      "Thời gian di chuyển dài hơn máy bay"
+    ],
+    "best_for": [
+      "cheap",
+      "experience",
+      "flexible_time"
+    ],
+    "default_priority": 1,
+    "recommendation_style": "Ưu tiên khi người dùng muốn tiết kiệm, muốn đi tàu, hoặc muốn so sánh với máy bay."
+  }
+]

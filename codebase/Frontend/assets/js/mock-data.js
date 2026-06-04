@@ -1,0 +1,178 @@
+﻿const trainResults = [
+  {
+    id: "train_se1_001",
+    provider: "Vietnam Railways",
+    code: "SE1",
+    transport_mode: "train",
+    origin: "TP.HCM",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "08:00",
+    arrival_time: "23:15",
+    duration_minutes: 915,
+    duration: "15h15m",
+    total_price_vnd: 1250000,
+    price: "1.250.000đ",
+    available_seats: 12,
+    booking_url: "#",
+    reason: "Phù hợp nếu muốn đi tàu và kiểm soát chi phí"
+  },
+  {
+    id: "train_se3_002",
+    provider: "Vietnam Railways",
+    code: "SE3",
+    transport_mode: "train",
+    origin: "TP.HCM",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "13:00",
+    arrival_time: "04:30",
+    duration_minutes: 930,
+    duration: "15h30m",
+    total_price_vnd: 1150000,
+    price: "1.150.000đ",
+    available_seats: 8,
+    booking_url: "#",
+    reason: "Giá thấp hơn, phù hợp nếu linh hoạt giờ đến"
+  },
+  {
+    id: "train_se5_003",
+    provider: "Vietnam Railways",
+    code: "SE5",
+    transport_mode: "train",
+    origin: "TP.HCM",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "19:00",
+    arrival_time: "10:10",
+    duration_minutes: 910,
+    duration: "15h10m",
+    total_price_vnd: 1320000,
+    price: "1.320.000đ",
+    available_seats: 5,
+    booking_url: "#",
+    reason: "Đi buổi tối, phù hợp nếu muốn ngủ qua đêm trên tàu"
+  }
+];
+
+const flightResults = [
+  {
+    id: "flight_vn171_001",
+    provider: "Vietnam Airlines",
+    code: "VN171",
+    transport_mode: "flight",
+    origin: "Hà Nội",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "09:00",
+    arrival_time: "10:25",
+    duration_minutes: 85,
+    duration: "1h25m",
+    total_price_vnd: 1480000,
+    price: "1.480.000đ",
+    available_seats: 9,
+    booking_url: "#",
+    reason: "Nhanh nhất, phù hợp nếu ưu tiên tiết kiệm thời gian"
+  },
+  {
+    id: "flight_vj623_002",
+    provider: "Vietjet Air",
+    code: "VJ623",
+    transport_mode: "flight",
+    origin: "Hà Nội",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "14:30",
+    arrival_time: "15:50",
+    duration_minutes: 80,
+    duration: "1h20m",
+    total_price_vnd: 1120000,
+    price: "1.120.000đ",
+    available_seats: 17,
+    booking_url: "#",
+    reason: "Giá tốt hơn, phù hợp nếu ưu tiên chi phí"
+  },
+  {
+    id: "flight_qh103_003",
+    provider: "Bamboo Airways",
+    code: "QH103",
+    transport_mode: "flight",
+    origin: "Hà Nội",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "18:15",
+    arrival_time: "19:40",
+    duration_minutes: 85,
+    duration: "1h25m",
+    total_price_vnd: 1360000,
+    price: "1.360.000đ",
+    available_seats: 6,
+    booking_url: "#",
+    reason: "Khung giờ chiều tối, phù hợp nếu cần xuất phát sau giờ làm"
+  }
+];
+
+flightResults.push(
+  {
+    id: "flight_vu211_004",
+    provider: "Vietravel Airlines",
+    code: "VU211",
+    transport_mode: "flight",
+    origin: "Hà Nội",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "08:25",
+    arrival_time: "09:55",
+    duration_minutes: 90,
+    duration: "1h30m",
+    total_price_vnd: 1316500,
+    price: "1.316.500đ",
+    available_seats: 13,
+    booking_url: "#",
+    reason: "Giá tốt, phù hợp nếu muốn bay thẳng buổi sáng"
+  },
+  {
+    id: "flight_vj611_005",
+    provider: "Vietjet Air",
+    code: "VJ611",
+    transport_mode: "flight",
+    origin: "Hà Nội",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "22:35",
+    arrival_time: "23:55",
+    duration_minutes: 80,
+    duration: "1h20m",
+    total_price_vnd: 1322500,
+    price: "1.322.500đ",
+    available_seats: 17,
+    booking_url: "#",
+    reason: "Rẻ trong nhóm bay thẳng, nhưng đến khá muộn"
+  },
+  {
+    id: "flight_sp301_006",
+    provider: "Sun PhuQuoc Airways",
+    code: "SP301",
+    transport_mode: "flight",
+    origin: "Hà Nội",
+    destination: "Đà Nẵng",
+    date: "2026-06-10",
+    departure_time: "15:10",
+    arrival_time: "16:35",
+    duration_minutes: 85,
+    duration: "1h25m",
+    total_price_vnd: 1650000,
+    price: "1.650.000đ",
+    available_seats: 7,
+    booking_url: "#",
+    reason: "Một lựa chọn hãng khác để tham khảo sau khi bấm xem thêm"
+  }
+);
+
+const scenarios = {
+  happy: "Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6",
+  low: "Tìm vé đi Đà Nẵng ngày 10/6",
+  failure: "Tìm vé từ Hà Nội đi Đà Nẵng bằng tàu hỏa",
+  correction: "Tìm vé từ Hà Nội đi Đà Nẵng bằng tàu hỏa"
+};
+

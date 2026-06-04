@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "endpoint": "POST /api/search-trips",
+  "response_shape": {
+    "status": "ok | need_more_info | no_results | error",
+    "query": "normalized query object",
+    "grouped_results": {
+      "flight": {
+        "default": "Trip[]",
+        "see_more": "Trip[]"
+      },
+      "train": {
+        "default": "Trip[]",
+        "see_more": "Trip[]"
+      }
+    },
+    "recommendation": {
+      "best_option_id": "string | null",
+      "reason": "string",
+      "confidence": "number"
+    },
+    "follow_up_question": "string | null",
+    "message": "string"
+  },
+  "price_field_rules": {
+    "one_way": [
+      "one_way_price_vnd",
+      "price_label_one_way"
+    ],
+    "round_trip": [
+      "round_trip_price_vnd",
+      "price_label_round_trip"
+    ]
+  }
+}

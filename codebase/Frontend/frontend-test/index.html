@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Đi Không Demo</title>
+  <title>AI Đi Không - Frontend Test</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script src="./assets/js/tailwind.config.js"></script>
-  <link rel="stylesheet" href="./assets/css/base.css" />
+  <script src="./assets/scripts/config/tailwind.config.js"></script>
+  <link rel="stylesheet" href="./assets/styles/base.css" />
 </head>
 <body class="min-h-screen bg-background font-inter text-text">
   <div class="flex min-h-screen">
@@ -47,7 +47,7 @@
 
       <div class="mt-auto rounded-2xl border border-outline bg-surface-low p-4 text-xs text-muted">
         <p class="font-semibold text-text">Day 06 prototype</p>
-        <p class="mt-1">Frontend-first demo, mock AI parser, hard-coded results.</p>
+        <p class="mt-1">Bản test UI, mock data không cố định ngày.</p>
       </div>
     </aside>
 
@@ -63,7 +63,7 @@
             Reset
           </button>
           <button class="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-ambient">
-            Demo v1
+            Frontend test
           </button>
         </div>
       </header>
@@ -86,7 +86,7 @@
                 <button type="button" class="grid h-10 w-10 place-items-center rounded-xl text-muted transition hover:bg-surface-low">
                   <span class="material-symbols-outlined">add</span>
                 </button>
-                <input id="chatInput" class="min-w-0 flex-1 border-0 bg-transparent text-sm text-text placeholder:text-muted focus:ring-0" placeholder="Nhập: Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6" />
+                <input id="chatInput" class="min-w-0 flex-1 border-0 bg-transparent text-sm text-text placeholder:text-muted focus:ring-0" placeholder="Nhập: Tìm vé máy bay từ Hà Nội đi Đà Nẵng" />
                 <button type="submit" class="grid h-10 w-10 place-items-center rounded-xl bg-primary text-white transition hover:bg-primary-container" title="Gửi">
                   <span class="material-symbols-outlined fill">send</span>
                 </button>
@@ -116,9 +116,13 @@
     </button>
   </aside>
 
-  <script src="./assets/js/mock-data.js"></script>
-  <script src="./assets/js/parser.js"></script>
-  <script src="./assets/js/app.js"></script>
+  <script src="./assets/scripts/data/trip-catalog.mock.js"></script>
+  <script src="./assets/scripts/core/message-parser.js"></script>
+  <script src="./assets/scripts/services/trip-search-service.js"></script>
+  <script src="./assets/scripts/ui/chat-app.js"></script>
 </body>
 </html>
+
+
+
 

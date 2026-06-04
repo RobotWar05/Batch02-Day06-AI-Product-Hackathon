@@ -1,0 +1,76 @@
+[
+  {
+    "name": "one_way_han_danang_flight",
+    "message": "Tìm vé một chiều Hà Nội đi Đà Nẵng ngày 6/6 bằng máy bay",
+    "query": {
+      "origin": "Hà Nội",
+      "destination": "Đà Nẵng",
+      "date": "2026-06-06",
+      "trip_type": "one_way",
+      "transport_mode": "flight",
+      "passengers": 1
+    },
+    "expected_status": "ok",
+    "expected_min_results": 1,
+    "expected_price_field": "one_way_price_vnd"
+  },
+  {
+    "name": "round_trip_han_danang_flight",
+    "message": "Tìm vé khứ hồi Hà Nội đi Đà Nẵng từ 6/6 đến 8/6",
+    "query": {
+      "origin": "Hà Nội",
+      "destination": "Đà Nẵng",
+      "date": "2026-06-06",
+      "return_date": "2026-06-08",
+      "trip_type": "round_trip",
+      "transport_mode": "flight",
+      "passengers": 1
+    },
+    "expected_status": "ok",
+    "expected_min_results": 1,
+    "expected_price_field": "round_trip_price_vnd"
+  },
+  {
+    "name": "reverse_route_danang_han_flight",
+    "message": "Đà Nẵng về Hà Nội ngày 6/6 bằng máy bay",
+    "query": {
+      "origin": "Đà Nẵng",
+      "destination": "Hà Nội",
+      "date": "2026-06-06",
+      "trip_type": "one_way",
+      "transport_mode": "flight",
+      "passengers": 1
+    },
+    "expected_status": "ok",
+    "expected_min_results": 1
+  },
+  {
+    "name": "compare_han_hcm_train_or_flight",
+    "message": "Hà Nội đi TP.HCM nên đi tàu hay máy bay",
+    "query": {
+      "origin": "Hà Nội",
+      "destination": "TP.HCM",
+      "date": "2026-06-06",
+      "trip_type": "one_way",
+      "transport_mode": null,
+      "passengers": 1
+    },
+    "expected_status": "ok",
+    "expected_min_results": 2,
+    "expected_modes": ["flight", "train"]
+  },
+  {
+    "name": "no_results_out_of_scope_route",
+    "message": "Tìm vé Hà Nội đi Phú Quốc ngày 6/6 bằng tàu",
+    "query": {
+      "origin": "Hà Nội",
+      "destination": "Phú Quốc",
+      "date": "2026-06-06",
+      "trip_type": "one_way",
+      "transport_mode": "train",
+      "passengers": 1
+    },
+    "expected_status": "no_results",
+    "expected_min_results": 0
+  }
+]

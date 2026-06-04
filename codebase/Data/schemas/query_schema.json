@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "required_fields": [
+    "origin",
+    "destination",
+    "date"
+  ],
+  "optional_fields": [
+    "return_date",
+    "trip_type",
+    "transport_mode",
+    "preferred_provider",
+    "passengers",
+    "priority",
+    "sort_by"
+  ],
+  "defaults": {
+    "trip_type": "one_way",
+    "passengers": 1,
+    "priority": "balanced",
+    "sort_by": "recommended"
+  },
+  "trip_type_values": [
+    "one_way",
+    "round_trip"
+  ],
+  "transport_mode_values": [
+    "flight",
+    "train"
+  ],
+  "priority_values": [
+    "cheap",
+    "fast",
+    "balanced",
+    "premium"
+  ],
+  "provider_values": [
+    "Vietjet Air",
+    "Vietnam Airlines",
+    "Bamboo Airways",
+    "Vietravel Airlines",
+    "Sun PhuQuoc Airways",
+    "Vietnam Railways"
+  ],
+  "validation_rules": [
+    "origin and destination must match locations.canonical_name",
+    "date must be YYYY-MM-DD",
+    "return_date is required when trip_type is round_trip",
+    "transport_mode can be empty when user asks to compare train and flight"
+  ]
+}

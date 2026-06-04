@@ -1,0 +1,38 @@
+[
+  {
+    "canonical_name": "Hà Nội",
+    "code": "HAN",
+    "type": "city",
+    "aliases": ["ha noi", "hanoi", "hn", "Hà Nội", "Ha Noi"],
+    "airport": "Sân bay Nội Bài",
+    "airport_code": "HAN",
+    "train_station": "Ga Hà Nội"
+  },
+  {
+    "canonical_name": "TP.HCM",
+    "code": "SGN",
+    "type": "city",
+    "aliases": ["tp hcm", "tphcm", "hcm", "ho chi minh", "sai gon", "sài gòn", "TP.HCM", "TP Hồ Chí Minh"],
+    "airport": "Sân bay Tân Sơn Nhất",
+    "airport_code": "SGN",
+    "train_station": "Ga Sài Gòn"
+  },
+  {
+    "canonical_name": "Đà Nẵng",
+    "code": "DAD",
+    "type": "city",
+    "aliases": ["da nang", "danang", "dn", "đà nẵng", "Đà Nẵng"],
+    "airport": "Sân bay Đà Nẵng",
+    "airport_code": "DAD",
+    "train_station": "Ga Đà Nẵng"
+  },
+  {
+    "canonical_name": "Nha Trang",
+    "code": "CXR",
+    "type": "city",
+    "aliases": ["nha trang", "nt", "Nha Trang"],
+    "airport": "Sân bay Cam Ranh",
+    "airport_code": "CXR",
+    "train_station": "Ga Nha Trang"
+  }
+]

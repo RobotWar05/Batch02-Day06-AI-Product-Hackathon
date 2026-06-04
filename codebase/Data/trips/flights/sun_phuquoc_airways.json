@@ -1,0 +1,55 @@
+[
+  {
+    "id": "flight_sp_sgnhan_1615_20260606",
+    "provider": "Sun PhuQuoc Airways",
+    "code": "SP-SGNHAN-1615",
+    "transport_mode": "flight",
+    "trip_type_supported": [
+      "one_way",
+      "round_trip"
+    ],
+    "origin": "TP.HCM",
+    "destination": "Hà Nội",
+    "date": "2026-06-06",
+    "return_date": "2026-06-08",
+    "departure_time": "16:15",
+    "arrival_time": "18:25",
+    "duration_minutes": 130,
+    "duration_label": "2h10m",
+    "is_direct": true,
+    "one_way_price_vnd": 1979500,
+    "round_trip_price_vnd": 3959000,
+    "price_label_one_way": "1.979.500đ",
+    "price_label_round_trip": "3.959.000đ",
+    "available_seats": 7,
+    "pickup_location": "Sân bay Tân Sơn Nhất",
+    "dropoff_location": "Sân bay Nội Bài",
+    "baggage_policy": "Hành lý xách tay cơ bản",
+    "refund_policy": "Đổi/hủy tùy điều kiện vé",
+    "comfort_score": 8,
+    "reliability_score": 8,
+    "time_score": 10,
+    "price_score": 7,
+    "best_for": "Người muốn lựa chọn cân bằng giữa giá và trải nghiệm",
+    "pros": [
+      "Bay thẳng",
+      "Có thêm lựa chọn hãng",
+      "Khung giờ dễ so sánh với chuyến rẻ nhất"
+    ],
+    "cons": [
+      "Giá không phải thấp nhất",
+      "Vẫn cần làm thủ tục sân bay"
+    ],
+    "recommendation_reason": "Nên hiện sau nhóm rẻ nhất để người dùng có thêm lựa chọn cân bằng cho tuyến TP.HCM đi Hà Nội.",
+    "data_source_type": "mock",
+    "display_group": "flight_options",
+    "directness_label": "Đi thẳng",
+    "provider_preference_tags": [
+      "sun_phuquoc_airways",
+      "more_options"
+    ],
+    "display_rank": 5,
+    "default_visible": false,
+    "reveal_group": "see_more"
+  }
+]

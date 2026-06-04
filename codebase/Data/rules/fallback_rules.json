@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "missing_fields": {
+    "origin": "Bạn muốn khởi hành từ đâu?",
+    "destination": "Bạn muốn đi tới đâu?",
+    "date": "Bạn muốn đi ngày nào?",
+    "transport_mode": "Bạn muốn đi máy bay hay tàu hỏa?"
+  },
+  "no_results": {
+    "same_route_other_mode": "Không có kết quả với phương tiện này. Bạn muốn xem phương tiện khác không?",
+    "same_route_other_date": "Chưa có chuyến phù hợp ngày này. Bạn muốn đổi ngày đi không?",
+    "unsupported_route": "Tuyến này chưa có trong dữ liệu demo."
+  },
+  "provider_follow_up": {
+    "cheaper_available": "Tôi thấy có chuyến rẻ hơn hãng bạn chọn. Bạn muốn xem chuyến rẻ hơn không?",
+    "no_provider_specified": "Bạn có muốn ưu tiên hãng bay nào không?"
+  },
+  "safety_notes": [
+    "Không tự động đặt vé trong demo.",
+    "Giá là mock data, không phải realtime.",
+    "Nếu confidence thấp, phải hỏi lại user trước khi search."
+  ]
+}
