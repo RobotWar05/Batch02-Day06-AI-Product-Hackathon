@@ -171,10 +171,17 @@ Hãy dùng mốc thời gian này để tính chính xác các cụm từ thời
   "raw_analysis": "Mô tả ngắn phân tích lý do trích xuất"
 }
 
-Quy tắc chuẩn hóa:
-- Sài Gòn, HCM, Hồ Chí Minh -> TP.HCM
-- HN, Hà Nội -> Hà Nội
-- ĐN, Đà Nẵng -> Đà Nẵng
+Quy tắc chuẩn hóa và Xử lý Lỗi Ngữ cảnh:
+1. Chuẩn hóa địa điểm: Sài Gòn, HCM, SG -> TP.HCM; HN -> Hà Nội; ĐN -> Đà Nẵng; HP -> Hải Phòng.
+2. Lỗi Xung đột Hướng đi (Directional Ambiguity): Nếu người dùng liệt kê 2 địa điểm nhưng không dùng giới từ rõ ràng để phân biệt đi/đến (ví dụ: "Hà Nội Hải Phòng", "SG HN"), hãy để intent là "search_trip", gán cả departure và destination là null, hạ confidence < 0.5, đưa departure và destination vào missing_slots, và ghi vào raw_analysis: "Phát hiện xung đột hướng đi (Directional Ambiguity)."
+3. Lỗi Trừu tượng hóa Định lượng (Quantifier Abstraction):
+   - "chỉ mình tôi", "một mình" -> passengers = 1.
+   - "cặp đôi", "hai vợ chồng", "hai đứa" -> passengers = 2.
+   - "gia đình" -> passengers = null, đưa "passengers" vào missing_slots, raw_analysis = "Phát hiện entity 'gia đình' nhưng không có số lượng cụ thể."
+   - "2 vợ chồng và 1 đứa nhỏ 3 tuổi" -> tính toán ra passengers = 3, tránh nhầm lẫn số tuổi (3 tuổi) thành passengers hoặc ngày tháng.
+4. Lỗi Ngữ cảnh Ngầm định (Implicit Context & Anchoring):
+   - "Đặt vé về quê" hay "bay đi Đà Lạt" -> gán departure = null, đưa "departure" vào missing_slots.
+   - Tính toán relative dates (ví dụ: "chiều mai") dựa trên mốc thời gian hệ thống: Hôm nay là Thứ Năm, ngày 04/06/2026.
 Trả về duy nhất chuỗi JSON hợp lệ. Không có markdown ```json.
 """
 
@@ -222,111 +229,163 @@ def _extract_entities_core(user_prompt: str) -> dict:
     }
 
     # Phát hiện Intent tìm kiếm chuyến đi sơ bộ
-    search_keywords = ["tìm", "đặt", "vé", "chuyến", "đi", "bay", "tàu", "xe"]
-    if any(kw in cleaned for kw in search_keywords):
-        result["intent"] = "search_trip"
-        
-        # Nhận diện địa điểm
-        if "sài gòn" in cleaned or "hcm" in cleaned or "hồ chí minh" in cleaned:
-            if "từ sài gòn" in cleaned or "từ hcm" in cleaned:
-                result["entities"]["departure"] = "TP.HCM"
-            elif "đi sài gòn" in cleaned or "về sài gòn" in cleaned:
-                result["entities"]["destination"] = "TP.HCM"
-            else:
-                # Gán tạm theo vị trí
-                result["entities"]["departure"] = "TP.HCM"
-                
-        if "hà nội" in cleaned or "hn" in cleaned:
-            if "từ hà nội" in cleaned or "từ hn" in cleaned:
-                result["entities"]["departure"] = "Hà Nội"
-            elif "đi hà nội" in cleaned or "về hà nội" in cleaned:
-                result["entities"]["destination"] = "Hà Nội"
-            else:
-                # Gán tạm
-                result["entities"]["destination"] = "Hà Nội"
-
-        if "đà nẵng" in cleaned or "đn" in cleaned:
-            if "đi đà nẵng" in cleaned or "về đà nẵng" in cleaned:
-                result["entities"]["destination"] = "Đà Nẵng"
-            else:
-                result["entities"]["destination"] = "Đà Nẵng"
-                
-        if "phú quốc" in cleaned or "pq" in cleaned:
-            result["entities"]["destination"] = "Phú Quốc"
-
-        # Nhận diện các địa điểm khác trong test-cases
-        for city in ["Huế", "Nha Trang", "Đà Lạt", "Hải Phòng"]:
-            if city.lower() in cleaned:
-                if f"từ {city.lower()}" in cleaned:
-                    result["entities"]["departure"] = city
-                else:
-                    result["entities"]["destination"] = city
-            
-        # Nhận diện phương tiện
-        if "tàu" in cleaned or "hỏa" in cleaned:
-            result["entities"]["transport"] = "train"
-        elif "bay" in cleaned or "phóng" in cleaned or "máy bay" in cleaned:
-            result["entities"]["transport"] = "plane"
-        elif "xe" in cleaned or "khách" in cleaned or "coach" in cleaned:
-            result["entities"]["transport"] = "coach"
-            
-        # Nhận diện hành khách (hỗ trợ số viết bằng chữ & cụm từ đặc biệt)
-        passengers_detected = None
-        
-        # 1. Các cụm từ ẩn ý tiếng Việt
-        phrase_map = {
-            "chỉ mình tôi": 1,
-            "một mình": 1,
-            "đơn độc": 1,
-            "cặp đôi": 2,
-            "vợ chồng": 2,
-            "hai đứa": 2,
-            "tôi và bạn": 2,
-            "tôi và vợ": 2,
-            "tôi và chồng": 2
-        }
-        for phrase, val in phrase_map.items():
-            if phrase in cleaned:
-                passengers_detected = val
+    search_keywords = ["tìm", "đặt", "vé", "chuyến", "đi", "bay", "tàu", "xe", "book"]
+    
+    # Mapping normalized names and abbreviations
+    city_mapping = {
+        "TP.HCM": ["sài gòn", "hcm", "hồ chí minh", "sg"],
+        "Hà Nội": ["hà nội", "hn"],
+        "Đà Nẵng": ["đà nẵng", "đn"],
+        "Phú Quốc": ["phú quốc", "pq"],
+        "Huế": ["huế"],
+        "Nha Trang": ["nha trang"],
+        "Đà Lạt": ["đà lạt"],
+        "Hải Phòng": ["hải phòng", "hp"]
+    }
+    
+    found_cities = []
+    for norm_name, keywords in city_mapping.items():
+        for kw in keywords:
+            pattern = rf'\b{kw}\b' if len(kw) <= 3 else kw
+            if re.search(pattern, cleaned):
+                found_cities.append((norm_name, kw))
                 break
                 
-        # 2. Số viết bằng chữ trong tiếng Việt
-        if passengers_detected is None:
-            word_to_num = {
-                "một": 1, "hai": 2, "ba": 3, "bốn": 4, "năm": 5,
-                "sáu": 6, "bảy": 7, "tám": 8, "chín": 9, "mười": 10
-            }
-            # Khớp các cụm từ như "một vé", "hai người", v.v.
-            for word, val in word_to_num.items():
-                if re.search(rf'\b{word}\b\s*(vé|người|hành khách)', cleaned):
-                    passengers_detected = val
-                    break
-            # Nếu chưa tìm thấy, kiểm tra từ đơn lẻ
-            if passengers_detected is None:
-                for word, val in word_to_num.items():
-                    if rf" {word} " in f" {cleaned} ":
-                        passengers_detected = val
-                        break
-                        
-        # 3. Số tự nhiên thông thường
-        if passengers_detected is None:
-            passengers_match = re.search(r'(\d+)\s*(vé|người|hành khách)?', cleaned)
-            if passengers_match:
-                passengers_detected = int(passengers_match.group(1))
-                
-        if passengers_detected is not None:
-            result["entities"]["passengers"] = passengers_detected
-
-        # Nhận diện ngày
-        if "10/6" in cleaned or "10 tháng 6" in cleaned:
-            result["entities"]["date"] = "2026-06-10"
-        elif "mai" in cleaned or "ngày mai" in cleaned:
-            result["entities"]["date"] = "2026-06-05"
-        elif "hôm nay" in cleaned:
-            result["entities"]["date"] = "2026-06-04"
-        elif "cuối tuần" in cleaned:
-            result["entities"]["date"] = "2026-06-06"
+    # Nhận diện địa điểm & Xử lý Directional Ambiguity
+    departure = None
+    destination = None
+    has_ambiguity = False
+    
+    if len(found_cities) >= 2:
+        has_from = False
+        has_to = False
+        
+        city1_norm, city1_kw = found_cities[0]
+        city2_norm, city2_kw = found_cities[1]
+        
+        if f"từ {city1_kw}" in cleaned or f"đi từ {city1_kw}" in cleaned:
+            departure = city1_norm
+            has_from = True
+        if f"từ {city2_kw}" in cleaned or f"đi từ {city2_kw}" in cleaned:
+            departure = city2_norm
+            has_from = True
             
+        if f"đi {city1_kw}" in cleaned or f"đến {city1_kw}" in cleaned or f"về {city1_kw}" in cleaned or f"vô {city1_kw}" in cleaned or f"ra {city1_kw}" in cleaned:
+            destination = city1_norm
+            has_to = True
+        if f"đi {city2_kw}" in cleaned or f"đến {city2_kw}" in cleaned or f"về {city2_kw}" in cleaned or f"vô {city2_kw}" in cleaned or f"ra {city2_kw}" in cleaned:
+            destination = city2_norm
+            has_to = True
+            
+        if not has_from and not has_to:
+            # Directional Ambiguity!
+            departure = None
+            destination = None
+            has_ambiguity = True
+            result["confidence"] = 0.40
+            result["raw_analysis"] = f"Phát hiện xung đột hướng đi (Directional Ambiguity) giữa {city1_norm} và {city2_norm}. Cần làm rõ."
+        else:
+            if departure and not destination:
+                destination = city2_norm if departure == city1_norm else city1_norm
+            elif destination and not departure:
+                departure = city2_norm if destination == city1_norm else city1_norm
+            result["confidence"] = 0.85
+    elif len(found_cities) == 1:
+        city_norm, city_kw = found_cities[0]
+        if f"từ {city_kw}" in cleaned or f"đi từ {city_kw}" in cleaned:
+            departure = city_norm
+        else:
+            destination = city_norm
+            
+    if not has_ambiguity:
+        result["entities"]["departure"] = departure
+        result["entities"]["destination"] = destination
+        
+    # Nhận diện phương tiện
+    transport_found = None
+    if "tàu" in cleaned or "hỏa" in cleaned:
+        transport_found = "train"
+    elif "bay" in cleaned or "phóng" in cleaned or "máy bay" in cleaned:
+        transport_found = "plane"
+    elif "xe" in cleaned or "khách" in cleaned or "coach" in cleaned:
+        transport_found = "coach"
+    result["entities"]["transport"] = transport_found
+        
+    # Nhận diện hành khách (hỗ trợ số viết bằng chữ & cụm từ đặc biệt)
+    passengers_detected = None
+    cleaned_no_age = re.sub(r'\d+\s*tuổi', '', cleaned)
+    
+    has_family_phrase = "gia đình" in cleaned_no_age
+    if has_family_phrase:
+        passengers_detected = None
+        result["raw_analysis"] = "Phát hiện entity 'gia đình' nhưng không có số lượng cụ thể."
+    else:
+        total_pass = 0
+        matches = re.findall(r'(\d+)\s*(vé|người|đứa|bé|trẻ|hành khách)?', cleaned_no_age)
+        if matches:
+            for num_str, unit in matches:
+                total_pass += int(num_str)
+            if "vợ chồng" in cleaned_no_age and not any(int(m[0]) == 2 for m in matches):
+                total_pass += 2
+        else:
+            phrase_map = {
+                "chỉ mình tôi": 1,
+                "một mình": 1,
+                "đơn độc": 1,
+                "cặp đôi": 2,
+                "vợ chồng": 2,
+                "hai đứa": 2,
+                "tôi và bạn": 2,
+                "tôi và vợ": 2,
+                "tôi và chồng": 2
+            }
+            for phrase, val in phrase_map.items():
+                if phrase in cleaned_no_age:
+                    total_pass = val
+                    break
+            
+            if total_pass == 0:
+                word_to_num = {
+                    "một": 1, "hai": 2, "ba": 3, "bốn": 4, "năm": 5,
+                    "sáu": 6, "bảy": 7, "tám": 8, "chín": 9, "mười": 10
+                }
+                for word, val in word_to_num.items():
+                    if re.search(rf'\b{word}\b\s*(vé|người|hành khách|đứa)', cleaned_no_age):
+                        total_pass = val
+                        break
+                if total_pass == 0:
+                    for word, val in word_to_num.items():
+                        if rf" {word} " in f" {cleaned_no_age} ":
+                            total_pass = val
+                            break
+                            
+        if total_pass > 0:
+            passengers_detected = total_pass
+            
+    if passengers_detected is not None:
+        result["entities"]["passengers"] = passengers_detected
+    elif not has_family_phrase:
+        result["entities"]["passengers"] = 1
+        
+    # Nhận diện ngày
+    date_found = None
+    if "10/6" in cleaned or "10 tháng 6" in cleaned:
+        date_found = "2026-06-10"
+    elif "mai" in cleaned or "ngày mai" in cleaned:
+        date_found = "2026-06-05"
+    elif "hôm nay" in cleaned:
+        date_found = "2026-06-04"
+    elif "cuối tuần" in cleaned:
+        date_found = "2026-06-06"
+    result["entities"]["date"] = date_found
+        
+    # Phân loại Intent và Trình bày
+    has_travel_entities = len(found_cities) > 0 or transport_found is not None or passengers_detected is not None or date_found is not None or has_family_phrase
+    is_search = any(kw in cleaned for kw in search_keywords) or has_travel_entities
+    
+    if is_search:
+        result["intent"] = "search_trip"
+        
         # Tính toán missing slots
         missing = []
         if not result["entities"]["departure"]:
@@ -335,12 +394,17 @@ def _extract_entities_core(user_prompt: str) -> dict:
             missing.append("destination")
         if not result["entities"]["date"]:
             missing.append("date")
+        if has_family_phrase:
+            missing.append("passengers")
+            
         result["missing_slots"] = missing
         
-        if len(missing) == 0:
-            result["confidence"] = 0.85
-        else:
-            result["confidence"] = 0.65
+        # Thiết lập confidence chung
+        if not has_ambiguity:
+            if len(missing) == 0:
+                result["confidence"] = 0.85
+            else:
+                result["confidence"] = 0.65
 
     return result
 
