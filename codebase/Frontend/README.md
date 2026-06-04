@@ -24,6 +24,7 @@ Không cần backend, không cần cài package. Frontend đang dùng:
 | Happy | Nhập: `Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6` |
 | Happy flight | Nhập: `Tìm vé máy bay từ Hà Nội đi Đà Nẵng ngày 10/6` |
 | Low-confidence | Nhập: `Tìm vé đi Đà Nẵng ngày 10/6` |
+| Low-confidence thiếu ngày | Nhập: `Tìm vé đi Đà Nẵng` rồi chọn ngày bằng quick button |
 | Failure | Bấm scenario `Failure` hoặc nhập: `Tìm vé từ Hà Nội đi Đà Nẵng bằng tàu hỏa` |
 | Correction | Bấm nút sửa trong widget, chọn lại phương tiện rồi cập nhật |
 
@@ -36,6 +37,7 @@ Khi bấm `Tìm chuyến`, frontend chỉ hiển thị một block kết quả h
 - Chưa có search tool riêng.
 - Dữ liệu kết quả đang hard-code để demo frontend nhìn được và bấm thử được trước.
 - Result cards hiện là dữ liệu giả, chưa lọc theo route thật.
+- Parser demo nhận được cả `10/6` và `10 tháng 6`.
 
 ## Bước tiếp theo
 
