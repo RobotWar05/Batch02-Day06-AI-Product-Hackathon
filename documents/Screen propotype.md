@@ -208,9 +208,7 @@ Widget cập nhật
 
 ---
 
-# Flow màn hình cuối cùng nên trình bày
-
-Nếu làm Figma, hãy nối thành flow:
+# Flow màn hình
 
 ```text
 Screen 1
@@ -252,13 +250,9 @@ Updated Widget
      ▼
 New Results
 ```
-
-Cho bài workshop này, chỉ cần **5 frame Figma**:
-
 1. Current Trip.com (FAQ thất bại)
 2. Happy Path
 3. Low-confidence Path
 4. Failure Path
 5. Correction Path
 
-là đủ để thể hiện toàn bộ Evidence → Insight → Solution → Human-in-the-loop mà giảng viên đang tìm kiếm.
