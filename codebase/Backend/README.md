@@ -127,7 +127,7 @@ Kết quả search trả về cho frontend result cards.
 
 ## 3. API endpoints
 
-## 3.1. `POST /api/parse`
+### 3.1. `POST /api/parse`
 
 ### Mục đích
 
@@ -262,7 +262,7 @@ Backend v1 có thể dùng rule-based parser để demo ổn định:
 
 ---
 
-## 3.2. `POST /api/search`
+### 3.2. `POST /api/search`
 
 ### Mục đích
 
@@ -360,7 +360,7 @@ Sort:
 
 ---
 
-## 3.3. `POST /api/update-slot`
+### 3.3. `POST /api/update-slot`
 
 ### Mục đích
 
@@ -438,8 +438,9 @@ Các code nên có:
 |---|---|
 | `INVALID_REQUEST` | Body thiếu field hoặc sai type |
 | `UNSUPPORTED_INTENT` | Intent không thuộc demo v1 |
-| `NO_RESULTS` | Không có kết quả trong mock data |
 | `INTERNAL_ERROR` | Lỗi không mong muốn |
+
+Lưu ý: `no_results` trong `/api/search` là trạng thái nghiệp vụ hợp lệ, không phải lỗi hệ thống. Backend chỉ dùng error format khi request sai hoặc server lỗi.
 
 ---
 
@@ -475,7 +476,22 @@ Các code nên có:
 
 ---
 
-## 7. Nguyên tắc quan trọng
+## 7. Mock data tối thiểu
+
+Để frontend demo có dữ liệu đủ nhìn và backend search được, mock data nên có tối thiểu:
+
+| Nhóm data | Số record | Mục đích |
+|---|---:|---|
+| `TP.HCM -> Đà Nẵng`, `train`, `2026-06-10` | 3 | Happy path tàu hỏa |
+| `Hà Nội -> Đà Nẵng`, `flight`, `2026-06-10` | 3 | Happy path máy bay |
+| `Hà Nội -> Đà Nẵng`, `train`, `2026-06-10` | 2 | Correction từ máy bay sang tàu |
+| Route/date không có data | 1-2 case | Test `no_results` |
+
+Các record nên dùng đúng schema ở mục `Trip result`. Nếu chưa có backend search, frontend có thể hard-code trước nhưng field nên giữ cùng tên để dễ tách sang `Data` sau.
+
+---
+
+## 8. Nguyên tắc quan trọng
 
 - Backend không được tự đặt vé thật.
 - Không scrape web đặt vé.

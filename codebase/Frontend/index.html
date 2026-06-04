@@ -183,47 +183,115 @@
 
     const trainResults = [
       {
+        id: "train_se1_001",
         provider: "Vietnam Railways",
         code: "SE1",
         transport_mode: "train",
+        origin: "TP.HCM",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
         departure_time: "08:00",
         arrival_time: "23:15",
+        duration_minutes: 915,
         duration: "15h15m",
+        total_price_vnd: 1250000,
         price: "1.250.000đ",
+        available_seats: 12,
+        booking_url: "#",
         reason: "Phù hợp nếu muốn đi tàu và kiểm soát chi phí"
       },
       {
+        id: "train_se3_002",
         provider: "Vietnam Railways",
         code: "SE3",
         transport_mode: "train",
+        origin: "TP.HCM",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
         departure_time: "13:00",
         arrival_time: "04:30",
+        duration_minutes: 930,
         duration: "15h30m",
+        total_price_vnd: 1150000,
         price: "1.150.000đ",
+        available_seats: 8,
+        booking_url: "#",
         reason: "Giá thấp hơn, phù hợp nếu linh hoạt giờ đến"
+      },
+      {
+        id: "train_se5_003",
+        provider: "Vietnam Railways",
+        code: "SE5",
+        transport_mode: "train",
+        origin: "TP.HCM",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
+        departure_time: "19:00",
+        arrival_time: "10:10",
+        duration_minutes: 910,
+        duration: "15h10m",
+        total_price_vnd: 1320000,
+        price: "1.320.000đ",
+        available_seats: 5,
+        booking_url: "#",
+        reason: "Đi buổi tối, phù hợp nếu muốn ngủ qua đêm trên tàu"
       }
     ];
 
     const flightResults = [
       {
+        id: "flight_vn171_001",
         provider: "Vietnam Airlines",
         code: "VN171",
         transport_mode: "flight",
+        origin: "Hà Nội",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
         departure_time: "09:00",
         arrival_time: "10:25",
+        duration_minutes: 85,
         duration: "1h25m",
+        total_price_vnd: 1480000,
         price: "1.480.000đ",
+        available_seats: 9,
+        booking_url: "#",
         reason: "Nhanh nhất, phù hợp nếu ưu tiên tiết kiệm thời gian"
       },
       {
+        id: "flight_vj623_002",
         provider: "Vietjet Air",
         code: "VJ623",
         transport_mode: "flight",
+        origin: "Hà Nội",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
         departure_time: "14:30",
         arrival_time: "15:50",
+        duration_minutes: 80,
         duration: "1h20m",
+        total_price_vnd: 1120000,
         price: "1.120.000đ",
+        available_seats: 17,
+        booking_url: "#",
         reason: "Giá tốt hơn, phù hợp nếu ưu tiên chi phí"
+      },
+      {
+        id: "flight_qh103_003",
+        provider: "Bamboo Airways",
+        code: "QH103",
+        transport_mode: "flight",
+        origin: "Hà Nội",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
+        departure_time: "18:15",
+        arrival_time: "19:40",
+        duration_minutes: 85,
+        duration: "1h25m",
+        total_price_vnd: 1360000,
+        price: "1.360.000đ",
+        available_seats: 6,
+        booking_url: "#",
+        reason: "Khung giờ chiều tối, phù hợp nếu cần xuất phát sau giờ làm"
       }
     ];
 
@@ -271,6 +339,8 @@
       }
 
       if (isFailureDemo) {
+        slots.date = "2026-06-10";
+        slots.date_label = "10/06/2026";
         slots.transport_mode = "flight";
         slots.confidence = 0.62;
         slots.warning = "AI có thể đã hiểu sai phương tiện. Vui lòng kiểm tra trước khi tìm.";
@@ -479,7 +549,7 @@
               <h3 class="text-lg font-bold text-text">Kết quả phù hợp</h3>
               <p class="text-sm text-muted">${slots.origin} -> ${slots.destination} · ${slots.date_label} · ${labelForTransport(slots.transport_mode)}</p>
             </div>
-            <span class="rounded-full bg-secondary-container px-3 py-1 text-xs font-bold text-secondary">${results.length} lựa chọn</span>
+            <span class="rounded-full bg-secondary-container px-3 py-1 text-xs font-bold text-secondary">Dữ liệu demo</span>
           </div>
           <div class="grid gap-3">
             ${results.map(renderResultCard).join("")}

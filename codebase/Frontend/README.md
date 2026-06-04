@@ -15,7 +15,7 @@ Không cần backend, không cần cài package. Frontend đang dùng:
 - Tailwind CDN
 - Material Symbols
 - Mock parser hard-code trong JavaScript
-- Result cards hard-code trong JavaScript
+- Result cards hard-code trong JavaScript, gồm dữ liệu demo cho tàu hỏa và máy bay
 
 ## Flow đã hỗ trợ
 
@@ -27,12 +27,15 @@ Không cần backend, không cần cài package. Frontend đang dùng:
 | Failure | Bấm scenario `Failure` hoặc nhập: `Tìm vé từ Hà Nội đi Đà Nẵng bằng tàu hỏa` |
 | Correction | Bấm nút sửa trong widget, chọn lại phương tiện rồi cập nhật |
 
+Khi bấm `Tìm chuyến`, frontend chỉ hiển thị một block kết quả hiện tại. Nếu bấm lại, block kết quả sẽ được refresh chứ không append nhiều lần.
+
 ## Giới hạn hiện tại
 
 - Chưa có backend thật.
 - Chưa có mock data JSON riêng.
 - Chưa có search tool riêng.
 - Dữ liệu kết quả đang hard-code để demo frontend nhìn được và bấm thử được trước.
+- Result cards hiện là dữ liệu giả, chưa lọc theo route thật.
 
 ## Bước tiếp theo
 
