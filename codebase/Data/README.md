@@ -15,6 +15,11 @@ Không scrape web, không gọi API thật, không tự đặt vé thật.
 | `trips/trips_manifest.json` | Manifest mô tả các file data đã tách |
 | `trips/flights/*.json` | Data chuyến bay tách theo từng hãng |
 | `trips/trains/*.json` | Data tàu tách theo nhà vận hành |
+| `provider_profiles.json` | Hồ sơ từng hãng/nhà vận hành để chatbot giải thích đặc điểm |
+| `ranking_rules.json` | Rule xếp hạng khi user muốn rẻ, nhanh, cân bằng hoặc premium |
+| `query_schema.json` | Chuẩn input từ parser sang search tool |
+| `response_schema.json` | Chuẩn output từ search API/tool về frontend/chatbot |
+| `fallback_rules.json` | Câu hỏi lại và xử lý no-results/failure path |
 | `search_test_cases.json` | Case test cho parser/search/backend |
 
 Khuyến nghị backend mới nên đọc theo `trips/trips_manifest.json`, sau đó load từng file theo nhu cầu. `trips.json` chỉ nên coi là file tương thích tạm thời.
@@ -38,6 +43,11 @@ Data/
       vietravel_airlines.json
     trains/
       vietnam_railways.json
+  provider_profiles.json
+  ranking_rules.json
+  query_schema.json
+  response_schema.json
+  fallback_rules.json
 ```
 
 Ý nghĩa:
@@ -48,6 +58,54 @@ Data/
 - `flights/vietravel_airlines.json`: chỉ chứa chuyến bay Vietravel Airlines.
 - `flights/sun_phuquoc_airways.json`: chỉ chứa chuyến bay Sun PhuQuoc Airways.
 - `trains/vietnam_railways.json`: chỉ chứa chuyến tàu Vietnam Railways.
+
+---
+
+## 1.2. Các file cấu hình cho backend/tool
+
+### `provider_profiles.json`
+
+Mô tả từng hãng để chatbot biết hãng nào rẻ, hãng nào ổn định, hãng nào là lựa chọn xem thêm.
+
+Ví dụ backend dùng:
+
+```text
+User hỏi "hãng nào rẻ" -> ưu tiên provider có category = low_cost
+User hỏi "hãng ổn định" -> ưu tiên provider có best_for chứa reliable/premium
+```
+
+### `ranking_rules.json`
+
+Quy định cách sort kết quả:
+
+```text
+balanced -> dùng score tổng hợp
+cheap -> sort theo giá
+fast -> sort theo duration
+premium -> ưu tiên comfort/reliability
+provider_first -> ưu tiên hãng user nói rõ
+```
+
+### `query_schema.json`
+
+Chuẩn hóa query đầu vào cho search tool. File này giúp parser biết thiếu field nào thì phải hỏi lại.
+
+### `response_schema.json`
+
+Mô tả shape output nên trả về cho frontend/chatbot:
+
+```text
+grouped_results.flight.default
+grouped_results.flight.see_more
+grouped_results.train.default
+grouped_results.train.see_more
+recommendation
+follow_up_question
+```
+
+### `fallback_rules.json`
+
+Chứa câu hỏi lại khi thiếu thông tin và câu trả lời khi không có kết quả.
 
 ---
 

@@ -1,46 +1,48 @@
-# Frontend Demo - AI Đi Không
-
-Đây là frontend v1 cho Day 06 AI Product Hackathon.
-
-## Cách chạy
-
-Mở trực tiếp file:
-
+﻿# Frontend Demo - AI Di Khong
+Day 06 AI Product Hackathon frontend prototype.
+## Cach chay
+Mo truc tiep file:
 ```text
 index.html
 ```
-
-Không cần backend, không cần cài package. Frontend đang dùng:
-
+Frontend hien chua can backend va chua can cai package. Project dang dung:
 - Tailwind CDN
 - Material Symbols
-- Mock parser hard-code trong JavaScript
-- Result cards hard-code trong JavaScript, gồm dữ liệu demo cho tàu hỏa và máy bay
-
-## Flow đã hỗ trợ
-
-| Path | Cách test |
+- Mock parser trong `assets/js/parser.js`
+- Mock data trong `assets/js/mock-data.js`
+- UI/render/event handling trong `assets/js/app.js`
+## Cau truc thu muc
+```text
+Frontend/
+  index.html
+  README.md
+  assets/
+    css/
+      base.css
+    js/
+      tailwind.config.js
+      mock-data.js
+      parser.js
+      app.js
+```
+## Flow da ho tro
+| Path | Cach test |
 |---|---|
-| Happy | Nhập: `Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6` |
-| Happy flight | Nhập: `Tìm vé máy bay từ Hà Nội đi Đà Nẵng ngày 10/6` |
-| Low-confidence | Nhập: `Tìm vé đi Đà Nẵng ngày 10/6` |
-| Low-confidence thiếu ngày | Nhập: `Tìm vé đi Đà Nẵng` rồi chọn ngày bằng quick button |
-| Failure | Bấm scenario `Failure` hoặc nhập: `Tìm vé từ Hà Nội đi Đà Nẵng bằng tàu hỏa` |
-| Correction | Bấm nút sửa trong widget, chọn lại phương tiện rồi cập nhật |
-
-Khi bấm `Tìm chuyến`, frontend chỉ hiển thị một block kết quả hiện tại. Nếu bấm lại, block kết quả sẽ được refresh chứ không append nhiều lần.
-
-## Giới hạn hiện tại
-
-- Chưa có backend thật.
-- Chưa có mock data JSON riêng.
-- Chưa có search tool riêng.
-- Dữ liệu kết quả đang hard-code để demo frontend nhìn được và bấm thử được trước.
-- Result cards hiện là dữ liệu giả, chưa lọc theo route thật.
-- Parser demo nhận được cả `10/6` và `10 tháng 6`.
-
-## Bước tiếp theo
-
-1. Tách data hard-code sang `codebase/Data`.
-2. Viết search tool đọc mock data.
-3. Nối frontend với backend API.
+| Happy | Nhap: `Tim 2 ve tau hoa tu Sai Gon di Da Nang ngay 10/6` |
+| Happy flight | Nhap: `Tim ve may bay tu Ha Noi di Da Nang ngay 10/6` |
+| Low-confidence | Nhap: `Tim ve di Da Nang ngay 10/6` |
+| Low-confidence thieu ngay | Nhap: `Tim ve di Da Nang` roi chon ngay bang quick button |
+| Failure | Bam scenario `Failure` hoac nhap: `Tim ve tu Ha Noi di Da Nang bang tau hoa` |
+| Correction | Bam nut sua trong widget, chon lai phuong tien roi cap nhat |
+Khi bam `Tim chuyen`, frontend chi hien thi mot block ket qua hien tai. Neu bam lai, block ket qua se duoc refresh, khong append nhieu lan.
+## Gioi han hien tai
+- Chua co backend that.
+- Chua doc data tu API hoac file JSON.
+- Du lieu ket qua van la mock data de demo frontend.
+- Result cards chua loc theo route that.
+- Parser demo nhan duoc ca `10/6` va `10 thang 6`.
+## Huong tich hop tiep theo
+1. Doi `assets/js/mock-data.js` sang nguon data that hoac API response tu backend.
+2. Tach service goi API rieng, vi du `assets/js/api-client.js`.
+3. Giu `parser.js` la fallback/local demo hoac thay bang response NLP tu backend.
+4. Chuan hoa contract slot/result voi backend truoc khi bo mock.

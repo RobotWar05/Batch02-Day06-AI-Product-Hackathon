@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "default_strategy": "balanced",
+  "strategies": {
+    "balanced": {
+      "description": "User không nói rõ ưu tiên, cân bằng giá, thời gian, độ tin cậy và thoải mái.",
+      "weights": {
+        "price_score": 0.35,
+        "time_score": 0.3,
+        "reliability_score": 0.2,
+        "comfort_score": 0.15
+      },
+      "tie_breakers": [
+        "one_way_price_vnd",
+        "duration_minutes",
+        "display_rank"
+      ]
+    },
+    "cheap": {
+      "description": "User ưu tiên rẻ nhất.",
+      "sort_by": [
+        "one_way_price_vnd",
+        "round_trip_price_vnd",
+        "display_rank"
+      ]
+    },
+    "fast": {
+      "description": "User ưu tiên nhanh nhất.",
+      "sort_by": [
+        "duration_minutes",
+        "one_way_price_vnd"
+      ]
+    },
+    "premium": {
+      "description": "User ưu tiên hãng, độ ổn định hoặc trải nghiệm.",
+      "weights": {
+        "comfort_score": 0.4,
+        "reliability_score": 0.4,
+        "time_score": 0.15,
+        "price_score": 0.05
+      }
+    },
+    "provider_first": {
+      "description": "User nói rõ hãng bay.",
+      "sort_by": [
+        "preferred_provider_match",
+        "one_way_price_vnd",
+        "duration_minutes"
+      ]
+    }
+  },
+  "default_visibility": {
+    "flight": 3,
+    "train": 2
+  },
+  "see_more_behavior": {
+    "enabled": true,
+    "reveal_group_value": "see_more"
+  }
+}

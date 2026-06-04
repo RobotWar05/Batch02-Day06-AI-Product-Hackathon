@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generated_at": "2026-06-04",
-  "note": "Split mock trip data by transport mode and provider. trips.json remains as a legacy aggregate for current frontend/backend compatibility.",
+  "note": "Split mock trip data by transport mode and provider. Backend should read this manifest, load provider files, then apply config files for ranking, query validation, response shape, and fallback handling.",
   "aggregate_file": "../trips.json",
   "files": {
     "flights": {
@@ -27,5 +27,12 @@
     "trains": {
       "Vietnam Railways": 12
     }
+  },
+  "config_files": {
+    "provider_profiles": "../provider_profiles.json",
+    "ranking_rules": "../ranking_rules.json",
+    "query_schema": "../query_schema.json",
+    "response_schema": "../response_schema.json",
+    "fallback_rules": "../fallback_rules.json"
   }
 }
