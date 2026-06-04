@@ -8,8 +8,7 @@
       "Vietnam Airlines": "flight/vietnam_airlines.json",
       "Vietjet Air": "flight/vietjet_air.json",
       "Bamboo Airways": "flight/bamboo_airways.json",
-      "Vietravel Airlines": "flight/vietravel_airlines.json",
-      "Sun PhuQuoc Airways": "flight/sun_phuquoc_airways.json"
+      "Vietravel Airlines": "flight/vietravel_airlines.json"
     },
     "train": {
       "Vietnam Railways": "train/vietnam_railways.json"
@@ -21,8 +20,7 @@
       "Vietnam Airlines": 14,
       "Vietjet Air": 20,
       "Bamboo Airways": 14,
-      "Vietravel Airlines": 6,
-      "Sun PhuQuoc Airways": 0
+      "Vietravel Airlines": 6
     },
     "train": {
       "Vietnam Railways": 16

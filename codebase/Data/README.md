@@ -33,7 +33,6 @@ Data/
     trips_manifest.json
     flight/
       bamboo_airways.json
-      sun_phuquoc_airways.json
       vietnam_airlines.json
       vietjet_air.json
       vietravel_airlines.json

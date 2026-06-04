@@ -89,9 +89,6 @@ FLIGHT_TEMPLATES = {
             {"origin": "Huế", "destination": "TP.HCM", "departure_time": "18:25", "duration": 80, "price": 1230000},
         ],
     },
-    "sun_phuquoc_airways.json": {
-        "provider": "Sun PhuQuoc Airways",
-        "provider_tag": "sun_phuquoc_airways",
         "default_visible_count": 1,
         "records": [
             {"origin": "Phú Quốc", "destination": "Đà Nẵng", "departure_time": "09:45", "duration": 75, "price": 1190000},

@@ -71,23 +71,6 @@
     "default_priority": 2
   },
   {
-    "provider": "Sun PhuQuoc Airways",
-    "type": "airline",
-    "category": "secondary_option",
-    "display_name": "Sun PhuQuoc Airways",
-    "strengths": [
-      "Extra option for leisure routes"
-    ],
-    "tradeoffs": [
-      "Mock-only secondary provider"
-    ],
-    "best_for": [
-      "more_options",
-      "leisure"
-    ],
-    "default_priority": 4
-  },
-  {
     "provider": "Vietnam Railways",
     "type": "railway",
     "category": "rail_operator",
