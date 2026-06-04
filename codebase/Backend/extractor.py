@@ -286,14 +286,14 @@ def _extract_entities_core(user_prompt: str) -> dict:
     
     # Mapping normalized names and abbreviations
     city_mapping = {
-        "TP.HCM": ["sài gòn", "hcm", "hồ chí minh", "sg"],
-        "Hà Nội": ["hà nội", "hn"],
-        "Đà Nẵng": ["đà nẵng", "đn"],
-        "Phú Quốc": ["phú quốc", "pq"],
-        "Huế": ["huế"],
-        "Nha Trang": ["nha trang"],
-        "Đà Lạt": ["đà lạt"],
-        "Hải Phòng": ["hải phòng", "hp"]
+        "TP.HCM": ["sài gòn", "hcm", "hồ chí minh", "sg", "tp.hcm", "tp hcm", "tphcm"],
+        "Hà Nội": ["hà nội", "hn", "ha noi"],
+        "Đà Nẵng": ["đà nẵng", "đn", "da nang"],
+        "Phú Quốc": ["phú quốc", "pq", "phu quoc"],
+        "Huế": ["huế", "hue"],
+        "Nha Trang": ["nha trang", "nt", "nha trang"],
+        "Đà Lạt": ["đà lạt", "đl", "da lat"],
+        "Hải Phòng": ["hải phòng", "hp", "hai phong"]
     }
     
     found_cities = []

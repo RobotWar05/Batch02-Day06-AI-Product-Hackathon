@@ -1,0 +1,13 @@
+{
+  "test-session-999": {
+    "departure": "TP.HCM",
+    "destination": "Đà Nẵng",
+    "date": "2026-06-10",
+    "return_date": null,
+    "is_round_trip": false,
+    "time": null,
+    "transport": "train",
+    "passengers": 1,
+    "last_asked_slot": null
+  }
+}
