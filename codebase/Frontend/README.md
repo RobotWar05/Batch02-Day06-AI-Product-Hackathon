@@ -1,4 +1,4 @@
-# Frontend Demo - Trip Assistant
+# Frontend Demo - AI Đi Không
 
 Đây là frontend v1 cho Day 06 AI Product Hackathon.
 
