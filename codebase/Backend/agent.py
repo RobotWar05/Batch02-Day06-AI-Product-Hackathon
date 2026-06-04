@@ -1,23 +1,42 @@
 import os
 import json
 import re
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import datetime
 from uuid import uuid4
-from fastapi import HTTPException, status
 
-from app.core.config import TRIP_STATES_FILE, MOCK_TRIPS_FILE
-from app.models.session import SessionMessage
-from app.services.json_store import JsonStore
+# Import your extractor logic
 from extractor import extract_entities
 
+# Paths relative to the codebase/Backend directory
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+TRIP_STATES_FILE = os.path.join(BACKEND_DIR, "data", "trip_states.json")
+MOCK_TRIPS_FILE = os.path.join(BACKEND_DIR, "data", "mock_trips.json")
 
-class TripService:
+
+class TripAgent:
     def __init__(self) -> None:
-        self.state_store = JsonStore(TRIP_STATES_FILE, default_data={})
+        self._ensure_file_exists(TRIP_STATES_FILE, {})
+        self._ensure_file_exists(MOCK_TRIPS_FILE, [])
+
+    def _ensure_file_exists(self, path: str, default_content) -> None:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if not os.path.exists(path):
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(default_content, f, ensure_ascii=False, indent=2)
+
+    def _read_json(self, path: str):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {} if path == TRIP_STATES_FILE else []
+
+    def _write_json(self, path: str, data) -> None:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
     def get_trip_state(self, session_id: str) -> dict:
-        states = self.state_store.read()
+        states = self._read_json(TRIP_STATES_FILE)
         if session_id not in states:
             states[session_id] = {
                 "departure": None,
@@ -30,13 +49,13 @@ class TripService:
                 "passengers": 1,
                 "last_asked_slot": None
             }
-            self.state_store.write(states)
+            self._write_json(TRIP_STATES_FILE, states)
         return states[session_id]
 
     def save_trip_state(self, session_id: str, state: dict) -> None:
-        states = self.state_store.read()
+        states = self._read_json(TRIP_STATES_FILE)
         states[session_id] = state
-        self.state_store.write(states)
+        self._write_json(TRIP_STATES_FILE, states)
 
     def process_user_message(self, session_id: str, content: str) -> dict:
         state = self.get_trip_state(session_id)
@@ -101,7 +120,7 @@ class TripService:
                 "next_action": "conversational"
             }
 
-        # 3. Merge new extracted entities into accumulated state (overwriting existing if found)
+        # 3. Merge new extracted entities into accumulated state
         # Contextual redirection based on last_asked
         if last_asked == "departure" and entities.get("destination") and not entities.get("departure"):
             entities["departure"] = entities["destination"]
@@ -117,7 +136,6 @@ class TripService:
             if v is not None:
                 state[k] = v
 
-        # If passenger count is extracted or modified, update it. If missing, default to 1.
         if "passengers" in entities and entities["passengers"] is not None:
             state["passengers"] = entities["passengers"]
 
@@ -221,7 +239,6 @@ class TripService:
         for k, v in patch.items():
             state[k] = v
         
-        # Check completeness after patch
         missing = []
         if not state["departure"]:
             missing.append("departure")
@@ -239,7 +256,6 @@ class TripService:
         state["last_asked_slot"] = None if not missing else missing[0]
         self.save_trip_state(session_id, state)
 
-        # Build response
         if missing:
             next_slot = missing[0]
             questions = {
@@ -303,29 +319,6 @@ class TripService:
                 "next_action": "ready_to_search"
             }
 
-        # Append assistant message to session message store
-        from app.services.session_service import session_service
-        try:
-            sessions = session_service._read_sessions()
-            for index, session in enumerate(sessions):
-                if session.id == session_id:
-                    now = datetime.now(timezone.utc)
-                    assistant_message = SessionMessage(
-                        id=str(uuid4()),
-                        role="assistant",
-                        content=json.dumps(res, ensure_ascii=False),
-                        created_at=now,
-                    )
-                    session.messages.append(assistant_message)
-                    session.updated_at = now
-                    sessions[index] = session
-                    session_service.session_store.write(
-                        [stored_session.model_dump(mode="json") for stored_session in sessions]
-                    )
-                    break
-        except Exception:
-            pass
-
         return res
 
     def search_trips(self, session_id: str) -> dict:
@@ -342,18 +335,13 @@ class TripService:
             missing.append("transport")
 
         if missing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Missing fields for search: {', '.join(missing)}",
-            )
+            raise ValueError(f"Missing fields for search: {', '.join(missing)}")
 
         transport_mode = state["transport"]
         if transport_mode == "plane":
             transport_mode = "flight"
 
-        trips_store = JsonStore(MOCK_TRIPS_FILE, default_data=[])
-        all_trips = trips_store.read()
-
+        all_trips = self._read_json(MOCK_TRIPS_FILE)
         results = []
         for trip in all_trips:
             origin_match = self._normalize_city(trip.get("origin")) == self._normalize_city(state["departure"])
@@ -364,38 +352,13 @@ class TripService:
             if origin_match and dest_match and date_match and trans_match:
                 results.append(trip)
 
-        res = {
+        return {
             "response_type": "trip_results",
             "message": f"Tìm thấy {len(results)} kết quả phù hợp cho chuyến đi của bạn.",
             "payload": {
                 "results": results
             }
         }
-
-        # Append assistant message to session message store
-        from app.services.session_service import session_service
-        try:
-            sessions = session_service._read_sessions()
-            for index, session in enumerate(sessions):
-                if session.id == session_id:
-                    now = datetime.now(timezone.utc)
-                    assistant_message = SessionMessage(
-                        id=str(uuid4()),
-                        role="assistant",
-                        content=json.dumps(res, ensure_ascii=False),
-                        created_at=now,
-                    )
-                    session.messages.append(assistant_message)
-                    session.updated_at = now
-                    sessions[index] = session
-                    session_service.session_store.write(
-                        [stored_session.model_dump(mode="json") for stored_session in sessions]
-                    )
-                    break
-        except Exception:
-            pass
-
-        return res
 
     def _normalize_city(self, city: str | None) -> str:
         if not city:
@@ -446,4 +409,5 @@ class TripService:
         return None
 
 
-trip_service = TripService()
+# Global agent instance
+trip_agent = TripAgent()

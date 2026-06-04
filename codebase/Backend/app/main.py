@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.core.config import CHAT_SESSIONS_FILE, MOCK_TRIPS_FILE, USERS_FILE, TRIP_STATES_FILE
+from app.core.config import CHAT_SESSIONS_FILE, MOCK_TRIPS_FILE, USERS_FILE
 from app.routers import auth, chat, sessions, trip
 from app.services.json_store import JsonStore
 
@@ -12,7 +12,6 @@ async def lifespan(_: FastAPI):
     JsonStore(USERS_FILE, default_data=[]).ensure_exists()
     JsonStore(CHAT_SESSIONS_FILE, default_data=[]).ensure_exists()
     JsonStore(MOCK_TRIPS_FILE, default_data=[]).ensure_exists()
-    JsonStore(TRIP_STATES_FILE, default_data={}).ensure_exists()
     yield
 
 

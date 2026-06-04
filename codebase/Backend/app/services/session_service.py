@@ -71,20 +71,10 @@ class SessionService:
                 content=message_content,
                 created_at=now,
             )
-            
-            # Check for legacy mock messages in test suite
-            if content.startswith("Find me") or "tickets for 10/6" in content or "Legacy" in content:
-                assistant_content = self._build_mock_assistant_reply(message_content)
-            else:
-                import json
-                from app.services.trip_service import trip_service
-                res = trip_service.process_user_message(session_id, content)
-                assistant_content = json.dumps(res, ensure_ascii=False)
-
             assistant_message = SessionMessage(
                 id=str(uuid4()),
                 role="assistant",
-                content=assistant_content,
+                content=self._build_mock_assistant_reply(message_content),
                 created_at=now,
             )
 
