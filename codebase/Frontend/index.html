@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trip Assistant Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: "#f8f9fb",
+            surface: "#ffffff",
+            "surface-low": "#f2f4f6",
+            "surface-high": "#e7e8ea",
+            primary: "#0058be",
+            "primary-container": "#0570ec",
+            secondary: "#485f86",
+            "secondary-container": "#bbd2ff",
+            text: "#191c1e",
+            muted: "#414754",
+            outline: "#c1c6d7",
+            success: "#12B76A",
+            warning: "#F79009",
+            error: "#F04438"
+          },
+          fontFamily: {
+            inter: ["Inter", "sans-serif"]
+          },
+          boxShadow: {
+            ambient: "0 4px 12px rgba(15, 41, 77, 0.05)",
+            floating: "0 12px 24px rgba(15, 41, 77, 0.12)"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-background font-inter text-text">
+  <div class="flex min-h-screen">
+    <aside class="hidden w-64 shrink-0 border-r border-outline bg-surface p-5 shadow-ambient md:flex md:flex-col">
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-primary">Trip Assistant</h1>
+        <p class="mt-1 text-sm text-muted">Task-Oriented Travel AI</p>
+      </div>
+
+      <div class="mb-5 rounded-2xl border border-outline bg-surface-low p-4">
+        <p class="text-xs font-semibold uppercase tracking-wide text-muted">Demo paths</p>
+        <div class="mt-3 grid gap-2">
+          <button data-scenario="happy" class="scenario-btn rounded-xl bg-primary px-3 py-2 text-left text-sm font-semibold text-white transition hover:bg-primary-container">Happy path</button>
+          <button data-scenario="low" class="scenario-btn rounded-xl border border-outline bg-surface px-3 py-2 text-left text-sm font-semibold text-muted transition hover:border-primary hover:text-primary">Low-confidence</button>
+          <button data-scenario="failure" class="scenario-btn rounded-xl border border-outline bg-surface px-3 py-2 text-left text-sm font-semibold text-muted transition hover:border-warning hover:text-warning">Failure</button>
+          <button data-scenario="correction" class="scenario-btn rounded-xl border border-outline bg-surface px-3 py-2 text-left text-sm font-semibold text-muted transition hover:border-success hover:text-success">Correction</button>
+        </div>
+      </div>
+
+      <nav class="grid gap-2 text-sm">
+        <a class="flex items-center gap-3 rounded-xl bg-secondary-container px-4 py-3 font-semibold text-secondary" href="#">
+          <span class="material-symbols-outlined">history</span>
+          History
+        </a>
+        <a class="flex items-center gap-3 rounded-xl px-4 py-3 text-muted transition hover:bg-surface-low" href="#">
+          <span class="material-symbols-outlined">settings</span>
+          Settings
+        </a>
+        <a class="flex items-center gap-3 rounded-xl px-4 py-3 text-muted transition hover:bg-surface-low" href="#">
+          <span class="material-symbols-outlined">person</span>
+          Profile
+        </a>
+      </nav>
+
+      <div class="mt-auto rounded-2xl border border-outline bg-surface-low p-4 text-xs text-muted">
+        <p class="font-semibold text-text">Day 06 prototype</p>
+        <p class="mt-1">Frontend-first demo, mock AI parser, hard-coded results.</p>
+      </div>
+    </aside>
+
+    <main class="flex min-h-screen flex-1 flex-col">
+      <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-outline bg-surface px-4 md:px-8">
+        <div>
+          <h2 class="text-lg font-bold text-primary md:hidden">Trip Assistant</h2>
+          <h2 class="hidden text-lg font-semibold text-text md:block">Chatbot Trip.com cải thiện</h2>
+          <p class="hidden text-xs text-muted md:block">FAQ-based Assistant -> Task-Oriented Travel Assistant</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="resetBtn" class="rounded-full border border-outline bg-surface px-4 py-2 text-sm font-semibold text-muted transition hover:border-primary hover:text-primary">
+            Reset
+          </button>
+          <button class="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-ambient">
+            Demo v1
+          </button>
+        </div>
+      </header>
+
+      <section class="flex-1 overflow-hidden">
+        <div class="mx-auto flex h-[calc(100vh-4rem)] w-full max-w-[900px] flex-col">
+          <div id="chatCanvas" class="no-scrollbar flex-1 overflow-y-auto px-4 py-6 md:px-0">
+            <div id="messages" class="flex flex-col gap-5 pb-28"></div>
+          </div>
+
+          <div class="border-t border-outline bg-background px-4 py-4 md:px-0">
+            <div class="mx-auto max-w-[900px]">
+              <div class="mb-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar md:hidden">
+                <button data-scenario="happy" class="scenario-btn shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white">Happy</button>
+                <button data-scenario="low" class="scenario-btn shrink-0 rounded-full border border-outline bg-surface px-4 py-2 text-xs font-semibold text-muted">Low-confidence</button>
+                <button data-scenario="failure" class="scenario-btn shrink-0 rounded-full border border-outline bg-surface px-4 py-2 text-xs font-semibold text-muted">Failure</button>
+                <button data-scenario="correction" class="scenario-btn shrink-0 rounded-full border border-outline bg-surface px-4 py-2 text-xs font-semibold text-muted">Correction</button>
+              </div>
+              <form id="chatForm" class="flex items-center gap-3 rounded-2xl border border-outline bg-surface p-2 shadow-ambient">
+                <button type="button" class="grid h-10 w-10 place-items-center rounded-xl text-muted transition hover:bg-surface-low">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+                <input id="chatInput" class="min-w-0 flex-1 border-0 bg-transparent text-sm text-text placeholder:text-muted focus:ring-0" placeholder="Nhập: Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6" />
+                <button type="submit" class="grid h-10 w-10 place-items-center rounded-xl bg-primary text-white transition hover:bg-primary-container" title="Gửi">
+                  <span class="material-symbols-outlined fill">send</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="sheetBackdrop" class="fixed inset-0 z-40 hidden bg-black/30"></div>
+  <aside id="editSheet" class="fixed inset-x-0 bottom-0 z-50 hidden rounded-t-3xl bg-surface p-5 shadow-floating md:left-1/2 md:right-auto md:w-[420px] md:-translate-x-1/2">
+    <div class="mx-auto mb-4 h-1 w-12 rounded-full bg-outline"></div>
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h3 id="sheetTitle" class="text-lg font-bold text-text">Chỉnh sửa</h3>
+        <p class="mt-1 text-sm text-muted">Cập nhật thông tin AI đã hiểu sai.</p>
+      </div>
+      <button id="closeSheetBtn" class="grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-surface-low">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div id="sheetOptions" class="mt-5 grid gap-2"></div>
+    <button id="applyEditBtn" class="mt-5 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-white transition hover:bg-primary-container">
+      Cập nhật
+    </button>
+  </aside>
+
+  <script>
+    const messagesEl = document.getElementById("messages");
+    const chatCanvas = document.getElementById("chatCanvas");
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("chatInput");
+    const resetBtn = document.getElementById("resetBtn");
+    const sheet = document.getElementById("editSheet");
+    const sheetBackdrop = document.getElementById("sheetBackdrop");
+    const sheetTitle = document.getElementById("sheetTitle");
+    const sheetOptions = document.getElementById("sheetOptions");
+    const applyEditBtn = document.getElementById("applyEditBtn");
+    const closeSheetBtn = document.getElementById("closeSheetBtn");
+
+    const state = {
+      messages: [],
+      currentSlots: null,
+      selectedEditField: null,
+      pendingValue: null,
+      resultVisible: false
+    };
+
+    const trainResults = [
+      {
+        provider: "Vietnam Railways",
+        code: "SE1",
+        transport_mode: "train",
+        departure_time: "08:00",
+        arrival_time: "23:15",
+        duration: "15h15m",
+        price: "1.250.000đ",
+        reason: "Phù hợp nếu muốn đi tàu và kiểm soát chi phí"
+      },
+      {
+        provider: "Vietnam Railways",
+        code: "SE3",
+        transport_mode: "train",
+        departure_time: "13:00",
+        arrival_time: "04:30",
+        duration: "15h30m",
+        price: "1.150.000đ",
+        reason: "Giá thấp hơn, phù hợp nếu linh hoạt giờ đến"
+      }
+    ];
+
+    const flightResults = [
+      {
+        provider: "Vietnam Airlines",
+        code: "VN171",
+        transport_mode: "flight",
+        departure_time: "09:00",
+        arrival_time: "10:25",
+        duration: "1h25m",
+        price: "1.480.000đ",
+        reason: "Nhanh nhất, phù hợp nếu ưu tiên tiết kiệm thời gian"
+      },
+      {
+        provider: "Vietjet Air",
+        code: "VJ623",
+        transport_mode: "flight",
+        departure_time: "14:30",
+        arrival_time: "15:50",
+        duration: "1h20m",
+        price: "1.120.000đ",
+        reason: "Giá tốt hơn, phù hợp nếu ưu tiên chi phí"
+      }
+    ];
+
+    const scenarios = {
+      happy: "Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6",
+      low: "Tìm vé đi Đà Nẵng ngày 10/6",
+      failure: "Tìm vé từ Hà Nội đi Đà Nẵng bằng tàu hỏa",
+      correction: "Tìm vé từ Hà Nội đi Đà Nẵng bằng tàu hỏa"
+    };
+
+    function normalize(text) {
+      return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function parseUserMessage(message) {
+      const raw = normalize(message);
+      const isFailureDemo = raw.includes("ha noi") && raw.includes("da nang") && raw.includes("tau");
+      const slots = {
+        intent: raw.includes("huy") ? "cancel" : "search_trip",
+        origin: null,
+        destination: null,
+        date: raw.includes("10/6") ? "2026-06-10" : null,
+        date_label: raw.includes("10/6") ? "10/06/2026" : null,
+        transport_mode: null,
+        passengers: raw.match(/\b2\b|2 ve|hai ve/) ? 2 : 1,
+        confidence: 0.96,
+        missing_fields: [],
+        warning: ""
+      };
+
+      if (raw.includes("sai gon") || raw.includes("tp.hcm") || raw.includes("tphcm") || raw.includes("ho chi minh")) {
+        slots.origin = "TP.HCM";
+      }
+      if (raw.includes("ha noi")) {
+        slots.origin = "Hà Nội";
+      }
+      if (raw.includes("da nang")) {
+        slots.destination = "Đà Nẵng";
+      }
+      if (raw.includes("tau")) {
+        slots.transport_mode = "train";
+      }
+      if (raw.includes("may bay") || raw.includes("bay")) {
+        slots.transport_mode = "flight";
+      }
+
+      if (isFailureDemo) {
+        slots.transport_mode = "flight";
+        slots.confidence = 0.62;
+        slots.warning = "AI có thể đã hiểu sai phương tiện. Vui lòng kiểm tra trước khi tìm.";
+      }
+
+      if (!slots.origin) slots.missing_fields.push("origin");
+      if (!slots.destination) slots.missing_fields.push("destination");
+      if (!slots.date) slots.missing_fields.push("date");
+      if (!slots.transport_mode) slots.missing_fields.push("transport_mode");
+
+      return slots;
+    }
+
+    function iconForTransport(mode) {
+      return mode === "flight" ? "flight_takeoff" : "train";
+    }
+
+    function labelForTransport(mode) {
+      return mode === "flight" ? "Máy bay" : "Tàu hỏa";
+    }
+
+    function addMessage(type, content, meta = {}) {
+      state.messages.push({ id: crypto.randomUUID(), type, content, meta });
+      render();
+    }
+
+    function setTyping() {
+      addMessage("typing", "Đang phân tích...");
+    }
+
+    function removeTyping() {
+      state.messages = state.messages.filter((msg) => msg.type !== "typing");
+      render();
+    }
+
+    function scrollToBottom() {
+      requestAnimationFrame(() => {
+        chatCanvas.scrollTop = chatCanvas.scrollHeight;
+      });
+    }
+
+    function render() {
+      messagesEl.innerHTML = state.messages.map(renderMessage).join("");
+      attachDynamicHandlers();
+      scrollToBottom();
+    }
+
+    function renderMessage(message) {
+      if (message.type === "user") return renderUserBubble(message.content);
+      if (message.type === "typing") return renderTypingBubble();
+      if (message.type === "bot") return renderBotBubble(message.content);
+      if (message.type === "clarify") return renderClarification(message.meta.slots);
+      if (message.type === "widget") return renderTripWidget(message.meta.slots);
+      if (message.type === "results") return renderResults(message.meta.slots);
+      return "";
+    }
+
+    function renderUserBubble(text) {
+      return `
+        <div class="flex justify-end">
+          <div class="max-w-[80%] rounded-3xl rounded-tr-md bg-primary px-4 py-3 text-sm text-white shadow-ambient">
+            ${escapeHtml(text)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBotBubble(text) {
+      return `
+        <div class="flex items-start gap-3">
+          <div class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-secondary-container text-secondary">
+            <span class="material-symbols-outlined text-[18px] fill">smart_toy</span>
+          </div>
+          <div class="max-w-[85%] rounded-3xl rounded-tl-md border border-outline bg-surface px-4 py-3 text-sm text-text shadow-ambient">
+            ${escapeHtml(text)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTypingBubble() {
+      return `
+        <div class="flex items-start gap-3">
+          <div class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-secondary-container text-secondary">
+            <span class="material-symbols-outlined text-[18px] fill">smart_toy</span>
+          </div>
+          <div class="rounded-3xl rounded-tl-md border border-outline bg-surface px-4 py-3 text-sm text-muted shadow-ambient">
+            <span class="inline-flex items-center gap-2">
+              <span class="h-2 w-2 animate-pulse rounded-full bg-primary"></span>
+              Đang phân tích...
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderClarification(slots) {
+      const needOrigin = slots.missing_fields.includes("origin");
+      const needTransport = slots.missing_fields.includes("transport_mode");
+      return `
+        <div class="ml-0 md:ml-11 max-w-[620px] rounded-2xl border border-outline bg-surface p-5 shadow-ambient">
+          <div class="mb-4 flex items-center gap-3">
+            <div class="grid h-9 w-9 place-items-center rounded-xl bg-secondary-container text-secondary">
+              <span class="material-symbols-outlined">help</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-text">Tôi cần thêm thông tin</h3>
+              <p class="text-sm text-muted">Bot không đoán bừa khi thiếu slot quan trọng.</p>
+            </div>
+          </div>
+          ${needOrigin ? `
+          <div class="mb-4">
+            <p class="mb-2 text-sm font-semibold text-text">Bạn muốn khởi hành từ đâu?</p>
+            <div class="flex flex-wrap gap-2">
+              ${quickButton("origin", "Hà Nội")}
+              ${quickButton("origin", "TP.HCM")}
+              ${quickButton("origin", "Đà Nẵng")}
+            </div>
+          </div>` : ""}
+          ${needTransport ? `
+          <div>
+            <p class="mb-2 text-sm font-semibold text-text">Bạn muốn đi bằng gì?</p>
+            <div class="flex flex-wrap gap-2">
+              ${quickButton("transport_mode", "flight", "Máy bay")}
+              ${quickButton("transport_mode", "train", "Tàu hỏa")}
+            </div>
+          </div>` : ""}
+        </div>
+      `;
+    }
+
+    function quickButton(field, value, label = value) {
+      return `<button data-quick-field="${field}" data-quick-value="${value}" class="quick-btn rounded-full border border-outline bg-surface px-4 py-2 text-sm font-semibold text-muted transition hover:border-primary hover:text-primary">${escapeHtml(label)}</button>`;
+    }
+
+    function renderTripWidget(slots) {
+      const statusColor = slots.warning ? "text-warning" : "text-success";
+      const statusIcon = slots.warning ? "warning" : "check_circle";
+      const statusText = slots.warning ? "Cần kiểm tra lại" : "Đã nhận diện thông tin";
+      return `
+        <div class="ml-0 md:ml-11 max-w-[620px] overflow-hidden rounded-2xl border border-outline bg-surface shadow-ambient">
+          <div class="flex items-center justify-between border-b border-outline bg-surface-low px-5 py-4">
+            <div class="flex items-center gap-3">
+              <div class="grid h-10 w-10 place-items-center rounded-xl bg-secondary-container text-primary">
+                <span class="material-symbols-outlined">${iconForTransport(slots.transport_mode)}</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-text">Chi tiết hành trình</h3>
+                <p class="flex items-center gap-1 text-xs font-semibold ${statusColor}">
+                  <span class="material-symbols-outlined text-[16px]">${statusIcon}</span>
+                  ${statusText} · confidence ${Math.round(slots.confidence * 100)}%
+                </p>
+              </div>
+            </div>
+            <button data-edit-field="all" class="edit-btn grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-surface-high hover:text-primary" title="Chỉnh sửa">
+              <span class="material-symbols-outlined">edit</span>
+            </button>
+          </div>
+
+          <div class="grid gap-4 p-5 sm:grid-cols-2">
+            ${slotField("origin", "location_on", "Điểm đi", slots.origin || "Chưa rõ")}
+            ${slotField("destination", "flag", "Điểm đến", slots.destination || "Chưa rõ")}
+            ${slotField("date", "calendar_today", "Ngày đi", slots.date_label || "Chưa rõ")}
+            ${slotField("transport_mode", iconForTransport(slots.transport_mode), "Phương tiện", labelForTransport(slots.transport_mode))}
+            ${slotField("passengers", "group", "Hành khách", `${slots.passengers || 1} người`)}
+          </div>
+
+          ${slots.warning ? `
+          <div class="mx-5 mb-4 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-text">
+            <span class="font-semibold text-warning">Cảnh báo:</span> ${escapeHtml(slots.warning)}
+          </div>` : ""}
+
+          <div class="flex flex-wrap items-center justify-end gap-3 border-t border-outline px-5 py-4">
+            <button data-edit-field="transport_mode" class="edit-btn rounded-xl border border-outline bg-surface px-4 py-2 text-sm font-semibold text-muted transition hover:border-primary hover:text-primary">Chỉnh sửa</button>
+            <button id="searchBtn" class="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-container">
+              ${state.resultVisible ? "Tìm lại kết quả" : "Tìm chuyến"}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function slotField(field, icon, label, value) {
+      return `
+        <div class="group flex items-start justify-between gap-3 rounded-xl border border-transparent p-2 transition hover:border-outline hover:bg-surface-low">
+          <div class="flex gap-3">
+            <span class="material-symbols-outlined mt-1 text-[18px] text-muted">${icon}</span>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wide text-muted">${label}</p>
+              <p class="mt-1 text-sm font-semibold text-text">${escapeHtml(value)}</p>
+            </div>
+          </div>
+          <button data-edit-field="${field}" class="edit-btn grid h-8 w-8 place-items-center rounded-full text-muted opacity-100 transition hover:bg-surface-high hover:text-primary md:opacity-0 md:group-hover:opacity-100" title="Sửa ${label}">
+            <span class="material-symbols-outlined text-[16px]">edit</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderResults(slots) {
+      const results = slots.transport_mode === "flight" ? flightResults : trainResults;
+      return `
+        <div class="ml-0 md:ml-11 max-w-[720px]">
+          <div class="mb-3 flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-text">Kết quả phù hợp</h3>
+              <p class="text-sm text-muted">${slots.origin} -> ${slots.destination} · ${slots.date_label} · ${labelForTransport(slots.transport_mode)}</p>
+            </div>
+            <span class="rounded-full bg-secondary-container px-3 py-1 text-xs font-bold text-secondary">${results.length} lựa chọn</span>
+          </div>
+          <div class="grid gap-3">
+            ${results.map(renderResultCard).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderResultCard(item) {
+      const modeLabel = labelForTransport(item.transport_mode);
+      return `
+        <article class="rounded-2xl border border-outline bg-surface p-4 shadow-ambient transition hover:-translate-y-0.5 hover:shadow-floating">
+          <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div class="flex items-start gap-3">
+              <div class="grid h-11 w-11 place-items-center rounded-xl bg-secondary-container text-primary">
+                <span class="material-symbols-outlined">${iconForTransport(item.transport_mode)}</span>
+              </div>
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h4 class="font-bold text-text">${escapeHtml(item.provider)} · ${escapeHtml(item.code)}</h4>
+                  <span class="rounded-full bg-surface-low px-2 py-1 text-xs font-semibold text-muted">${modeLabel}</span>
+                </div>
+                <p class="mt-1 text-sm text-muted">${escapeHtml(item.reason)}</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 items-center gap-4 rounded-xl bg-surface-low px-4 py-3 text-center md:min-w-[260px]">
+              <div>
+                <p class="text-lg font-bold text-text">${item.departure_time}</p>
+                <p class="text-xs text-muted">Đi</p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-muted">${item.duration}</p>
+                <div class="my-1 h-px bg-outline"></div>
+                <p class="text-xs text-muted">Thời lượng</p>
+              </div>
+              <div>
+                <p class="text-lg font-bold text-text">${item.arrival_time}</p>
+                <p class="text-xs text-muted">Đến</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 md:block md:text-right">
+              <p class="text-xl font-bold text-primary">${item.price}</p>
+              <button class="mt-0 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-container md:mt-2">Chọn vé</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function attachDynamicHandlers() {
+      document.querySelectorAll(".quick-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          const field = button.dataset.quickField;
+          const value = button.dataset.quickValue;
+          updateSlot(field, value);
+        });
+      });
+
+      document.querySelectorAll(".edit-btn").forEach((button) => {
+        button.addEventListener("click", () => openEditSheet(button.dataset.editField));
+      });
+
+      const searchBtn = document.getElementById("searchBtn");
+      if (searchBtn) {
+        searchBtn.addEventListener("click", showResults);
+      }
+    }
+
+    function handleUserMessage(message) {
+      if (!message.trim()) return;
+      state.resultVisible = false;
+      addMessage("user", message);
+      setTyping();
+      setTimeout(() => {
+        removeTyping();
+        const slots = parseUserMessage(message);
+        state.currentSlots = slots;
+        if (slots.intent !== "search_trip") {
+          addMessage("bot", "Hiện demo này tập trung vào luồng tìm chuyến đi. Tôi sẽ chuyển câu hỏi này sang FAQ thông thường.");
+          return;
+        }
+        if (slots.missing_fields.length > 0) {
+          addMessage("bot", "Tôi cần thêm thông tin để tìm chuyến chính xác hơn.");
+          addMessage("clarify", "", { slots });
+          return;
+        }
+        addMessage("bot", "Tôi đã tìm thấy thông tin chuyến đi của bạn. Vui lòng kiểm tra trước khi tìm kiếm.");
+        addMessage("widget", "", { slots });
+      }, 500);
+    }
+
+    function updateSlot(field, value) {
+      if (!state.currentSlots) {
+        state.currentSlots = {
+          intent: "search_trip",
+          origin: null,
+          destination: "Đà Nẵng",
+          date: "2026-06-10",
+          date_label: "10/06/2026",
+          transport_mode: null,
+          passengers: 1,
+          confidence: 0.9,
+          missing_fields: [],
+          warning: ""
+        };
+      }
+
+      if (field === "transport_mode") {
+        state.currentSlots.transport_mode = value;
+      } else if (field === "date") {
+        state.currentSlots.date = value === "2026-06-11" ? "2026-06-11" : "2026-06-10";
+        state.currentSlots.date_label = value === "2026-06-11" ? "11/06/2026" : "10/06/2026";
+      } else if (field === "passengers") {
+        state.currentSlots.passengers = Number(value);
+      } else {
+        state.currentSlots[field] = value;
+      }
+
+      state.currentSlots.warning = "";
+      state.currentSlots.confidence = 0.94;
+      state.currentSlots.missing_fields = ["origin", "destination", "date", "transport_mode"].filter((key) => !state.currentSlots[key]);
+
+      if (state.currentSlots.missing_fields.length === 0) {
+        removeClarificationMessages();
+        addOrReplaceWidget();
+      } else {
+        render();
+      }
+    }
+
+    function removeClarificationMessages() {
+      state.messages = state.messages.filter((msg) => msg.type !== "clarify");
+    }
+
+    function addOrReplaceWidget() {
+      state.messages = state.messages.filter((msg) => msg.type !== "widget" && msg.type !== "results");
+      addMessage("bot", "Thông tin đã được cập nhật. Bạn kiểm tra lại trước khi tìm chuyến nhé.");
+      addMessage("widget", "", { slots: state.currentSlots });
+    }
+
+    function showResults() {
+      state.resultVisible = true;
+      state.messages = state.messages.filter((msg) => msg.type !== "results");
+      addMessage("results", "", { slots: state.currentSlots });
+    }
+
+    function openEditSheet(field) {
+      if (!state.currentSlots) return;
+      state.selectedEditField = field === "all" ? "transport_mode" : field;
+      state.pendingValue = null;
+      sheetTitle.textContent = titleForField(state.selectedEditField);
+      sheetOptions.innerHTML = optionsForField(state.selectedEditField);
+      sheet.classList.remove("hidden");
+      sheetBackdrop.classList.remove("hidden");
+      document.querySelectorAll(".option-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.pendingValue = button.dataset.value;
+          document.querySelectorAll(".option-btn").forEach((btn) => btn.classList.remove("border-primary", "text-primary", "bg-secondary-container"));
+          button.classList.add("border-primary", "text-primary", "bg-secondary-container");
+        });
+      });
+    }
+
+    function closeEditSheet() {
+      sheet.classList.add("hidden");
+      sheetBackdrop.classList.add("hidden");
+      state.selectedEditField = null;
+      state.pendingValue = null;
+    }
+
+    function titleForField(field) {
+      const map = {
+        origin: "Chỉnh sửa điểm đi",
+        destination: "Chỉnh sửa điểm đến",
+        date: "Chỉnh sửa ngày đi",
+        transport_mode: "Chỉnh sửa phương tiện",
+        passengers: "Chỉnh sửa hành khách"
+      };
+      return map[field] || "Chỉnh sửa";
+    }
+
+    function optionsForField(field) {
+      const button = (value, label) => `<button data-value="${value}" class="option-btn rounded-xl border border-outline bg-surface px-4 py-3 text-left text-sm font-semibold text-text transition hover:border-primary hover:text-primary">${label}</button>`;
+      if (field === "transport_mode") {
+        return button("flight", "Máy bay") + button("train", "Tàu hỏa");
+      }
+      if (field === "origin" || field === "destination") {
+        return button("Hà Nội", "Hà Nội") + button("TP.HCM", "TP.HCM") + button("Đà Nẵng", "Đà Nẵng");
+      }
+      if (field === "date") {
+        return button("2026-06-10", "10/06/2026") + button("2026-06-11", "11/06/2026");
+      }
+      if (field === "passengers") {
+        return button("1", "1 người") + button("2", "2 người") + button("3", "3 người");
+      }
+      return "";
+    }
+
+    function runScenario(name) {
+      resetConversation();
+      const message = scenarios[name];
+      input.value = "";
+      if (name === "correction") {
+        handleUserMessage(message);
+        setTimeout(() => openEditSheet("transport_mode"), 900);
+        return;
+      }
+      handleUserMessage(message);
+    }
+
+    function resetConversation() {
+      closeEditSheet();
+      state.messages = [];
+      state.currentSlots = null;
+      state.resultVisible = false;
+      render();
+      addMessage("bot", "Xin chào, tôi là Trip Assistant. Hãy nhập nhu cầu chuyến đi, tôi sẽ trích xuất thông tin và tạo widget xác nhận cho bạn.");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const message = input.value;
+      input.value = "";
+      handleUserMessage(message);
+    });
+
+    resetBtn.addEventListener("click", resetConversation);
+    closeSheetBtn.addEventListener("click", closeEditSheet);
+    sheetBackdrop.addEventListener("click", closeEditSheet);
+    applyEditBtn.addEventListener("click", () => {
+      if (state.selectedEditField && state.pendingValue !== null) {
+        updateSlot(state.selectedEditField, state.pendingValue);
+      }
+      closeEditSheet();
+    });
+
+    document.querySelectorAll(".scenario-btn").forEach((button) => {
+      button.addEventListener("click", () => runScenario(button.dataset.scenario));
+    });
+
+    resetConversation();
+  </script>
+</body>
+</html>
