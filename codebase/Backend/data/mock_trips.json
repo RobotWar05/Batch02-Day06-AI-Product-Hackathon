@@ -1,0 +1,32 @@
+[
+  {
+    "id": "train-se1-001",
+    "provider": "Vietnam Railways",
+    "code": "SE1",
+    "transport_mode": "train",
+    "origin": "TP.HCM",
+    "destination": "Đà Nẵng",
+    "date": "2026-06-10",
+    "departure_time": "08:00",
+    "arrival_time": "23:15",
+    "duration_minutes": 915,
+    "total_price_vnd": 1250000,
+    "available_seats": 12,
+    "data_source_type": "mock"
+  },
+  {
+    "id": "flight-vn-210",
+    "provider": "Vietnam Airlines",
+    "code": "VN210",
+    "transport_mode": "flight",
+    "origin": "TP.HCM",
+    "destination": "Đà Nẵng",
+    "date": "2026-06-10",
+    "departure_time": "09:15",
+    "arrival_time": "10:40",
+    "duration_minutes": 85,
+    "total_price_vnd": 1890000,
+    "available_seats": 9,
+    "data_source_type": "mock"
+  }
+]

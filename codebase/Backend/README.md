@@ -1,6 +1,6 @@
 # Backend API Doc & Vietnamese Entity Extractor
 
-Tài liệu này mô tả công cụ trích xuất thực thể Tiếng Việt và các đặc tả API cho backend của dự án.
+Tài liệu này mô tả công cụ trích xuất thực thể Tiếng Việt, trạng thái scaffold hiện tại của backend, và các đặc tả API cho backend của dự án.
 
 ---
 
@@ -67,30 +67,72 @@ $env:PYTHONIOENCODING="utf-8"; python codebase/Backend/cli.py "tìm vé từ Hà
 
 ---
 
-## 2. Tài liệu API Backend gốc (Original Backend API Doc)
+## 2. FastAPI Backend Setup & Scaffold
 
-Tài liệu này mô tả API backend cần có để nối với frontend demo **AI Đi Không**.
+### 2.1. Trạng thái hiện tại
 
-Mục tiêu backend v1:
-- Nhận câu người dùng nhập trong chat.
-- Nhận diện intent.
-- Trích xuất thông tin chuyến đi.
-- Báo thiếu thông tin nếu input chưa đủ.
-- Tìm kết quả từ mock data tàu hỏa/máy bay.
-- Cho phép user sửa slot và search lại.
+Phase 0 đến Phase 3 đã được scaffold:
 
-Backend chưa cần đặt vé thật, chưa cần gọi API Trip.com/Traveloka/Vietnam Airlines. Tất cả dữ liệu kết quả ở v1 nên lấy từ mock data.
+- FastAPI app có `GET /health`
+- Router chính: `auth`, `sessions`, `chat`, `trip`
+- JSON data store: `data/users.json`, `data/chat_sessions.json`, `data/mock_trips.json`
+- `POST /auth/login` theo flow username-only
+- `POST /users/{user_id}/sessions` để tạo chat session
+- `GET /users/{user_id}/sessions` để list session theo user
+- `GET /sessions/{session_id}` để mở lại session cũ
+- `POST /sessions/{session_id}/messages` để lưu user message + mock assistant response
+
+### 2.2. Chạy local
+
+```bash
+cd codebase/Backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Health check:
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Login demo:
+```bash
+curl -X POST http://127.0.0.1:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"demo user","password":"whatever"}'
+```
+
+Create session demo:
+```bash
+curl -X POST http://127.0.0.1:8000/users/<user_id>/sessions \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Da Nang planning"}'
+```
+
+Post message demo:
+```bash
+curl -X POST http://127.0.0.1:8000/sessions/<session_id>/messages \
+  -H "Content-Type: application/json" \
+  -d '{"content":"Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6"}'
+```
+
+Run tests:
+```bash
+pytest -q
+```
 
 ---
 
-### 2.1. Kiến trúc tổng quát
+## 3. Kiến trúc tổng quát
 
 ```text
 Frontend
   |
   | POST /api/parse
   v
-Backend Parser
+  Backend Parser
   |
   +-- intent classification
   +-- entity / slot extraction
@@ -99,13 +141,13 @@ Backend Parser
   |
   | POST /api/search
   v
-Search Tool
+  Search Tool
   |
   v
-Mock Data
+  Mock Data
   |
   v
-Frontend Result Cards
+  Frontend Result Cards
 ```
 
 Backend nên chia 3 module:
@@ -118,55 +160,56 @@ Backend nên chia 3 module:
 
 ---
 
-### 2.2. Data model chính
+## 4. Phase 2 và 3 Contract
 
-#### 2.2.1. Trip slots
+Theo `Backend_Phases.md` và `Backend_Delivery_Plan_V2.md`, backend Phase 2 và 3 cần giữ các contract sau để frontend và teammate làm AI/parser không bị block:
 
-Đây là object trung tâm frontend/backend cùng dùng.
+### 4.1. Phase 2 — Chat session persistence
 
-```json
-{
-  "intent": "search_trip",
-  "origin": "TP.HCM",
-  "destination": "Đà Nẵng",
-  "date": "2026-06-10",
-  "date_label": "10/06/2026",
-  "transport_mode": "train",
-  "passengers": 2,
-  "confidence": 0.96,
-  "missing_fields": [],
-  "warning": ""
-}
-```
+- `POST /users/{user_id}/sessions`
+- `GET /users/{user_id}/sessions`
+- `GET /sessions/{session_id}`
+- Mỗi user có nhiều session riêng
+- Session lưu trong `data/chat_sessions.json`
+- Reload session phải trả lại `messages` và metadata
 
-Field:
+### 4.2. Phase 3 — Chat message storage
 
-| Field | Type | Bắt buộc | Ý nghĩa |
-|---|---|---|---|
-| `intent` | string | yes | `search_trip`, `booking`, `cancel`, `order_check`, `faq` |
-| `origin` | string/null | no | Điểm đi |
-| `destination` | string/null | no | Điểm đến |
-| `date` | string/null | no | Ngày chuẩn ISO `YYYY-MM-DD` |
-| `date_label` | string/null | no | Ngày hiển thị cho user |
-| `transport_mode` | string/null | no | `train` hoặc `flight` |
-| `passengers` | number | yes | Số hành khách, default `1` |
-| `confidence` | number | yes | Độ chắc chắn từ `0` đến `1` |
-| `missing_fields` | string[] | yes | Danh sách field còn thiếu |
-| `warning` | string | no | Cảnh báo nếu AI có thể hiểu sai |
+- `POST /sessions/{session_id}/messages`
+- Append `user` message vào đúng session
+- Append `assistant` message mock ngay sau đó
+- Update `updated_at` sau mỗi lần gửi
+- Session khác không bị ảnh hưởng
 
-#### 2.2.2. Transport mode
+### 4.3. JSON shape hiện tại
 
-Chỉ hỗ trợ 2 loại trong demo v1:
+`chat_sessions.json` lưu theo danh sách session. Mỗi session gồm:
+- `id`
+- `user_id`
+- `title`
+- `messages`
+- `created_at`
+- `updated_at`
 
-```text
-train
-flight
-```
+Mỗi message gồm:
+- `id`
+- `role`
+- `content`
+- `created_at`
 
+---
+
+## 5. Tài liệu API Specs (Phases 1, 4-7)
+
+### 5.1. Data model chính
+
+#### 5.1.1. Trip slots
 Không dùng `bus` trong v1 để giữ scope nhỏ.
 
-#### 2.2.3. Trip result
+#### 5.1.2. Transport mode
+- `train` hoặc `flight`
 
+#### 5.1.3. Trip result
 Kết quả search trả về cho frontend result cards.
 
 ```json
@@ -191,11 +234,9 @@ Kết quả search trả về cho frontend result cards.
 }
 ```
 
----
+### 5.2. API endpoints
 
-### 2.3. API endpoints
-
-#### 2.3.1. `POST /api/parse`
+#### 5.2.1. `POST /api/parse`
 
 ##### Mục đích
 Nhận câu tự nhiên của user và trả về intent + slots.
@@ -320,7 +361,7 @@ Backend v1 có thể dùng rule-based parser để demo ổn định:
 
 ---
 
-#### 2.3.2. `POST /api/search`
+#### 5.2.2. `POST /api/search`
 
 ##### Mục đích
 Tìm chuyến phù hợp từ mock data sau khi user đã xác nhận widget.
@@ -412,7 +453,7 @@ Sort:
 
 ---
 
-#### 2.3.3. `POST /api/update-slot`
+#### 5.2.3. `POST /api/update-slot`
 
 ##### Mục đích
 Cập nhật slot khi user sửa thông tin trên widget hoặc bấm quick reply.
@@ -466,7 +507,7 @@ Cập nhật slot khi user sửa thông tin trên widget hoặc bấm quick repl
 
 ---
 
-### 2.4. Error format
+### 5.3. Error format
 Tất cả lỗi backend nên trả cùng format:
 
 ```json
@@ -491,7 +532,7 @@ Lưu ý: `no_results` trong `/api/search` là trạng thái nghiệp vụ hợp 
 
 ---
 
-### 2.5. Test cases backend
+### 5.4. Test cases backend
 
 | Case | API | Input | Expected |
 |---|---|---|---|
@@ -507,7 +548,7 @@ Lưu ý: `no_results` trong `/api/search` là trạng thái nghiệp vụ hợp 
 
 ---
 
-### 2.6. Gợi ý thứ tự implement
+### 5.5. Gợi ý thứ tự implement
 1. Tạo mock data trong `codebase/Data`.
 2. Implement parser rule-based cho `/api/parse`.
 3. Implement validator tính `missing_fields`.
@@ -518,7 +559,7 @@ Lưu ý: `no_results` trong `/api/search` là trạng thái nghiệp vụ hợp 
 
 ---
 
-### 2.7. Mock data tối thiểu
+### 5.6. Mock data tối thiểu
 
 Để frontend demo có dữ liệu đủ nhìn và backend search được, mock data nên có tối thiểu:
 
@@ -533,7 +574,7 @@ Các record nên dùng đúng schema ở mục `Trip result`. Nếu chưa có ba
 
 ---
 
-### 2.8. Nguyên tắc quan trọng
+### 5.7. Nguyên tắc quan trọng
 - Backend không được tự đặt vé thật.
 - Không scrape web đặt vé.
 - Không gọi API thương mại nếu chưa có key/partner access.

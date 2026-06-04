@@ -3,4 +3,6 @@ node_modules/
 .env
 *.log
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.venv/
