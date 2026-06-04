@@ -1,630 +1,123 @@
 [
   {
-    "id": "61186a22-1cf7-4342-90fc-7b9a3b3ce07a",
-    "user_id": "1a771840-0dd8-4fc8-9e2c-4bd809c3e110",
-    "title": "Trip",
+    "id": "828331b3-0b72-4af8-b769-7b732e70f8ba",
+    "user_id": "22b78a7e-027d-4d3d-9eef-e0671d3acd78",
+    "title": "Agent",
     "messages": [
       {
-        "id": "02cceb10-1ab5-43dc-9ac5-ef20f3dc187f",
+        "id": "66e19c80-2672-4529-9024-a25ecc44b43f",
         "role": "user",
-        "content": "Tìm 2 vé tàu hỏa từ Hà Nội đi Đà Nẵng ngày 6/6",
-        "created_at": "2026-06-04T08:43:50.055600Z",
+        "content": "Tìm vé đi Đà Nẵng ngày 10/6",
+        "created_at": "2026-06-04T08:58:39.885268Z",
         "response_type": null,
         "payload": null,
         "next_action": null
       },
       {
-        "id": "00274934-7a02-4614-b4b1-8a97d7dbb7a4",
+        "id": "2a472eb4-4783-44b4-90e4-f995d3c260f5",
         "role": "assistant",
-        "content": "Tôi đã tìm thấy 2 lựa chọn phù hợp cho hành trình của bạn.",
-        "created_at": "2026-06-04T08:43:50.055600Z",
-        "response_type": "search_results",
-        "payload": {
-          "intent": "search_trip",
-          "slots": {
-            "departure": "Hà Nội",
-            "destination": "Đà Nẵng",
-            "date": "2026-06-06",
-            "transport": "train",
-            "passengers": 2
-          },
-          "confidence": 0.93,
-          "missing_slots": [],
-          "pending_slot": null,
-          "search_status": "searched",
-          "is_unsafe": false,
-          "last_tool_calls": [],
-          "raw_message": "Tìm 2 vé tàu hỏa từ Hà Nội đi Đà Nẵng ngày 6/6",
-          "assistant_response": {
-            "response_type": "search_results",
-            "message": "Tôi đã tìm thấy 2 lựa chọn phù hợp cho hành trình của bạn.",
-            "payload": {
-              "status": "ok",
-              "query": {
-                "origin": "Hà Nội",
-                "destination": "Đà Nẵng",
-                "date": "2026-06-06",
-                "transport_mode": "train",
-                "preferred_provider": null,
-                "trip_type": "one_way",
-                "passengers": 2,
-                "priority": "balanced"
-              },
-              "grouped_results": {
-                "flight": {
-                  "default": [],
-                  "see_more": []
-                },
-                "train": {
-                  "default": [
-                    {
-                      "id": "train_han_dad_se3_20260606",
-                      "provider": "Vietnam Railways",
-                      "code": "SE3",
-                      "transport_mode": "train",
-                      "trip_type_supported": [
-                        "one_way",
-                        "round_trip"
-                      ],
-                      "origin": "Hà Nội",
-                      "destination": "Đà Nẵng",
-                      "date": "2026-06-06",
-                      "return_date": "2026-06-08",
-                      "departure_time": "19:25",
-                      "arrival_time": "10:35+1",
-                      "duration_minutes": 910,
-                      "duration_label": "15h10m",
-                      "is_direct": true,
-                      "one_way_price_vnd": 760000,
-                      "round_trip_price_vnd": 1520000,
-                      "price_label_one_way": "760.000đ",
-                      "price_label_round_trip": "1.520.000đ",
-                      "available_seats": 26,
-                      "pickup_location": "Ga Hà Nội",
-                      "dropoff_location": "Ga Đà Nẵng",
-                      "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
-                      "refund_policy": "Đổi/trả vé theo quy định đường sắt",
-                      "comfort_score": 6,
-                      "reliability_score": 7,
-                      "time_score": 5,
-                      "price_score": 10,
-                      "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
-                      "pros": [
-                        "Đi thẳng từ ga",
-                        "Giá thường thấp hơn máy bay",
-                        "Phù hợp nếu không cần đến quá gấp"
-                      ],
-                      "cons": [
-                        "Thời gian di chuyển dài",
-                        "Không phù hợp với lịch trình gấp"
-                      ],
-                      "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến Hà Nội đi Đà Nẵng.",
-                      "data_source_type": "mock",
-                      "display_group": "train_options",
-                      "directness_label": "Đi thẳng",
-                      "provider_preference_tags": [
-                        "vietnam_railways",
-                        "cheap"
-                      ],
-                      "display_rank": 1,
-                      "default_visible": true,
-                      "reveal_group": "default"
-                    },
-                    {
-                      "id": "train_han_dad_se1_20260606",
-                      "provider": "Vietnam Railways",
-                      "code": "SE1",
-                      "transport_mode": "train",
-                      "trip_type_supported": [
-                        "one_way",
-                        "round_trip"
-                      ],
-                      "origin": "Hà Nội",
-                      "destination": "Đà Nẵng",
-                      "date": "2026-06-06",
-                      "return_date": "2026-06-08",
-                      "departure_time": "22:20",
-                      "arrival_time": "12:32+1",
-                      "duration_minutes": 852,
-                      "duration_label": "14h12m",
-                      "is_direct": true,
-                      "one_way_price_vnd": 820000,
-                      "round_trip_price_vnd": 1640000,
-                      "price_label_one_way": "820.000đ",
-                      "price_label_round_trip": "1.640.000đ",
-                      "available_seats": 20,
-                      "pickup_location": "Ga Hà Nội",
-                      "dropoff_location": "Ga Đà Nẵng",
-                      "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
-                      "refund_policy": "Đổi/trả vé theo quy định đường sắt",
-                      "comfort_score": 7,
-                      "reliability_score": 7,
-                      "time_score": 5,
-                      "price_score": 9,
-                      "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
-                      "pros": [
-                        "Đi thẳng từ ga",
-                        "Giá thường thấp hơn máy bay",
-                        "Phù hợp nếu không cần đến quá gấp"
-                      ],
-                      "cons": [
-                        "Thời gian di chuyển dài",
-                        "Không phù hợp với lịch trình gấp"
-                      ],
-                      "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến Hà Nội đi Đà Nẵng.",
-                      "data_source_type": "mock",
-                      "display_group": "train_options",
-                      "directness_label": "Đi thẳng",
-                      "provider_preference_tags": [
-                        "vietnam_railways",
-                        "cheap"
-                      ],
-                      "display_rank": 2,
-                      "default_visible": true,
-                      "reveal_group": "default"
-                    }
-                  ],
-                  "see_more": []
-                }
-              },
-              "recommendation": {
-                "best_option_id": "train_han_dad_se3_20260606",
-                "reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến Hà Nội đi Đà Nẵng.",
-                "confidence": 0.88
-              },
-              "follow_up_question": null,
-              "message": "Tôi đã tìm thấy 2 lựa chọn phù hợp cho hành trình của bạn."
-            },
-            "next_action": "search_completed"
-          }
-        },
-        "next_action": "search_completed"
-      }
-    ],
-    "current_trip_state": {
-      "intent": "search_trip",
-      "slots": {
-        "departure": "Hà Nội",
-        "destination": "Đà Nẵng",
-        "date": "2026-06-06",
-        "transport": "train",
-        "passengers": 2
-      },
-      "confidence": 0.93,
-      "missing_slots": [],
-      "pending_slot": null,
-      "search_status": "searched",
-      "is_unsafe": false,
-      "system_warning": null,
-      "last_tool_calls": [],
-      "raw_message": "Tìm 2 vé tàu hỏa từ Hà Nội đi Đà Nẵng ngày 6/6"
-    },
-    "created_at": "2026-06-04T08:43:50.054617Z",
-    "updated_at": "2026-06-04T08:43:50.055600Z"
-  },
-  {
-    "id": "165dcf9c-b1ad-4b61-81f5-7f0ecb0dbbc5",
-    "user_id": "4bd6ccd1-3b26-411b-985c-7d0a0c43494e",
-    "title": "Neo frontend session",
-    "messages": [
-      {
-        "id": "c157d8d2-79f1-4b88-ae1a-37219cae9843",
-        "role": "user",
-        "content": "tôi cần tìm vé đi từ hà nội tới sài gòn",
-        "created_at": "2026-06-04T08:48:00.907409Z",
-        "response_type": null,
-        "payload": null,
-        "next_action": null
-      },
-      {
-        "id": "1f44468a-2779-4221-a6be-a0ffb41e1a1c",
-        "role": "assistant",
-        "content": "Bạn muốn đi ngày nào?",
-        "created_at": "2026-06-04T08:48:00.907409Z",
+        "content": "Bạn muốn khởi hành từ đâu?",
+        "created_at": "2026-06-04T08:58:39.885268Z",
         "response_type": "slot_filling",
         "payload": {
           "intent": "search_trip",
           "slots": {
-            "departure": "Hà Nội",
-            "destination": "TP.HCM",
-            "date": null,
+            "departure": null,
+            "destination": "Đà Nẵng",
+            "date": "2026-06-10",
             "transport": null,
             "passengers": null
           },
           "confidence": 0.57,
           "missing_slots": [
-            "date",
+            "departure",
             "transport",
             "passengers"
           ],
-          "pending_slot": "date",
+          "pending_slot": "departure",
           "search_status": "collecting",
           "is_unsafe": false,
           "system_warning": null,
           "last_tool_calls": [],
-          "raw_message": "tôi cần tìm vé đi từ hà nội tới sài gòn",
+          "raw_message": "Tìm vé đi Đà Nẵng ngày 10/6",
           "assistant_response": {
             "response_type": "slot_filling",
-            "message": "Bạn muốn đi ngày nào?",
+            "message": "Bạn muốn khởi hành từ đâu?",
             "payload": {
               "current_slots": {
-                "departure": "Hà Nội",
-                "destination": "TP.HCM",
-                "date": null,
+                "departure": null,
+                "destination": "Đà Nẵng",
+                "date": "2026-06-10",
                 "transport": null,
                 "passengers": null
               },
               "missing_slots": [
-                "date",
+                "departure",
                 "transport",
                 "passengers"
               ],
-              "pending_slot": "date",
+              "pending_slot": "departure",
               "question": {
-                "slot": "date",
-                "question": "Bạn muốn đi ngày nào?",
+                "slot": "departure",
+                "question": "Bạn muốn khởi hành từ đâu?",
                 "options": [
-                  "2026-06-05",
-                  "2026-06-06",
-                  "2026-06-10"
+                  "Hà Nội",
+                  "TP.HCM",
+                  "Đà Nẵng"
                 ]
               },
               "system_warning": null
             },
-            "next_action": "awaiting_date"
+            "next_action": "awaiting_departure"
           }
         },
-        "next_action": "awaiting_date"
+        "next_action": "awaiting_departure"
+      }
+    ],
+    "current_trip_state": {
+      "intent": "search_trip",
+      "slots": {
+        "departure": null,
+        "destination": "Đà Nẵng",
+        "date": "2026-06-10",
+        "transport": null,
+        "passengers": null
       },
+      "confidence": 0.57,
+      "missing_slots": [
+        "departure",
+        "transport",
+        "passengers"
+      ],
+      "pending_slot": "departure",
+      "search_status": "collecting",
+      "is_unsafe": false,
+      "system_warning": null,
+      "last_tool_calls": [],
+      "raw_message": "Tìm vé đi Đà Nẵng ngày 10/6"
+    },
+    "created_at": "2026-06-04T08:58:39.883463Z",
+    "updated_at": "2026-06-04T08:58:39.885268Z"
+  },
+  {
+    "id": "62f3e88a-ad34-43ed-8ab7-3e2b5de92451",
+    "user_id": "dd238e37-4600-4796-a465-b73bb77038f7",
+    "title": "Neo frontend session",
+    "messages": [
       {
-        "id": "14529a2d-965d-4931-bc73-5c091b20cd9c",
+        "id": "2fc51b92-63e7-42a4-8b3b-113f93eb3beb",
         "role": "user",
-        "content": "ngày mai",
-        "created_at": "2026-06-04T08:48:06.581016Z",
+        "content": "tôi muốn đi sài gòn tới hà nội thì vé tàu rẻ hơn bao nhiêu",
+        "created_at": "2026-06-04T09:02:51.699522Z",
         "response_type": null,
         "payload": null,
         "next_action": null
       },
       {
-        "id": "56c00e75-c5a4-4c0e-9841-a3cd53b29cee",
-        "role": "assistant",
-        "content": "Bạn muốn đi máy bay hay tàu hỏa?",
-        "created_at": "2026-06-04T08:48:06.581016Z",
-        "response_type": "slot_filling",
-        "payload": {
-          "intent": "search_trip",
-          "slots": {
-            "departure": "Hà Nội",
-            "destination": "TP.HCM",
-            "date": "2026-06-05",
-            "transport": null,
-            "passengers": null
-          },
-          "confidence": 0.69,
-          "missing_slots": [
-            "transport",
-            "passengers"
-          ],
-          "pending_slot": "transport",
-          "search_status": "collecting",
-          "is_unsafe": false,
-          "system_warning": null,
-          "last_tool_calls": [],
-          "raw_message": "ngày mai",
-          "assistant_response": {
-            "response_type": "slot_filling",
-            "message": "Bạn muốn đi máy bay hay tàu hỏa?",
-            "payload": {
-              "current_slots": {
-                "departure": "Hà Nội",
-                "destination": "TP.HCM",
-                "date": "2026-06-05",
-                "transport": null,
-                "passengers": null
-              },
-              "missing_slots": [
-                "transport",
-                "passengers"
-              ],
-              "pending_slot": "transport",
-              "question": {
-                "slot": "transport",
-                "question": "Bạn muốn đi máy bay hay tàu hỏa?",
-                "options": [
-                  "Máy bay",
-                  "Tàu hỏa"
-                ]
-              },
-              "system_warning": null
-            },
-            "next_action": "awaiting_transport"
-          }
-        },
-        "next_action": "awaiting_transport"
-      },
-      {
-        "id": "4a24d57b-792f-4092-86ba-95f3f1b0a630",
-        "role": "user",
-        "content": "cả hai",
-        "created_at": "2026-06-04T08:48:14.698443Z",
-        "response_type": null,
-        "payload": null,
-        "next_action": null
-      },
-      {
-        "id": "453213ef-bba1-4e2f-ab14-c4b6184eefd5",
-        "role": "assistant",
-        "content": "Bạn muốn đi máy bay hay tàu hỏa?",
-        "created_at": "2026-06-04T08:48:14.698443Z",
-        "response_type": "slot_filling",
-        "payload": {
-          "intent": "search_trip",
-          "slots": {
-            "departure": "Hà Nội",
-            "destination": "TP.HCM",
-            "date": "2026-06-05",
-            "transport": null,
-            "passengers": null
-          },
-          "confidence": 0.69,
-          "missing_slots": [
-            "transport",
-            "passengers"
-          ],
-          "pending_slot": "transport",
-          "search_status": "collecting",
-          "is_unsafe": false,
-          "system_warning": null,
-          "last_tool_calls": [],
-          "raw_message": "cả hai",
-          "assistant_response": {
-            "response_type": "slot_filling",
-            "message": "Bạn muốn đi máy bay hay tàu hỏa?",
-            "payload": {
-              "current_slots": {
-                "departure": "Hà Nội",
-                "destination": "TP.HCM",
-                "date": "2026-06-05",
-                "transport": null,
-                "passengers": null
-              },
-              "missing_slots": [
-                "transport",
-                "passengers"
-              ],
-              "pending_slot": "transport",
-              "question": {
-                "slot": "transport",
-                "question": "Bạn muốn đi máy bay hay tàu hỏa?",
-                "options": [
-                  "Máy bay",
-                  "Tàu hỏa"
-                ]
-              },
-              "system_warning": null
-            },
-            "next_action": "awaiting_transport"
-          }
-        },
-        "next_action": "awaiting_transport"
-      },
-      {
-        "id": "fcbbef38-6ab0-4345-9450-33405c6aa37a",
-        "role": "user",
-        "content": "máy bay",
-        "created_at": "2026-06-04T08:48:18.911325Z",
-        "response_type": null,
-        "payload": null,
-        "next_action": null
-      },
-      {
-        "id": "ddf86b23-ef34-481a-a9e4-f431217e368a",
-        "role": "assistant",
-        "content": "Bạn đi bao nhiêu người?",
-        "created_at": "2026-06-04T08:48:18.911325Z",
-        "response_type": "slot_filling",
-        "payload": {
-          "intent": "search_trip",
-          "slots": {
-            "departure": "Hà Nội",
-            "destination": "TP.HCM",
-            "date": "2026-06-05",
-            "transport": "flight",
-            "passengers": null
-          },
-          "confidence": 0.81,
-          "missing_slots": [
-            "passengers"
-          ],
-          "pending_slot": "passengers",
-          "search_status": "collecting",
-          "is_unsafe": false,
-          "system_warning": null,
-          "last_tool_calls": [],
-          "raw_message": "máy bay",
-          "assistant_response": {
-            "response_type": "slot_filling",
-            "message": "Bạn đi bao nhiêu người?",
-            "payload": {
-              "current_slots": {
-                "departure": "Hà Nội",
-                "destination": "TP.HCM",
-                "date": "2026-06-05",
-                "transport": "flight",
-                "passengers": null
-              },
-              "missing_slots": [
-                "passengers"
-              ],
-              "pending_slot": "passengers",
-              "question": {
-                "slot": "passengers",
-                "question": "Bạn đi bao nhiêu người?",
-                "options": [
-                  "1",
-                  "2",
-                  "3",
-                  "4"
-                ]
-              },
-              "system_warning": null
-            },
-            "next_action": "awaiting_passengers"
-          }
-        },
-        "next_action": "awaiting_passengers"
-      },
-      {
-        "id": "1edc257b-5817-47dc-ac91-fe5940d49c9a",
-        "role": "user",
-        "content": "tôi, bố và mẹ",
-        "created_at": "2026-06-04T08:48:25.628664Z",
-        "response_type": null,
-        "payload": null,
-        "next_action": null
-      },
-      {
-        "id": "48e42551-769b-4686-b02b-ba18ccf751bd",
-        "role": "assistant",
-        "content": "Bạn đi bao nhiêu người?",
-        "created_at": "2026-06-04T08:48:25.628664Z",
-        "response_type": "slot_filling",
-        "payload": {
-          "intent": "search_trip",
-          "slots": {
-            "departure": "Hà Nội",
-            "destination": "TP.HCM",
-            "date": "2026-06-05",
-            "transport": "flight",
-            "passengers": null
-          },
-          "confidence": 0.81,
-          "missing_slots": [
-            "passengers"
-          ],
-          "pending_slot": "passengers",
-          "search_status": "collecting",
-          "is_unsafe": false,
-          "system_warning": null,
-          "last_tool_calls": [],
-          "raw_message": "tôi, bố và mẹ",
-          "assistant_response": {
-            "response_type": "slot_filling",
-            "message": "Bạn đi bao nhiêu người?",
-            "payload": {
-              "current_slots": {
-                "departure": "Hà Nội",
-                "destination": "TP.HCM",
-                "date": "2026-06-05",
-                "transport": "flight",
-                "passengers": null
-              },
-              "missing_slots": [
-                "passengers"
-              ],
-              "pending_slot": "passengers",
-              "question": {
-                "slot": "passengers",
-                "question": "Bạn đi bao nhiêu người?",
-                "options": [
-                  "1",
-                  "2",
-                  "3",
-                  "4"
-                ]
-              },
-              "system_warning": null
-            },
-            "next_action": "awaiting_passengers"
-          }
-        },
-        "next_action": "awaiting_passengers"
-      },
-      {
-        "id": "0ba757d7-2e9a-441c-a6ae-d00caa4e3ded",
-        "role": "user",
-        "content": "3 người",
-        "created_at": "2026-06-04T08:48:32.996977Z",
-        "response_type": null,
-        "payload": null,
-        "next_action": null
-      },
-      {
-        "id": "f1c3cf70-8ab4-468e-8efc-bfcf152e6dc1",
-        "role": "assistant",
-        "content": "Tuyến này chưa có trong dữ liệu demo.",
-        "created_at": "2026-06-04T08:48:32.996977Z",
-        "response_type": "search_results",
-        "payload": {
-          "intent": "search_trip",
-          "slots": {
-            "departure": "Hà Nội",
-            "destination": "TP.HCM",
-            "date": "2026-06-05",
-            "transport": "flight",
-            "passengers": 3
-          },
-          "confidence": 0.93,
-          "missing_slots": [],
-          "pending_slot": null,
-          "search_status": "searched",
-          "is_unsafe": false,
-          "system_warning": null,
-          "last_tool_calls": [],
-          "raw_message": "3 người",
-          "assistant_response": {
-            "response_type": "search_results",
-            "message": "Tuyến này chưa có trong dữ liệu demo.",
-            "payload": {
-              "status": "no_results",
-              "query": {
-                "origin": "Hà Nội",
-                "destination": "TP.HCM",
-                "date": "2026-06-05",
-                "transport_mode": "flight",
-                "preferred_provider": null,
-                "trip_type": "one_way",
-                "passengers": 3,
-                "priority": "balanced"
-              },
-              "grouped_results": {
-                "flight": {
-                  "default": [],
-                  "see_more": []
-                },
-                "train": {
-                  "default": [],
-                  "see_more": []
-                }
-              },
-              "recommendation": {
-                "best_option_id": null,
-                "reason": "",
-                "confidence": 0.0
-              },
-              "follow_up_question": "Tuyến này chưa có trong dữ liệu demo.",
-              "message": "Tuyến này chưa có trong dữ liệu demo.",
-              "system_warning": null
-            },
-            "next_action": "search_completed"
-          }
-        },
-        "next_action": "search_completed"
-      },
-      {
-        "id": "26852674-fbb0-4992-afb8-be5db7472f71",
-        "role": "user",
-        "content": "nếu đi tàu từ sài gòn tới hà nội thì rẻ hơn máy bay bao nhiêu",
-        "created_at": "2026-06-04T08:49:47.288783Z",
-        "response_type": null,
-        "payload": null,
-        "next_action": null
-      },
-      {
-        "id": "3fb24fec-ffce-4d6e-b300-22aac7e393ad",
+        "id": "84d8c2a2-a5a1-4ff1-b053-dad09327b712",
         "role": "assistant",
         "content": "Cho 1 người, tàu hỏa rẻ hơn 686.000đ. Chênh lệch thời gian di chuyển khoảng 31h 5m. Chuyến bay rẻ nhất là Vietjet Air VJ-SGNHAN-1845, còn tàu rẻ nhất là Vietnam Railways SE4.",
-        "created_at": "2026-06-04T08:49:47.288783Z",
+        "created_at": "2026-06-04T09:02:51.699522Z",
         "response_type": "text",
         "payload": {
           "intent": "faq",
@@ -632,7 +125,7 @@
             "departure": "TP.HCM",
             "destination": "Hà Nội",
             "date": null,
-            "transport": null,
+            "transport": "train",
             "passengers": 1
           },
           "confidence": 0.88,
@@ -663,7 +156,10 @@
                   "preferred_provider": null,
                   "trip_type": "one_way",
                   "passengers": 1,
-                  "priority": "balanced"
+                  "priority": "balanced",
+                  "requested_date": null,
+                  "effective_date": null,
+                  "date_fallback_used": false
                 },
                 "cheaper_mode": "train",
                 "cheapest_flight": {
@@ -780,7 +276,7 @@
               }
             }
           ],
-          "raw_message": "nếu đi tàu từ sài gòn tới hà nội thì rẻ hơn máy bay bao nhiêu",
+          "raw_message": "tôi muốn đi sài gòn tới hà nội thì vé tàu rẻ hơn bao nhiêu",
           "assistant_response": {
             "response_type": "text",
             "message": "Cho 1 người, tàu hỏa rẻ hơn 686.000đ. Chênh lệch thời gian di chuyển khoảng 31h 5m. Chuyến bay rẻ nhất là Vietjet Air VJ-SGNHAN-1845, còn tàu rẻ nhất là Vietnam Railways SE4.",
@@ -804,7 +300,330 @@
                   "preferred_provider": null,
                   "trip_type": "one_way",
                   "passengers": 1,
-                  "priority": "balanced"
+                  "priority": "balanced",
+                  "requested_date": null,
+                  "effective_date": null,
+                  "date_fallback_used": false
+                },
+                "cheaper_mode": "train",
+                "cheapest_flight": {
+                  "id": "flight_sgn_han_vj_1845_20260606",
+                  "provider": "Vietjet Air",
+                  "code": "VJ-SGNHAN-1845",
+                  "transport_mode": "flight",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "18:45",
+                  "arrival_time": "20:55",
+                  "duration_minutes": 130,
+                  "duration_label": "2h10m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1876000,
+                  "round_trip_price_vnd": 3752000,
+                  "price_label_one_way": "1.876.000đ",
+                  "price_label_round_trip": "3.752.000đ",
+                  "available_seats": 16,
+                  "pickup_location": "Sân bay Tân Sơn Nhất",
+                  "dropoff_location": "Sân bay Nội Bài",
+                  "baggage_policy": "Hành lý xách tay cơ bản",
+                  "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                  "comfort_score": 7,
+                  "reliability_score": 8,
+                  "time_score": 10,
+                  "price_score": 8,
+                  "best_for": "Người ưu tiên giá tốt trong nhóm bay thẳng",
+                  "pros": [
+                    "Bay thẳng",
+                    "Giá tốt trong nhóm",
+                    "Phù hợp để hiển thị mặc định khi người dùng chưa chọn hãng"
+                  ],
+                  "cons": [
+                    "Có thể hết chỗ nhanh",
+                    "Cần tính thêm thời gian ra sân bay"
+                  ],
+                  "recommendation_reason": "Đây là lựa chọn nên hiện trong nhóm giá tốt cho tuyến TP.HCM đi Hà Nội nếu người dùng không chỉ định hãng.",
+                  "data_source_type": "mock",
+                  "display_group": "flight_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietjet_air",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "cheapest_train": {
+                  "id": "train_sgn_han_se4_20260606",
+                  "provider": "Vietnam Railways",
+                  "code": "SE4",
+                  "transport_mode": "train",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "19:00",
+                  "arrival_time": "04:15+2",
+                  "duration_minutes": 1995,
+                  "duration_label": "33h15m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1190000,
+                  "round_trip_price_vnd": 2380000,
+                  "price_label_one_way": "1.190.000đ",
+                  "price_label_round_trip": "2.380.000đ",
+                  "available_seats": 24,
+                  "pickup_location": "Ga Sài Gòn",
+                  "dropoff_location": "Ga Hà Nội",
+                  "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+                  "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+                  "comfort_score": 6,
+                  "reliability_score": 7,
+                  "time_score": 3,
+                  "price_score": 10,
+                  "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+                  "pros": [
+                    "Đi thẳng từ ga",
+                    "Giá thường thấp hơn máy bay",
+                    "Phù hợp nếu không cần đến quá gấp"
+                  ],
+                  "cons": [
+                    "Thời gian di chuyển dài",
+                    "Không phù hợp với lịch trình gấp"
+                  ],
+                  "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến TP.HCM đi Hà Nội.",
+                  "data_source_type": "mock",
+                  "display_group": "train_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietnam_railways",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "flight_total_price_vnd": 1876000,
+                "train_total_price_vnd": 1190000,
+                "price_delta_vnd": 686000,
+                "duration_delta_minutes": 1865,
+                "summary": "Tàu hỏa rẻ hơn 686.000đ cho 1 người."
+              }
+            },
+            "next_action": "answered"
+          }
+        },
+        "next_action": "answered"
+      },
+      {
+        "id": "e546c242-a3a1-42ca-a569-a6eaf07a725b",
+        "role": "user",
+        "content": "đi sài gòn tới hà nội ngày mai thì tàu rẻ hơn bao nhiêu",
+        "created_at": "2026-06-04T09:03:24.801467Z",
+        "response_type": null,
+        "payload": null,
+        "next_action": null
+      },
+      {
+        "id": "46dd89c0-2973-44b5-81b4-3745db93954a",
+        "role": "assistant",
+        "content": "Cho 1 người, tàu hỏa rẻ hơn 686.000đ. Chênh lệch thời gian di chuyển khoảng 31h 5m. Chuyến bay rẻ nhất là Vietjet Air VJ-SGNHAN-1845, còn tàu rẻ nhất là Vietnam Railways SE4.",
+        "created_at": "2026-06-04T09:03:24.801467Z",
+        "response_type": "text",
+        "payload": {
+          "intent": "faq",
+          "slots": {
+            "departure": "TP.HCM",
+            "destination": "Hà Nội",
+            "date": "2026-06-05",
+            "transport": "train",
+            "passengers": 1
+          },
+          "confidence": 0.88,
+          "missing_slots": [],
+          "pending_slot": null,
+          "search_status": "not_applicable",
+          "is_unsafe": false,
+          "system_warning": null,
+          "last_tool_calls": [
+            {
+              "tool": "compare_modes",
+              "input": {
+                "origin": "TP.HCM",
+                "destination": "Hà Nội",
+                "date": "2026-06-05",
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "balanced"
+              },
+              "observation": {
+                "query": {
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "balanced",
+                  "requested_date": "2026-06-05",
+                  "effective_date": "2026-06-06",
+                  "date_fallback_used": true
+                },
+                "cheaper_mode": "train",
+                "cheapest_flight": {
+                  "id": "flight_sgn_han_vj_1845_20260606",
+                  "provider": "Vietjet Air",
+                  "code": "VJ-SGNHAN-1845",
+                  "transport_mode": "flight",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "18:45",
+                  "arrival_time": "20:55",
+                  "duration_minutes": 130,
+                  "duration_label": "2h10m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1876000,
+                  "round_trip_price_vnd": 3752000,
+                  "price_label_one_way": "1.876.000đ",
+                  "price_label_round_trip": "3.752.000đ",
+                  "available_seats": 16,
+                  "pickup_location": "Sân bay Tân Sơn Nhất",
+                  "dropoff_location": "Sân bay Nội Bài",
+                  "baggage_policy": "Hành lý xách tay cơ bản",
+                  "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                  "comfort_score": 7,
+                  "reliability_score": 8,
+                  "time_score": 10,
+                  "price_score": 8,
+                  "best_for": "Người ưu tiên giá tốt trong nhóm bay thẳng",
+                  "pros": [
+                    "Bay thẳng",
+                    "Giá tốt trong nhóm",
+                    "Phù hợp để hiển thị mặc định khi người dùng chưa chọn hãng"
+                  ],
+                  "cons": [
+                    "Có thể hết chỗ nhanh",
+                    "Cần tính thêm thời gian ra sân bay"
+                  ],
+                  "recommendation_reason": "Đây là lựa chọn nên hiện trong nhóm giá tốt cho tuyến TP.HCM đi Hà Nội nếu người dùng không chỉ định hãng.",
+                  "data_source_type": "mock",
+                  "display_group": "flight_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietjet_air",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "cheapest_train": {
+                  "id": "train_sgn_han_se4_20260606",
+                  "provider": "Vietnam Railways",
+                  "code": "SE4",
+                  "transport_mode": "train",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "19:00",
+                  "arrival_time": "04:15+2",
+                  "duration_minutes": 1995,
+                  "duration_label": "33h15m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1190000,
+                  "round_trip_price_vnd": 2380000,
+                  "price_label_one_way": "1.190.000đ",
+                  "price_label_round_trip": "2.380.000đ",
+                  "available_seats": 24,
+                  "pickup_location": "Ga Sài Gòn",
+                  "dropoff_location": "Ga Hà Nội",
+                  "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+                  "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+                  "comfort_score": 6,
+                  "reliability_score": 7,
+                  "time_score": 3,
+                  "price_score": 10,
+                  "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+                  "pros": [
+                    "Đi thẳng từ ga",
+                    "Giá thường thấp hơn máy bay",
+                    "Phù hợp nếu không cần đến quá gấp"
+                  ],
+                  "cons": [
+                    "Thời gian di chuyển dài",
+                    "Không phù hợp với lịch trình gấp"
+                  ],
+                  "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến TP.HCM đi Hà Nội.",
+                  "data_source_type": "mock",
+                  "display_group": "train_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietnam_railways",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "flight_total_price_vnd": 1876000,
+                "train_total_price_vnd": 1190000,
+                "price_delta_vnd": 686000,
+                "duration_delta_minutes": 1865,
+                "summary": "Tàu hỏa rẻ hơn 686.000đ cho 1 người."
+              }
+            }
+          ],
+          "raw_message": "đi sài gòn tới hà nội ngày mai thì tàu rẻ hơn bao nhiêu",
+          "assistant_response": {
+            "response_type": "text",
+            "message": "Cho 1 người, tàu hỏa rẻ hơn 686.000đ. Chênh lệch thời gian di chuyển khoảng 31h 5m. Chuyến bay rẻ nhất là Vietjet Air VJ-SGNHAN-1845, còn tàu rẻ nhất là Vietnam Railways SE4.",
+            "payload": {
+              "query": {
+                "origin": "TP.HCM",
+                "destination": "Hà Nội",
+                "date": "2026-06-05",
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "balanced"
+              },
+              "comparison": {
+                "query": {
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "balanced",
+                  "requested_date": "2026-06-05",
+                  "effective_date": "2026-06-06",
+                  "date_fallback_used": true
                 },
                 "cheaper_mode": "train",
                 "cheapest_flight": {
@@ -931,8 +750,8 @@
       "slots": {
         "departure": "TP.HCM",
         "destination": "Hà Nội",
-        "date": null,
-        "transport": null,
+        "date": "2026-06-05",
+        "transport": "train",
         "passengers": 1
       },
       "confidence": 0.88,
@@ -947,7 +766,7 @@
           "input": {
             "origin": "TP.HCM",
             "destination": "Hà Nội",
-            "date": null,
+            "date": "2026-06-05",
             "transport_mode": null,
             "preferred_provider": null,
             "trip_type": "one_way",
@@ -958,12 +777,15 @@
             "query": {
               "origin": "TP.HCM",
               "destination": "Hà Nội",
-              "date": null,
+              "date": "2026-06-06",
               "transport_mode": null,
               "preferred_provider": null,
               "trip_type": "one_way",
               "passengers": 1,
-              "priority": "balanced"
+              "priority": "balanced",
+              "requested_date": "2026-06-05",
+              "effective_date": "2026-06-06",
+              "date_fallback_used": true
             },
             "cheaper_mode": "train",
             "cheapest_flight": {
@@ -1080,9 +902,9 @@
           }
         }
       ],
-      "raw_message": "nếu đi tàu từ sài gòn tới hà nội thì rẻ hơn máy bay bao nhiêu"
+      "raw_message": "đi sài gòn tới hà nội ngày mai thì tàu rẻ hơn bao nhiêu"
     },
-    "created_at": "2026-06-04T08:47:44.614175Z",
-    "updated_at": "2026-06-04T08:49:47.288783Z"
+    "created_at": "2026-06-04T09:02:37.784616Z",
+    "updated_at": "2026-06-04T09:03:24.801467Z"
   }
 ]

@@ -150,7 +150,7 @@ class TravelAssistantService:
                 origin=state.slots.departure,
                 destination=state.slots.destination,
                 date=state.slots.date,
-                transport_mode=state.slots.transport,
+                transport_mode=None if state.slots.transport == "both" else state.slots.transport,
                 passengers=state.slots.passengers or 1,
             )
         )
@@ -164,13 +164,13 @@ class TravelAssistantService:
     @staticmethod
     def _build_question(slot_name: str | None) -> SlotQuestion:
         if slot_name == "departure":
-            return SlotQuestion(slot="departure", question="Bạn muốn khởi hành từ đâu?", options=["Hà Nội", "TP.HCM", "Đà Nẵng"])
+            return SlotQuestion(slot="departure", question="Bạn muốn khởi hành từ đâu?", options=["Hà Nội", "TP.HCM", "Đà Nẵng", "Hải Phòng", "Đà Lạt"])
         if slot_name == "destination":
-            return SlotQuestion(slot="destination", question="Bạn muốn đi đến đâu?", options=["Hà Nội", "TP.HCM", "Đà Nẵng", "Phú Quốc", "Nha Trang"])
+            return SlotQuestion(slot="destination", question="Bạn muốn đi đến đâu?", options=["Phú Quốc", "Nha Trang", "Đà Lạt", "Huế", "Quy Nhơn"])
         if slot_name == "date":
-            return SlotQuestion(slot="date", question="Bạn muốn đi ngày nào?", options=["2026-06-05", "2026-06-06", "2026-06-10"])
+            return SlotQuestion(slot="date", question="Bạn muốn đi ngày nào?", options=["2026-06-05", "2026-06-06", "2026-06-07", "2026-06-08"])
         if slot_name == "transport":
-            return SlotQuestion(slot="transport", question="Bạn muốn đi máy bay hay tàu hỏa?", options=["Máy bay", "Tàu hỏa"])
+            return SlotQuestion(slot="transport", question="Bạn muốn đi máy bay hay tàu hỏa?", options=["Cả hai", "Máy bay", "Tàu hỏa"])
         return SlotQuestion(slot="passengers", question="Bạn đi bao nhiêu người?", options=["1", "2", "3", "4"])
 
 

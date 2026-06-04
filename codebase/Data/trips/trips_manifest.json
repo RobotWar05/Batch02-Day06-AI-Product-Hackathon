@@ -16,16 +16,16 @@
     }
   },
   "counts": {
-    "total": 42,
+    "total": 210,
     "flights": {
-      "Vietravel Airlines": 2,
-      "Vietjet Air": 14,
-      "Bamboo Airways": 6,
-      "Vietnam Airlines": 7,
-      "Sun PhuQuoc Airways": 1
+      "Vietnam Airlines": 40,
+      "Vietjet Air": 45,
+      "Bamboo Airways": 25,
+      "Vietravel Airlines": 20,
+      "Sun PhuQuoc Airways": 10
     },
     "trains": {
-      "Vietnam Railways": 12
+      "Vietnam Railways": 70
     }
   },
   "config_files": {

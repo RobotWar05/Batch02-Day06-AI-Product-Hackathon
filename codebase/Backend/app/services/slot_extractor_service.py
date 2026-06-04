@@ -20,11 +20,77 @@ except ImportError:
 
 
 REFERENCE_DATE = date(2026, 6, 4)
+DEFAULT_FLEXIBLE_DATE = date(2026, 6, 5)
 ASK_ORDER = ("departure", "destination", "date", "transport", "passengers")
 LLM_FALLBACK_WARNING = (
     "Loi extractor: thieu `google-generativeai` hoac `GEMINI_API_KEY`, "
     "he thong dang fallback sang heuristic parser."
 )
+
+
+def build_slot_extractor_system_prompt() -> str:
+    return f"""
+Bạn là bộ trích xuất slot cho trợ lý tìm chuyến đi.
+Hôm nay là {REFERENCE_DATE.isoformat()}.
+
+Mục tiêu:
+- Đọc tin nhắn tiếng Việt của người dùng cùng trạng thái hội thoại hiện tại.
+- Trích xuất hoặc cập nhật đúng 5 slot: departure, destination, date, transport, passengers.
+- Ưu tiên hiểu nghĩa câu nói tự nhiên và ngữ cảnh hội thoại, không phụ thuộc máy móc vào regex.
+
+Ngữ cảnh đầu vào:
+- `pending_slot` cho biết bot đang hỏi tiếp trường nào.
+- `current_slots` là các giá trị đã thu thập từ các lượt trước.
+- `message` là tin nhắn mới nhất của người dùng.
+
+Quy tắc hội thoại:
+- Nếu người dùng đang trả lời cho `pending_slot`, hãy điền đúng slot đó từ ngữ cảnh câu hỏi đáp.
+- Nếu người dùng nêu hành trình mới rõ ràng, hãy cập nhật lại departure và destination theo message mới thay vì bám route cũ.
+- Chỉ cập nhật slot khi có tín hiệu đủ chắc chắn từ message mới.
+- Không suy diễn thêm thông tin không được nói ra hoặc không suy ra chắc chắn.
+- Nếu mơ hồ, giữ giá trị đó là null.
+
+Quy tắc chuẩn hóa:
+- `date` phải ở dạng YYYY-MM-DD, dùng mốc tham chiếu {REFERENCE_DATE.isoformat()}.
+- Các cách nói tương đối như `hôm nay`, `ngày mai`, `ngày kia`, `cuối tuần này`, `cuối tuần sau` phải quy đổi theo mốc trên.
+- Nếu người dùng nói ngày linh hoạt như `ngày nào cũng được`, `date không quan trọng`, hãy tự chọn ngày gần nhất khả dụng thay vì hỏi lại ngày.
+- `transport` chỉ được là `flight`, `train`, `both`, hoặc null.
+- Nếu người dùng chấp nhận cả máy bay lẫn tàu hỏa, hoặc nói `cả hai`, `đều được`, `gì cũng được`, hãy chuẩn hóa thành `both`.
+- `departure` và `destination` chỉ được chuẩn hóa thành một trong các thành phố phổ biến ở Việt Nam: Hà Nội, Hải Phòng, TP.HCM, Cần Thơ, Đà Nẵng, Huế, Đà Lạt, Nha Trang, Quy Nhơn, Phú Quốc.
+- `passengers` phải là số nguyên dương.
+
+Suy luận hành khách:
+- `một mình`, `chỉ mình tôi` -> 1.
+- `đi với vợ`, `đi với chồng`, `vợ chồng` -> 2.
+- `đi với vợ và con`, `đi với chồng và con` -> 3.
+- `tôi bố và mẹ` -> 3.
+- Có thể suy luận từ cụm gia đình quen thuộc nếu đủ chắc chắn; nếu không chắc, trả về null.
+
+Ràng buộc đầu ra:
+- Chỉ trả về đúng một JSON object.
+- JSON chỉ có các field: `departure`, `destination`, `date`, `transport`, `passengers`.
+- Không thêm giải thích, không markdown, không text ngoài JSON.
+""".strip()
+
+
+def build_slot_extractor_user_prompt(
+    *,
+    pending_slot: str | None,
+    base_slots: TripSlots,
+    message: str,
+) -> str:
+    return (
+        "Ngữ cảnh phiên hiện tại:\n"
+        f"- pending_slot: {pending_slot}\n"
+        f"- current_slots: {base_slots.model_dump(mode='json')}\n"
+        f"- reference_date: {REFERENCE_DATE.isoformat()}\n"
+        f"- latest_user_message: {message}\n\n"
+        "Yêu cầu:\n"
+        "- Điền slot mới hoặc slot cần cập nhật từ message mới nhất.\n"
+        "- Nếu message thể hiện đổi hành trình, route mới phải thắng route cũ.\n"
+        "- Nếu không chắc một field, trả field đó là null.\n"
+        "- Trả về duy nhất JSON object hợp lệ."
+    )
 
 
 @dataclass(slots=True)
@@ -41,6 +107,9 @@ class SlotExtractorService:
         "ha noi": "Hà Nội",
         "hn": "Hà Nội",
         "hanoi": "Hà Nội",
+        "hai phong": "Hải Phòng",
+        "haiphong": "Hải Phòng",
+        "hp": "Hải Phòng",
         "sai gon": "TP.HCM",
         "saigon": "TP.HCM",
         "sg": "TP.HCM",
@@ -48,13 +117,23 @@ class SlotExtractorService:
         "tphcm": "TP.HCM",
         "tp.hcm": "TP.HCM",
         "ho chi minh": "TP.HCM",
+        "can tho": "Cần Thơ",
+        "cantho": "Cần Thơ",
         "da nang": "Đà Nẵng",
         "danang": "Đà Nẵng",
         "dn": "Đà Nẵng",
+        "hue": "Huế",
+        "huế": "Huế",
+        "da lat": "Đà Lạt",
+        "dalat": "Đà Lạt",
+        "dl": "Đà Lạt",
         "phu quoc": "Phú Quốc",
         "pq": "Phú Quốc",
         "nha trang": "Nha Trang",
         "nt": "Nha Trang",
+        "quy nhon": "Quy Nhơn",
+        "quynhon": "Quy Nhơn",
+        "qn": "Quy Nhơn",
     }
     _PASSENGER_WORDS: dict[str, int] = {
         "mot": 1,
@@ -64,6 +143,31 @@ class SlotExtractorService:
         "bon": 4,
         "bốn": 4,
     }
+    _FAMILY_MEMBER_TOKENS: tuple[str, ...] = (
+        "toi",
+        "mình",
+        "minh",
+        "bo",
+        "bố",
+        "me",
+        "mẹ",
+        "ba",
+        "má",
+        "ma",
+        "vo",
+        "vợ",
+        "chong",
+        "chồng",
+        "con",
+        "anh",
+        "chị",
+        "chi",
+        "em",
+        "ong",
+        "ông",
+        "ba",
+        "bà",
+    )
 
     def __init__(self) -> None:
         self._api_key = os.getenv("GEMINI_API_KEY", "")
@@ -122,6 +226,8 @@ class SlotExtractorService:
             parsed_date = self._extract_date(normalized)
             if parsed_date is not None:
                 base_slots.date = parsed_date
+            elif self._is_flexible_date_request(normalized):
+                base_slots.date = DEFAULT_FLEXIBLE_DATE.isoformat()
 
             parsed_transport = self._extract_transport(normalized)
             if parsed_transport is not None:
@@ -198,6 +304,8 @@ class SlotExtractorService:
             parsed_date = self._extract_date(normalized)
             if parsed_date is not None:
                 enriched.date = parsed_date
+            elif self._is_flexible_date_request(normalized):
+                enriched.date = DEFAULT_FLEXIBLE_DATE.isoformat()
 
         if enriched.transport is None:
             parsed_transport = self._extract_transport(normalized)
@@ -236,7 +344,11 @@ class SlotExtractorService:
         route = {"departure": None, "destination": None}
         route_patterns = (
             r"\btu\s+(?P<departure>.+?)\s+(?:di|den|toi)\s+(?P<destination>.+)",
-            r"\b(?P<departure>ha noi|hanoi|hn|sai gon|saigon|sg|tp hcm|tphcm|ho chi minh|da nang|danang|dn|phu quoc|pq|nha trang|nt)\s+(?:di|den|toi)\s+(?P<destination>.+)",
+            (
+                r"\b(?P<departure>ha noi|hanoi|hn|hai phong|haiphong|hp|sai gon|saigon|sg|tp hcm|tphcm|ho chi minh|"
+                r"can tho|cantho|da nang|danang|dn|hue|huế|da lat|dalat|dl|phu quoc|pq|nha trang|nt|quy nhon|quynhon|qn)"
+                r"\s+(?:di|den|toi)\s+(?P<destination>.+)"
+            ),
         )
         for pattern in route_patterns:
             match = re.search(pattern, normalized)
@@ -284,9 +396,40 @@ class SlotExtractorService:
             return self._format_date(year, month, day)
         return None
 
+    @staticmethod
+    def _is_flexible_date_request(normalized: str) -> bool:
+        return any(
+            token in normalized
+            for token in (
+                "ngay nao cung duoc",
+                "hom nao cung duoc",
+                "date nao cung duoc",
+                "date khong quan trong",
+                "ngay khong quan trong",
+                "khong quan trong ngay",
+                "khong can dung ngay",
+                "bat ky ngay nao",
+            )
+        )
+
     def _extract_transport(self, normalized: str) -> str | None:
+        has_both = any(
+            token in normalized
+            for token in (
+                "ca hai",
+                "cả hai",
+                "deu duoc",
+                "đều được",
+                "gi cung duoc",
+                "gì cũng được",
+                "may bay hay tau hoa deu duoc",
+                "flight hay train deu duoc",
+            )
+        )
         has_flight = any(token in normalized for token in ("may bay", "ve bay", "flight", "plane"))
         has_train = any(token in normalized for token in ("tau hoa", "tau", "train"))
+        if has_both or (has_flight and has_train):
+            return "both"
         if has_flight and not has_train:
             return "flight"
         if has_train and not has_flight:
@@ -319,7 +462,47 @@ class SlotExtractorService:
         has_child = "con" in normalized
         if has_spouse or has_child:
             return 1 + int(has_spouse) + int(has_child)
+
+        family_mentions = self._count_distinct_family_members(normalized)
+        if family_mentions:
+            return family_mentions
         return None
+
+    def _count_distinct_family_members(self, normalized: str) -> int | None:
+        matches: list[str] = []
+        for token in self._FAMILY_MEMBER_TOKENS:
+            if re.search(r"\b" + re.escape(token) + r"\b", normalized):
+                matches.append(token)
+
+        if not matches:
+            return None
+
+        normalized_roles = {
+            "toi": "self",
+            "mình": "self",
+            "minh": "self",
+            "bo": "father",
+            "bố": "father",
+            "ba": "father",
+            "me": "mother",
+            "mẹ": "mother",
+            "má": "mother",
+            "ma": "mother",
+            "vo": "spouse",
+            "vợ": "spouse",
+            "chong": "spouse",
+            "chồng": "spouse",
+            "con": "child",
+            "anh": "sibling",
+            "chị": "sibling",
+            "chi": "sibling",
+            "em": "sibling",
+            "ong": "grandfather",
+            "ông": "grandfather",
+            "bà": "grandmother",
+        }
+        distinct_roles = {normalized_roles[token] for token in matches if token in normalized_roles}
+        return len(distinct_roles) if distinct_roles else None
 
     @staticmethod
     def _route_changed(existing_slots: TripSlots, route_slots: dict[str, str | None]) -> bool:
@@ -354,24 +537,12 @@ class SlotExtractorService:
             model = genai.GenerativeModel(
                 model_name="gemini-1.5-flash",
                 generation_config={"response_mime_type": "application/json"},
-                system_instruction=(
-                    "Trich xuat slot dat ve du lich thanh JSON. "
-                    "Uu tien hieu nghia cau noi tu nhien thay vi regex. "
-                    "Neu nguoi dung dang tra loi cho pending_slot, hay dien dung slot do dua tren ngu canh hoi dap. "
-                    "Can phat hien khi nguoi dung doi hanh trinh moi va cap nhat departure, destination tu message moi. "
-                    "Chuan hoa transport thanh flight hoac train. "
-                    "Chuan hoa date thanh YYYY-MM-DD dua tren moc tham chieu 2026-06-04. "
-                    "Chuan hoa city thanh mot trong: Hà Nội, TP.HCM, Đà Nẵng, Phú Quốc, Nha Trang. "
-                    "Truong hop passengers co the suy luan tu cum nhu 'di voi vo'=2, 'di voi chong va con'=3, 'mot minh'=1. "
-                    "Chi tra ve JSON object voi cac field departure, destination, date, transport, passengers. "
-                    "Khong doan field khong chac; dung null neu khong ro."
-                ),
+                system_instruction=build_slot_extractor_system_prompt(),
             )
-            prompt = (
-                f"Pending slot: {pending_slot}\n"
-                f"Current slots: {base_slots.model_dump(mode='json')}\n"
-                "Reference date: 2026-06-04\n"
-                f"Message: {message}"
+            prompt = build_slot_extractor_user_prompt(
+                pending_slot=pending_slot,
+                base_slots=base_slots,
+                message=message,
             )
             response = model.generate_content(prompt)
             if not response.text:

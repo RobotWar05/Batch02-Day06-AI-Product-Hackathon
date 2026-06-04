@@ -8,7 +8,7 @@ class TripSlots(BaseModel):
     departure: str | None = None
     destination: str | None = None
     date: str | None = None
-    transport: str | None = None
+    transport: Literal["flight", "train", "both"] | None = None
     passengers: int | None = None
 
 

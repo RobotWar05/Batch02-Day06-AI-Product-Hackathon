@@ -17,7 +17,7 @@ export interface SearchSlots {
   departure: string | null;
   destination: string | null;
   travelDate: string | null;
-  transportType: "flight" | "train" | null;
+  transportType: "flight" | "train" | "both" | null;
   passengerCount: number | null;
 }
 
@@ -293,7 +293,7 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
     return {
       slots,
       routeData: routeData || undefined,
-      isComplete: !!(slots.departure && slots.destination && slots.travelDate && slots.transportType),
+    isComplete: !!(slots.departure && slots.destination && slots.travelDate && slots.transportType),
     };
   };
 
@@ -438,7 +438,7 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
   };
 
   const handleExecuteSearch = (slots: SearchSlots) => {
-    if (!slots.transportType || !slots.destination) return;
+    if (!slots.transportType || !slots.destination || slots.transportType === "both") return;
     if (onTriggerSearch) {
       onTriggerSearch(slots.transportType, slots.destination);
     }
@@ -643,7 +643,11 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
                           <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-4 text-white text-center space-y-1.5 relative">
                             {/* Decorative airplane/train vector */}
                             <div className="absolute right-3 top-3 opacity-15 rotate-12">
-                              {msg.searchWidget.slots.transportType === "train" ? <Train size={48} /> : <Plane size={48} />}
+                              {msg.searchWidget.slots.transportType === "train"
+                                ? <Train size={48} />
+                                : msg.searchWidget.slots.transportType === "both"
+                                  ? <Sparkles size={48} />
+                                  : <Plane size={48} />}
                             </div>
                             <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center mx-auto shadow-xs">
                               <Check size={18} strokeWidth={3} className="text-white" />
@@ -786,7 +790,11 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
                             <div className="p-2.5 bg-slate-50 border border-slate-150 rounded-xl space-y-1">
                               <div className="flex justify-between items-center text-[10px] font-black">
                                 <div className="flex items-center gap-1.5">
-                                  {msg.searchWidget.slots.transportType === "train" ? <Train size={11} className="text-amber-600" /> : <Plane size={11} className="text-blue-600" />}
+                                  {msg.searchWidget.slots.transportType === "train"
+                                    ? <Train size={11} className="text-amber-600" />
+                                    : msg.searchWidget.slots.transportType === "both"
+                                      ? <Sparkles size={11} className="text-violet-600" />
+                                      : <Plane size={11} className="text-blue-600" />}
                                   <span className="text-slate-805 font-extrabold">{msg.searchWidget.selectedTripDetails.provider} ({msg.searchWidget.selectedTripDetails.code})</span>
                                 </div>
                                 <span className="text-emerald-700 font-black font-sans">{(msg.searchWidget.selectedTripDetails.price * pax).toLocaleString()}đ</span>
@@ -938,7 +946,11 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
                           {/* Transport option switcher field */}
                           <div className="bg-slate-50 p-2 rounded-xl border border-slate-200">
                             <label className="block text-[8px] font-black text-slate-400 uppercase flex items-center gap-1">
-                              {msg.searchWidget.slots.transportType === "train" ? <Train size={10} /> : <Plane size={10} />}
+                              {msg.searchWidget.slots.transportType === "train"
+                                ? <Train size={10} />
+                                : msg.searchWidget.slots.transportType === "both"
+                                  ? <Sparkles size={10} />
+                                  : <Plane size={10} />}
                               <span>Phương tiện</span>
                             </label>
                             <select
@@ -947,6 +959,7 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
                               className="w-full bg-transparent font-bold mt-1 focus:outline-none text-xs cursor-pointer text-slate-700 font-sans"
                             >
                               <option value="">-- Chưa chọn --</option>
+                              <option value="both">✨ Cả hai</option>
                               <option value="flight">✈️ Vé máy bay</option>
                               <option value="train">🚂 Vé tàu hỏa</option>
                             </select>

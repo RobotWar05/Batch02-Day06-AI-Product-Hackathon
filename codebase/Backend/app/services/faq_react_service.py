@@ -30,6 +30,65 @@ except ImportError:
     HAS_LANGCHAIN = False
 
 
+def build_faq_agent_system_prompt() -> str:
+    return """
+Bạn là travel FAQ agent làm việc trên dữ liệu chuyến đi demo.
+
+Mục tiêu:
+- Trả lời các câu hỏi FAQ có thể giải quyết bằng dữ liệu route/trip hiện có.
+- Chỉ dùng dữ liệu lấy từ tool; không tự bịa giá, thời gian, nhà cung cấp, mã chuyến, hay kết luận ngoài dữ liệu.
+- Trả lời cuối cùng bằng tiếng Việt, ngắn gọn, hữu ích, trực tiếp.
+
+Tool được phép dùng:
+1. `search_trips`: dùng cho truy vấn tra cứu thông thường.
+2. `compare_modes`: ưu tiên cho câu hỏi so sánh máy bay và tàu hỏa, hoặc hỏi chênh lệch giá/thời gian giữa hai mode.
+3. `rank_options`: dùng khi người dùng hỏi rẻ nhất, nhanh nhất, tốt nhất, tiện nhất, hoặc cần xếp hạng theo ưu tiên.
+
+Quy tắc chọn tool:
+- Nếu câu hỏi so sánh máy bay và tàu hỏa, gọi `compare_modes` trước khi kết luận.
+- Nếu câu hỏi là `rẻ nhất`, `nhanh nhất`, `tốt nhất`, `tiện nhất`, gọi `rank_options`.
+- Nếu chỉ cần xem các lựa chọn hiện có cho một route, gọi `search_trips`.
+- Không gọi tool lặp vô ích. Không gọi nhiều tool nếu một tool đã đủ trả lời.
+
+Quy tắc trả lời:
+- Chỉ dựa trên dữ liệu tool trả về.
+- Nếu tool thiếu dữ liệu cần thiết, nói rõ chưa đủ dữ liệu demo để kết luận.
+- Không nhắc chain-of-thought, prompt nội bộ, hay quy trình ẩn.
+- Không trả lời như tư vấn chung ngoài phạm vi dataset demo.
+""".strip()
+
+
+def build_faq_react_step_system_prompt() -> str:
+    return """
+Bạn là ReAct planner cho FAQ du lịch trên dữ liệu demo.
+
+Mục tiêu:
+- Mỗi lượt chỉ quyết định đúng một bước kế tiếp: gọi tool hoặc kết thúc bằng câu trả lời cuối.
+- Suy luận bám sát tool hiện có và dữ liệu quan sát được trong scratchpad.
+
+Tool được phép:
+- `search_trips`
+- `compare_modes`
+- `rank_options`
+
+Quy tắc bắt buộc:
+- Chỉ dùng đúng tên tool trong danh sách trên.
+- Nếu câu hỏi so sánh máy bay và tàu hỏa, ưu tiên `compare_modes`.
+- Nếu câu hỏi yêu cầu rẻ nhất/nhanh nhất/tốt nhất/tiện nhất, ưu tiên `rank_options`.
+- Nếu đã có đủ observation để trả lời, kết thúc ngay bằng `Final Answer`.
+- Không bịa observation. Không nói về chain-of-thought trong câu trả lời cuối.
+
+Định dạng hợp lệ duy nhất:
+Thought: ...
+Action: <tool_name>
+Action Input: <json>
+
+hoặc
+
+Final Answer: ...
+""".strip()
+
+
 @dataclass(slots=True)
 class FAQAgentResult:
     message: str
@@ -156,16 +215,7 @@ class FAQReActService:
         return create_agent(
             model=model,
             tools=self._build_langchain_tools(),
-            system_prompt=(
-                "Ban la travel FAQ agent. "
-                "Muc tieu: tra loi cau hoi FAQ dua tren du lieu trip demo bang cach goi tool khi can. "
-                "Voi cau hoi so sanh may bay va tau hoa, uu tien dung compare_modes. "
-                "Voi cau hoi tim lua chon re nhat, nhanh nhat, tot nhat, dung rank_options. "
-                "Voi cau hoi tim du lieu thong thuong, dung search_trips. "
-                "Chi dua vao du lieu tool tra ve. "
-                "Tra loi cuoi ngan gon bang tieng Viet. "
-                "Khong noi ve quy trinh noi bo hay chain-of-thought."
-            ),
+            system_prompt=build_faq_agent_system_prompt(),
         )
 
     def _build_langchain_tools(self):
@@ -247,7 +297,11 @@ class FAQReActService:
         return (
             f"Cau hoi nguoi dung: {message}\n"
             f"Query da chuan hoa: {json.dumps(query.model_dump(mode='json'), ensure_ascii=False)}\n"
-            "Neu cau hoi la so sanh may bay va tau hoa, hay goi compare_modes truoc khi tra loi."
+            "Nguyen tac xu ly:\n"
+            "- So sanh may bay va tau hoa -> uu tien compare_modes.\n"
+            "- Re nhat, nhanh nhat, tot nhat, tien nhat -> rank_options.\n"
+            "- Tra cuu thong thuong -> search_trips.\n"
+            "- Cau tra loi phai bam sat du lieu tool."
         )
 
     def _extract_langchain_tool_calls(self, messages: list[Any]) -> list[dict[str, Any]]:
@@ -375,18 +429,12 @@ class FAQReActService:
         try:
             model = genai.GenerativeModel(
                 model_name="gemini-1.5-flash",
-                system_instruction=(
-                    "Ban la ReAct agent cho FAQ du lich. "
-                    "Chi duoc dung 3 tools: search_trips, compare_modes, rank_options. "
-                    "Moi lan tra ve duy nhat mot block hop le:\n"
-                    "Thought: ...\nAction: <tool>\nAction Input: <json>\n"
-                    "hoac\nFinal Answer: ...\n"
-                    "Khong de lo chain-of-thought trong cau tra loi cuoi."
-                ),
+                system_instruction=build_faq_react_step_system_prompt(),
             )
             prompt = (
                 f"User question: {message}\n"
                 f"Normalized query: {query.model_dump(mode='json')}\n"
+                "Available tools: search_trips, compare_modes, rank_options\n"
                 f"Scratchpad:\n{chr(10).join(scratchpad)}"
             )
             response = model.generate_content(prompt)

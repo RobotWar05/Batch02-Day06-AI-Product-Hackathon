@@ -4,7 +4,7 @@ export interface BackendTripState {
     departure: string | null;
     destination: string | null;
     date: string | null;
-    transport: "flight" | "train" | null;
+    transport: "flight" | "train" | "both" | null;
     passengers: number | null;
   };
   confidence: number;

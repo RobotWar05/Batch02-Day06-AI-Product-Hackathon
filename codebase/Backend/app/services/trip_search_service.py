@@ -1,4 +1,5 @@
 import json
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -15,7 +16,7 @@ class TripSearchService:
         self._trips = self._load_trips()
 
     def search_trips(self, query: SearchQuery) -> SearchResultSet:
-        matched = self._filter_trips(query=query)
+        matched, effective_date = self._resolve_candidate_trips(query=query)
         if not matched:
             return SearchResultSet(
                 status="no_results",
@@ -31,7 +32,7 @@ class TripSearchService:
         best_option = ranked[0]
         return SearchResultSet(
             status="ok",
-            query=query.model_dump(mode="json"),
+            query=self._build_response_query(query=query, effective_date=effective_date),
             grouped_results=grouped,
             recommendation={
                 "best_option_id": best_option["id"],
@@ -39,12 +40,12 @@ class TripSearchService:
                 "confidence": 0.88,
             },
             follow_up_question=None,
-            message=f"Tôi đã tìm thấy {len(ranked)} lựa chọn phù hợp cho hành trình của bạn.",
+            message=self._build_search_message(query=query, effective_date=effective_date, result_count=len(ranked)),
         )
 
     def compare_modes(self, query: SearchQuery) -> ModeComparison:
         both_modes = query.model_copy(update={"transport_mode": None})
-        matched = self._filter_trips(query=both_modes)
+        matched, effective_date = self._resolve_candidate_trips(query=both_modes)
         flights = self.rank_options(query=both_modes.model_copy(update={"transport_mode": "flight"}), trips=[trip for trip in matched if trip["transport_mode"] == "flight"])
         trains = self.rank_options(query=both_modes.model_copy(update={"transport_mode": "train"}), trips=[trip for trip in matched if trip["transport_mode"] == "train"])
 
@@ -69,7 +70,7 @@ class TripSearchService:
             )
 
         return ModeComparison(
-            query=query.model_dump(mode="json"),
+            query=self._build_response_query(query=query, effective_date=effective_date),
             cheaper_mode=cheaper_mode,
             cheapest_flight=cheapest_flight,
             cheapest_train=cheapest_train,
@@ -138,6 +139,55 @@ class TripSearchService:
                 continue
             matched.append(trip)
         return matched
+
+    def _resolve_candidate_trips(self, query: SearchQuery) -> tuple[list[dict[str, Any]], str | None]:
+        matched = self._filter_trips(query=query)
+        if matched or not query.date:
+            return matched, query.date
+
+        same_route_query = query.model_copy(update={"date": None})
+        same_route_trips = self._filter_trips(query=same_route_query)
+        if not same_route_trips:
+            return [], query.date
+
+        effective_date = self._closest_available_date(requested_date=query.date, trips=same_route_trips)
+        if effective_date is None:
+            return [], query.date
+
+        fallback_query = query.model_copy(update={"date": effective_date})
+        return self._filter_trips(query=fallback_query), effective_date
+
+    @staticmethod
+    def _closest_available_date(requested_date: str, trips: list[dict[str, Any]]) -> str | None:
+        available_dates = sorted({trip["date"] for trip in trips if trip.get("date")})
+        if not available_dates:
+            return None
+        return min(
+            available_dates,
+            key=lambda candidate: (abs(TripSearchService._date_distance(candidate, requested_date)), candidate),
+        )
+
+    @staticmethod
+    def _date_distance(candidate: str, requested: str) -> int:
+        return (date.fromisoformat(candidate) - date.fromisoformat(requested)).days
+
+    @staticmethod
+    def _build_response_query(query: SearchQuery, effective_date: str | None) -> dict[str, Any]:
+        payload = query.model_dump(mode="json")
+        payload["requested_date"] = query.date
+        payload["effective_date"] = effective_date
+        payload["date_fallback_used"] = bool(query.date and effective_date and effective_date != query.date)
+        if effective_date is not None:
+            payload["date"] = effective_date
+        return payload
+
+    def _build_search_message(self, query: SearchQuery, effective_date: str | None, result_count: int) -> str:
+        if query.date and effective_date and effective_date != query.date:
+            return (
+                f"Ngày {query.date} chưa có chuyến phù hợp. "
+                f"Tôi đang hiển thị {result_count} lựa chọn gần nhất vào ngày {effective_date}."
+            )
+        return f"Tôi đã tìm thấy {result_count} lựa chọn phù hợp cho hành trình của bạn."
 
     def _group_ranked_trips(self, ranked: list[dict[str, Any]]) -> dict[str, GroupedTrips]:
         grouped = {"flight": GroupedTrips(), "train": GroupedTrips()}
