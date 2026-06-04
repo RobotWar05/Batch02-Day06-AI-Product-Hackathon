@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip.com Official UI - AI Đi Không</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: white; color: #0f294d; overflow-x: hidden; }
+    
+    .sidebar {
+      width: 240px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-x: hidden;
+      white-space: nowrap;
+    }
+    .sidebar.collapsed {
+      width: 68px;
+    }
+    .sidebar-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 12px 24px;
+      color: #0f294d;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s;
+      width: 240px;
+    }
+    .sidebar-menu-item:hover { background-color: #f5f7fa; color: #3264ff; }
+    .sidebar-menu-item .material-symbols-outlined { color: #8592a6; font-size: 20px; flex-shrink: 0; }
+    .sidebar-menu-item:hover .material-symbols-outlined { color: #3264ff; }
+
+    .hero-banner {
+      background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop') center/cover;
+      position: relative;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 50, 160, 0.95), rgba(0, 100, 220, 0.85), rgba(50, 150, 255, 0.6));
+      border-radius: inherit;
+    }
+
+    .search-tab {
+      padding: 12px 20px;
+      font-weight: 600;
+      font-size: 14px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .search-tab.active { 
+      background-color: white; 
+      color: #0f294d; 
+      border-radius: 12px 12px 0 0;
+    }
+
+    /* Custom Radio for Airport Transfer */
+    .airport-radio {
+      font-weight: 700;
+      font-size: 15px;
+      color: #0f294d;
+      cursor: pointer;
+      padding-bottom: 4px;
+      position: relative;
+    }
+    .airport-radio.active {
+      border-bottom: 2px solid #0f294d;
+    }
+    .airport-radio:not(.active) {
+      color: #455873;
+      border-bottom: 2px solid transparent;
+    }
+    
+    .sub-tab {
+      font-size: 14px;
+      font-weight: 600;
+      color: #455873;
+      cursor: pointer;
+      padding-bottom: 6px;
+    }
+    .sub-tab.active {
+      color: #3264ff;
+      border-bottom: 2px solid #3264ff;
+    }
+
+    .card-img-zoom { overflow: hidden; }
+    .card-img-zoom img { transition: transform 0.3s; }
+    .card-img-zoom:hover img { transform: scale(1.05); }
+
+    /* Coupon Styles */
+    .coupon-card {
+      border: 1px solid #ffecf0;
+      border-radius: 8px;
+      background: white;
+      display: flex;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .coupon-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+    .coupon-left {
+      flex: 1;
+      padding: 16px;
+    }
+    .coupon-right {
+      width: 70px;
+      border-left: 2px dashed #ffecf0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .coupon-right::before, .coupon-right::after {
+      content: '';
+      position: absolute;
+      left: -8px;
+      width: 14px;
+      height: 14px;
+      background-color: white;
+      border-radius: 50%;
+      border: 1px solid #ffecf0;
+    }
+    .coupon-right::before { top: -8px; border-bottom: none; border-left: none; border-right: none; }
+    .coupon-right::after { bottom: -8px; border-top: none; border-left: none; border-right: none; }
+
+    /* Arrow Button */
+    .arrow-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: white;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #455873;
+    }
+    .arrow-btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+    /* Sticky Widgets */
+    .sticky-btn {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      display: grid;
+      place-items: center;
+      color: #0f294d;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sticky-btn:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    
+    /* AI Chatbot Button */
+    #chat-toggle-btn {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%);
+      color: white;
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(255, 71, 87, 0.4);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 10000;
+    }
+    #chat-toggle-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6); }
+
+    #chat-widget-container {
+      position: fixed;
+      bottom: 120px;
+      right: 32px;
+      width: 400px;
+      height: 600px;
+      max-height: calc(100vh - 140px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      z-index: 9999;
+      transform: translateY(20px) scale(0.95);
+      transform-origin: bottom right;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #chat-widget-container.open {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #chat-iframe { width: 100%; height: 100%; border: none; background: white; }
+    
+    .rotating { transform: rotate(90deg); opacity: 0; }
+  </style>
+</head>
+<body class="flex bg-white">
+
+  <!-- Top Header -->
+  <header class="fixed top-0 left-0 right-0 h-[64px] bg-white flex items-center justify-between px-6 z-50 border-b border-gray-100 shadow-sm">
+    <div class="flex items-center gap-6">
+      <span class="material-symbols-outlined text-gray-600 cursor-pointer text-[22px] hover:bg-gray-100 p-2 rounded transition ml-1" id="sidebar-toggle">menu</span>
+      <h1 class="text-[32px] font-black italic tracking-tighter text-[#3264ff]">Trip.com</h1>
+      <!-- Search bar -->
+      <div class="flex items-center bg-gray-100 rounded-full px-4 py-2 w-[340px] border border-transparent hover:border-gray-300 transition ml-2">
+        <input type="text" placeholder="Điểm đến, địa điểm tham quan, khách sạn..." class="bg-transparent border-none outline-none text-[13px] w-full placeholder-gray-500">
+        <button class="bg-[#3264ff] text-white rounded w-[26px] h-[26px] flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[16px]">search</span>
+        </button>
+      </div>
+    </div>
+    <!-- Right links -->
+    <div class="flex items-center gap-6 text-[13px] font-medium text-[#0f294d]">
+      <a href="#" class="flex items-center gap-1 hover:text-blue-600"><span class="material-symbols-outlined text-[16px] text-gray-500">smartphone</span> Ứng Dụng</a>
+      <a href="#" class="flex items-center gap-1 hover:text-blue-600">
+        <img src="https://flagcdn.com/w20/vn.png" class="w-4 h-4 rounded-full object-cover" alt="VN"> VND
+      </a>
+      <a href="#" class="hover:text-blue-600">Chăm sóc khách hàng</a>
+      <a href="#" class="hover:text-blue-600">Đơn Đặt Của Tôi</a>
+      <a href="#" class="flex items-center gap-1 text-gray-700 hover:text-blue-600"><div class="w-[18px] h-[18px] bg-[#ffa500] text-white rounded-full text-[10px] font-bold grid place-items-center">T</div> 0</a>
+      <div class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-400 border border-blue-100 cursor-pointer">
+        <span class="material-symbols-outlined text-[16px]">person</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Left Sidebar -->
+  <aside id="sidebar" class="sidebar fixed left-0 top-[64px] h-[calc(100vh-64px)] bg-white border-r border-gray-100 z-40 flex flex-col overflow-y-auto pt-2">
+    <div class="flex-1">
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">bed</span> Khách sạn & Chỗ nghỉ</a>
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">flight</span> Vé Máy bay</a>
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">train</span> Tàu</a>
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">directions_car</span> Xe</a>
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">attractions</span> Tour & Hoạt Động</a>
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">loyalty</span> Combo Tiết Kiệm</a>
+      <div class="h-[1px] bg-gray-100 my-2 mx-6"></div>
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">location_on</span> Cảm Hứng Du Lịch</a>
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">monetization_on</span> Phần Thưởng Trip.com</a>
+      <a href="#" class="sidebar-menu-item"><span class="material-symbols-outlined">smartphone</span> Ứng Dụng</a>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main id="main-content" class="ml-[240px] pt-[64px] flex-1 min-h-screen bg-white transition-all duration-300">
+
+    <!-- Page Content -->
+    <div class="pt-8 pb-32 w-full px-4 lg:px-8">
+      
+      <!-- Hero Section -->
+      <div class="hero-banner rounded-2xl pt-16 px-10 relative mb-40 overflow-visible" style="min-height: 420px;">
+        <div class="relative z-10 text-center text-white mb-8">
+          <h2 class="text-[40px] font-bold mb-4 tracking-tight">Du lịch dễ dàng khắp mọi nơi cùng Trip.com</h2>
+          <div class="flex items-center justify-center gap-4 text-[14px] font-medium">
+            <p class="flex items-center gap-1"><span class="material-symbols-outlined text-[#00ff88] text-[18px]">check</span> Thanh Toán An Toàn</p>
+            <span class="text-white/40">|</span>
+            <p class="flex items-center gap-1"><span class="material-symbols-outlined text-[#00ff88] text-[18px]">check</span> Hỗ trợ toàn cầu trong 30 giây</p>
+          </div>
+        </div>
+
+        <!-- Floating Search Box (Exact match to 1.PNG "Thuê xe" tab) -->
+        <div class="absolute bottom-[-75px] left-1/2 -translate-x-1/2 w-[1000px] bg-transparent z-20">
+          
+          <!-- Tabs -->
+          <div class="inline-flex bg-[#0d2a5c] rounded-t-xl overflow-hidden relative z-10" style="margin-bottom: -1px;">
+            <div class="search-tab hover:bg-white/20"><span class="material-symbols-outlined text-[18px]">bed</span> Khách Sạn</div>
+            <div class="search-tab hover:bg-white/20"><span class="material-symbols-outlined text-[18px]">flight</span> Vé Máy bay</div>
+            <div class="search-tab hover:bg-white/20"><span class="material-symbols-outlined text-[18px]">train</span> Vé Tàu</div>
+            <div class="search-tab active shadow-sm"><span class="material-symbols-outlined text-[18px]">directions_car</span> Thuê xe</div>
+            <div class="search-tab hover:bg-white/20"><span class="material-symbols-outlined text-[18px]">attractions</span> Tour & Hoạt Động</div>
+            <div class="search-tab hover:bg-white/20"><span class="material-symbols-outlined text-[18px]">loyalty</span> Combo Tiết Kiệm</div>
+          </div>
+          
+          <!-- Search Form (Thuê xe -> Đưa đón sân bay Mode) -->
+          <div class="bg-white rounded-xl rounded-tl-none shadow-lg p-6 pb-4 border border-gray-100 relative z-20">
+            <!-- Sub-tabs -->
+            <div class="flex items-center gap-6 border-b border-gray-100 mb-4 pb-1">
+              <span class="sub-tab">Thuê xe</span>
+              <span class="sub-tab active">Đưa đón sân bay</span>
+            </div>
+
+            <!-- Radio Options -->
+            <div class="flex items-center gap-6 mb-5">
+              <span class="airport-radio active">Đón Khách Tại Sân Bay</span>
+              <span class="airport-radio">Trả Khách Tại Sân Bay</span>
+            </div>
+            
+            <!-- Inputs -->
+            <div class="flex gap-2 h-[48px] mb-4">
+              <!-- Route Input -->
+              <div class="flex-1 flex border border-gray-300 rounded-lg relative hover:border-[#3264ff] transition cursor-text items-center">
+                <div class="flex-1 px-4 flex items-center gap-2 text-gray-400">
+                  <span class="material-symbols-outlined text-[18px]">flight_land</span>
+                  <input type="text" placeholder="Sân bay đến" class="bg-transparent border-none outline-none text-[15px] w-full text-[#0f294d]">
+                </div>
+                <!-- Mini arrow icon -->
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-400 bg-white px-1">
+                  <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+                </div>
+                <div class="flex-1 px-4 flex items-center gap-2 text-gray-400">
+                  <span class="material-symbols-outlined text-[18px]">location_on</span>
+                  <input type="text" placeholder="Nhập Điểm Đến" class="bg-transparent border-none outline-none text-[15px] w-full text-[#0f294d]">
+                </div>
+              </div>
+              
+              <!-- Passengers -->
+              <div class="w-[200px] border border-gray-300 rounded-lg px-4 flex items-center justify-between hover:border-[#3264ff] transition cursor-pointer">
+                <div class="flex items-center gap-2 text-[#0f294d]">
+                  <span class="material-symbols-outlined text-[18px] text-gray-500">person</span>
+                  <p class="text-[14px] font-bold">2 hành khách</p>
+                </div>
+                <span class="material-symbols-outlined text-[20px] text-gray-400">expand_more</span>
+              </div>
+
+              <!-- Button -->
+              <button class="bg-[#3264ff] text-white font-bold text-[18px] px-8 rounded-lg flex items-center gap-1 hover:bg-blue-700 transition">
+                <span class="material-symbols-outlined text-[22px]">search</span> Tìm Kiếm
+              </button>
+            </div>
+            
+            <!-- Bottom Promo Text -->
+            <div class="text-right flex items-center justify-end gap-2">
+              <span class="text-[12px] text-[#455873]">Đặt bằng mã khuyến mãi Đưa đón sân bay</span>
+              <span class="text-[#ff4d4f] border border-[#ff4d4f] px-1 py-0.5 rounded text-[11px] font-medium flex items-center gap-1">Giảm Giá 12% <span class="material-symbols-outlined text-[14px]">local_activity</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promo Banners -->
+      <div class="w-full max-w-[1152px] mx-auto grid grid-cols-2 gap-6 mb-12">
+        <!-- Flight Promo -->
+        <div class="rounded-xl overflow-hidden shadow-sm h-[140px] bg-blue-500 relative cursor-pointer hover:shadow-md transition">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Airplane_over_clouds.jpg/800px-Airplane_over_clouds.jpg" class="w-full h-full object-cover opacity-80" alt="Banner 1" style="filter: hue-rotate(200deg);">
+          <div class="absolute inset-0 p-4 flex flex-col justify-center">
+             <h3 class="text-white font-bold text-[13px] mb-1">Trip.com</h3>
+             <h2 class="text-white font-black text-[28px] leading-none mb-1 shadow-sm">6.6 MEGA SALE</h2>
+             <p class="text-white/90 text-[12px] flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 03.06 - 06.06</p>
+             <button class="bg-[#ffb000] text-[#0f294d] text-[11px] font-bold px-3 py-1 rounded-full mt-2 w-max">ĐẶT NGAY</button>
+          </div>
+        </div>
+        <!-- Hotel Discount -->
+        <div class="rounded-xl overflow-hidden shadow-sm h-[140px] bg-green-500 relative cursor-pointer hover:shadow-md transition">
+           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Hotel_Room_Luxury.jpg/800px-Hotel_Room_Luxury.jpg" class="w-full h-full object-cover opacity-80" alt="Banner 2" style="filter: hue-rotate(100deg);">
+           <div class="absolute inset-0 p-4 flex flex-col justify-center">
+             <h3 class="text-white font-bold text-[13px] mb-1">Trip.com</h3>
+             <h2 class="text-white font-black text-[28px] leading-none mb-1 shadow-sm">KHÁCH SẠN</h2>
+             <p class="text-white/90 text-[12px]">Mã ưu đãi 400K</p>
+             <button class="bg-[#ffb000] text-[#0f294d] text-[11px] font-bold px-3 py-1 rounded-full mt-2 w-max">ĐẶT NGAY</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Users Coupons (2.PNG layout) -->
+      <div class="w-full max-w-[1152px] mx-auto mb-14">
+        <h3 class="text-[22px] font-bold mb-4 text-[#0f294d]">Dành riêng cho người dùng mới</h3>
+        <div class="grid grid-cols-4 gap-4">
+          <!-- Coupon 1 -->
+          <div class="coupon-card">
+            <div class="coupon-left">
+              <h4 class="font-bold text-[15px] text-[#0f294d] leading-tight truncate">Giảm Giá Đến 10...</h4>
+              <p class="text-[11px] text-[#455873] mt-1 mb-2 leading-tight">Vé Máy bay | Chỉ dành cho ứng dụng</p>
+              <button class="bg-[#3264ff] text-white text-[12px] font-medium px-4 py-1.5 rounded hover:bg-blue-600 transition">Sử dụng</button>
+            </div>
+            <div class="coupon-right">
+              <span class="material-symbols-outlined text-[24px] text-[#ff4757]">flight</span>
+            </div>
+          </div>
+          <!-- Coupon 2 -->
+          <div class="coupon-card">
+            <div class="coupon-left">
+              <h4 class="font-bold text-[15px] text-[#0f294d] leading-tight truncate">Giảm Giá 10%</h4>
+              <p class="text-[11px] text-[#455873] mt-1 mb-2 leading-tight">Khách Sạn <span class="material-symbols-outlined text-[10px]">info</span></p>
+              <button class="bg-[#3264ff] text-white text-[12px] font-medium px-4 py-1.5 rounded hover:bg-blue-600 transition">Sử dụng</button>
+            </div>
+            <div class="coupon-right">
+              <span class="material-symbols-outlined text-[24px] text-[#ff4757]">bed</span>
+            </div>
+          </div>
+          <!-- Coupon 3 -->
+          <div class="coupon-card">
+            <div class="coupon-left">
+              <h4 class="font-bold text-[15px] text-[#0f294d] leading-tight truncate">Giảm Giá 10%</h4>
+              <p class="text-[11px] text-[#455873] mt-1 mb-2 leading-tight">Tour & Hoạt Động <span class="material-symbols-outlined text-[10px]">info</span></p>
+              <button class="bg-[#3264ff] text-white text-[12px] font-medium px-4 py-1.5 rounded hover:bg-blue-600 transition">Sử dụng</button>
+            </div>
+            <div class="coupon-right">
+              <span class="material-symbols-outlined text-[24px] text-[#ff4757]">attractions</span>
+            </div>
+          </div>
+          <!-- Coupon 4 -->
+          <div class="coupon-card">
+            <div class="coupon-left">
+              <h4 class="font-bold text-[15px] text-[#0f294d] leading-tight truncate">Giảm Giá 10%</h4>
+              <p class="text-[11px] text-[#455873] mt-1 mb-2 leading-tight">Đưa Đón Sân Bay <span class="material-symbols-outlined text-[10px]">info</span></p>
+              <button class="bg-[#3264ff] text-white text-[12px] font-medium px-4 py-1.5 rounded hover:bg-blue-600 transition">Sử dụng</button>
+            </div>
+            <div class="coupon-right">
+              <span class="material-symbols-outlined text-[24px] text-[#ff4757]">directions_car</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inspiration Section (2.PNG) -->
+      <div class="w-full max-w-[1152px] mx-auto mb-14 relative">
+        <h3 class="text-[22px] font-bold mb-4 text-[#0f294d]">Tìm cảm hứng cho chuyến đi tiếp theo của bạn</h3>
+        <div class="flex gap-4">
+          <!-- Item 1 (Active) -->
+          <div class="flex-[1.2] rounded-xl overflow-visible relative cursor-pointer h-[180px] shadow-sm">
+            <div class="rounded-xl overflow-hidden h-full w-full relative">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Hanoi_Train_Street.jpg/800px-Hanoi_Train_Street.jpg" class="w-full h-full object-cover" alt="Hanoi">
+              <div class="absolute inset-0 bg-[#3264ff]/60 mix-blend-multiply"></div>
+            </div>
+            <div class="absolute top-2 left-2 bg-white/90 text-[#0f294d] text-[11px] font-medium px-1.5 py-0.5 rounded shadow-sm">Đã xem</div>
+            <h4 class="absolute bottom-2 left-3 text-white font-bold text-[18px] z-10">Hà Nội</h4>
+            <div class="absolute -bottom-[8px] left-8 w-4 h-4 bg-[#1e4cd9] rotate-45 z-20"></div>
+          </div>
+          <!-- Item 2 -->
+          <div class="flex-1 rounded-xl overflow-hidden relative cursor-pointer h-[180px] group shadow-sm">
+            <div class="card-img-zoom h-full w-full">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Manila_Skyline.jpg/800px-Manila_Skyline.jpg" class="w-full h-full object-cover" alt="Manila">
+            </div>
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+            <div class="absolute top-2 left-2 bg-white/90 text-[#0f294d] text-[11px] font-medium px-1.5 py-0.5 rounded">Chặng ngắn</div>
+            <h4 class="absolute bottom-2 left-3 text-white font-bold text-[18px]">Manila</h4>
+          </div>
+          <!-- Item 3 -->
+          <div class="flex-1 rounded-xl overflow-hidden relative cursor-pointer h-[180px] group shadow-sm">
+            <div class="card-img-zoom h-full w-full">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Osaka_Castle_02bs3200.jpg/800px-Osaka_Castle_02bs3200.jpg" class="w-full h-full object-cover" alt="Osaka">
+            </div>
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+            <div class="absolute top-2 left-2 bg-white/90 text-[#0f294d] text-[11px] font-medium px-1.5 py-0.5 rounded">Chặng trung bình</div>
+            <h4 class="absolute bottom-2 left-3 text-white font-bold text-[18px]">Osaka</h4>
+          </div>
+          <!-- Item 4 -->
+          <div class="flex-[1.2] rounded-xl overflow-hidden relative cursor-pointer h-[180px] group shadow-sm">
+            <div class="card-img-zoom h-full w-full">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Toronto_skyline_from_islands.jpg/800px-Toronto_skyline_from_islands.jpg" class="w-full h-full object-cover" alt="Toronto">
+            </div>
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+            <div class="absolute top-2 left-2 bg-white/90 text-[#0f294d] text-[11px] font-medium px-1.5 py-0.5 rounded">Chặng dài</div>
+            <h4 class="absolute bottom-2 left-3 text-white font-bold text-[18px]">Toronto</h4>
+          </div>
+          <!-- Item 5 -->
+          <div class="flex-1 rounded-xl overflow-hidden relative cursor-pointer h-[180px] group shadow-sm">
+            <div class="card-img-zoom h-full w-full">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Nha_Trang_beach.jpg/800px-Nha_Trang_beach.jpg" class="w-full h-full object-cover" alt="Nha Trang">
+            </div>
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+            <div class="absolute top-2 left-2 bg-white/90 text-[#0f294d] text-[11px] font-medium px-1.5 py-0.5 rounded">Chặng ngắn</div>
+            <h4 class="absolute bottom-2 left-3 text-white font-bold text-[18px]">Nha Trang</h4>
+          </div>
+        </div>
+        <div class="absolute right-[-16px] top-1/2 mt-3 -translate-y-1/2 arrow-btn shadow-md">
+          <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+        </div>
+      </div>
+
+      <!-- Top Attractions (2.PNG / 3.PNG layout) -->
+      <div class="w-full max-w-[1152px] mx-auto mb-14 relative">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-[22px] font-bold text-[#0f294d]">Điểm tham quan hàng đầu không thể bỏ lỡ tại Hà Nội</h3>
+          <a href="#" class="text-[14px] text-[#455873] font-medium hover:text-blue-600 flex items-center">Xem thêm <span class="material-symbols-outlined text-[18px]">chevron_right</span></a>
+        </div>
+        
+        <div class="grid grid-cols-4 gap-4">
+          <!-- Card 1 -->
+          <div class="rounded-xl overflow-hidden relative cursor-pointer group h-[360px] shadow-sm hover:shadow-md transition">
+            <div class="card-img-zoom h-full w-full">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Water_Puppetry_Hanoi.jpg/800px-Water_Puppetry_Hanoi.jpg" class="w-full h-full object-cover" alt="Puppet">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <!-- Trip.Best tag -->
+            <div class="absolute top-3 left-3 bg-white text-[#0f294d] text-[12px] font-black px-2 py-0.5 rounded-sm flex items-center gap-1 shadow-sm">
+              <span class="text-[#cf895c] font-serif italic text-[14px] mr-1">Trip.Best</span>
+            </div>
+            <!-- Heart icon -->
+            <div class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><span class="material-symbols-outlined text-[18px]">favorite</span></div>
+            <!-- Bottom Content -->
+            <div class="absolute bottom-4 left-4 right-4 text-white">
+              <div class="flex items-center gap-1 mb-2">
+                <span class="bg-black/30 text-white text-[11px] px-1.5 py-0.5 rounded backdrop-blur-sm">Hà Nội</span>
+                <span class="bg-red-600 text-white text-[11px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">local_fire_department</span> 6,9</span>
+              </div>
+              <h4 class="font-bold text-[16px] leading-tight mb-1 line-clamp-2">Nhà Hát Múa Rối Thăng Long</h4>
+              <p class="text-[12px] text-white/90">4,3/5 · 782 đánh giá</p>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="rounded-xl overflow-hidden relative cursor-pointer group h-[360px] shadow-sm hover:shadow-md transition">
+            <div class="card-img-zoom h-full w-full">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Hoan_Kiem_Lake_and_Turtle_Tower.jpg/800px-Hoan_Kiem_Lake_and_Turtle_Tower.jpg" class="w-full h-full object-cover" alt="Hoan Kiem">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <div class="absolute top-3 left-3 bg-white text-[#0f294d] text-[12px] font-black px-2 py-0.5 rounded-sm flex items-center gap-1 shadow-sm">
+              <span class="text-[#cf895c] font-serif italic text-[14px] mr-1">Trip.Best</span>
+            </div>
+            <div class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><span class="material-symbols-outlined text-[18px]">favorite</span></div>
+            <div class="absolute bottom-4 left-4 right-4 text-white">
+              <div class="flex items-center gap-1 mb-2">
+                <span class="bg-black/30 text-white text-[11px] px-1.5 py-0.5 rounded backdrop-blur-sm">Hà Nội</span>
+                <span class="bg-red-600 text-white text-[11px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">local_fire_department</span> 6,7</span>
+              </div>
+              <h4 class="font-bold text-[16px] leading-tight mb-1 line-clamp-2">Hồ Hoàn Kiếm</h4>
+              <p class="text-[12px] text-white/90">4,6/5 · 1.136 đánh giá</p>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="rounded-xl overflow-hidden relative cursor-pointer group h-[360px] shadow-sm hover:shadow-md transition">
+            <div class="card-img-zoom h-full w-full">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Lotte_Center_Hanoi_2016.jpg/800px-Lotte_Center_Hanoi_2016.jpg" class="w-full h-full object-cover" alt="Lotte Sky">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <div class="absolute top-3 left-3 bg-white text-[#0f294d] text-[12px] font-black px-2 py-0.5 rounded-sm flex items-center gap-1 shadow-sm">
+              <span class="text-[#cf895c] font-serif italic text-[14px] mr-1">Trip.Best</span>
+            </div>
+            <div class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><span class="material-symbols-outlined text-[18px]">favorite</span></div>
+            <div class="absolute bottom-4 left-4 right-4 text-white">
+              <div class="flex items-center gap-1 mb-2">
+                <span class="bg-black/30 text-white text-[11px] px-1.5 py-0.5 rounded backdrop-blur-sm">Hà Nội</span>
+                <span class="bg-red-600 text-white text-[11px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">local_fire_department</span> 6,1</span>
+              </div>
+              <h4 class="font-bold text-[16px] leading-tight mb-1 line-clamp-2">Đài Quan Sát LOTTE Hanoi Sky</h4>
+              <p class="text-[12px] text-white/90">4,7/5 · 225 đánh giá</p>
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div class="rounded-xl overflow-hidden relative cursor-pointer group h-[360px] shadow-sm hover:shadow-md transition">
+            <div class="card-img-zoom h-full w-full">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Hanoi_Train_Street.jpg/800px-Hanoi_Train_Street.jpg" class="w-full h-full object-cover" alt="Train Street">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <div class="absolute top-3 left-3 bg-white text-[#0f294d] text-[12px] font-black px-2 py-0.5 rounded-sm flex items-center gap-1 shadow-sm">
+              <span class="text-[#cf895c] font-serif italic text-[14px] mr-1">Trip.Best</span>
+            </div>
+            <div class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><span class="material-symbols-outlined text-[18px]">favorite</span></div>
+            <div class="absolute bottom-4 left-4 right-4 text-white">
+              <div class="flex items-center gap-1 mb-2">
+                <span class="bg-black/30 text-white text-[11px] px-1.5 py-0.5 rounded backdrop-blur-sm">Hà Nội</span>
+                <span class="bg-red-600 text-white text-[11px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">local_fire_department</span> 5,9</span>
+              </div>
+              <h4 class="font-bold text-[16px] leading-tight mb-1 line-clamp-2">Phố Đường Tàu Hà Nội</h4>
+              <p class="text-[12px] text-white/90">4,5/5 · 54 đánh giá</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hotels Section (3.PNG) -->
+      <div class="w-full max-w-[1152px] mx-auto mb-14 relative">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-[22px] font-bold text-[#0f294d]">Thư giãn tại các khách sạn chọn lọc của chúng tôi ở Hà Nội</h3>
+          <a href="#" class="text-[14px] text-[#455873] font-medium hover:text-blue-600 flex items-center">Xem thêm <span class="material-symbols-outlined text-[18px]">chevron_right</span></a>
+        </div>
+        
+        <div class="grid grid-cols-4 gap-4">
+          <!-- Hotel 1 -->
+          <div class="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col group relative">
+            <div class="h-[220px] w-full card-img-zoom relative">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Sofitel_Legend_Metropole_Hanoi_2.jpg/800px-Sofitel_Legend_Metropole_Hanoi_2.jpg" class="w-full h-full object-cover" alt="Hotel 1">
+              <div class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><span class="material-symbols-outlined text-[18px]">favorite</span></div>
+            </div>
+            <div class="p-4 flex-1 flex flex-col">
+              <p class="text-[11px] text-gray-500 mb-1">Hà Nội</p>
+              <h4 class="font-bold text-[14px] text-[#0f294d] leading-snug line-clamp-2 mb-1">Căn hộ dịch vụ cao cấp Vinhomes D'Capitale Hà Nội - Zen Homes</h4>
+              <p class="text-yellow-400 text-[12px] mb-2">★★★★</p>
+              <div class="flex items-center gap-1 mt-auto">
+                <span class="bg-[#3264ff] text-white text-[12px] font-bold px-1.5 py-0.5 rounded rounded-br-none">9.5/10</span>
+                <span class="text-[11px] text-[#3264ff]">350 đánh giá</span>
+              </div>
+            </div>
+          </div>
+          <!-- Hotel 2 -->
+          <div class="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col group relative">
+            <div class="h-[220px] w-full card-img-zoom relative">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Hilton_Hanoi_Opera.jpg/800px-Hilton_Hanoi_Opera.jpg" class="w-full h-full object-cover" alt="Hotel 2">
+              <div class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><span class="material-symbols-outlined text-[18px]">favorite</span></div>
+            </div>
+            <div class="p-4 flex-1 flex flex-col">
+              <p class="text-[11px] text-gray-500 mb-1">Hà Nội</p>
+              <h4 class="font-bold text-[14px] text-[#0f294d] leading-snug line-clamp-2 mb-1">An Homestay Lakeview Apartment</h4>
+              <p class="text-yellow-400 text-[12px] mb-2">★★★</p>
+              <div class="flex items-center gap-1 mt-auto">
+                <span class="bg-[#3264ff] text-white text-[12px] font-bold px-1.5 py-0.5 rounded rounded-br-none">8.4/10</span>
+                <span class="text-[11px] text-[#3264ff]">284 đánh giá</span>
+              </div>
+            </div>
+          </div>
+          <!-- Hotel 3 -->
+          <div class="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col group relative">
+            <div class="h-[220px] w-full card-img-zoom relative">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Hotel_de_l%27Opera_Hanoi.jpg/800px-Hotel_de_l%27Opera_Hanoi.jpg" class="w-full h-full object-cover" alt="Hotel 3">
+              <div class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><span class="material-symbols-outlined text-[18px]">favorite</span></div>
+            </div>
+            <div class="p-4 flex-1 flex flex-col">
+              <p class="text-[11px] text-gray-500 mb-1">Hà Nội</p>
+              <h4 class="font-bold text-[14px] text-[#0f294d] leading-snug line-clamp-2 mb-1">Khách sạn & Spa The Queen 2</h4>
+              <p class="text-yellow-400 text-[12px] mb-2">★★★</p>
+              <div class="flex items-center gap-1 mt-auto">
+                <span class="bg-[#3264ff] text-white text-[12px] font-bold px-1.5 py-0.5 rounded rounded-br-none">8.8/10</span>
+                <span class="text-[11px] text-[#3264ff]">288 đánh giá</span>
+              </div>
+            </div>
+          </div>
+          <!-- Hotel 4 -->
+          <div class="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col group relative">
+            <div class="h-[220px] w-full card-img-zoom relative">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Hanoi_Daewoo_Hotel.jpg/800px-Hanoi_Daewoo_Hotel.jpg" class="w-full h-full object-cover" alt="Hotel 4">
+              <div class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><span class="material-symbols-outlined text-[18px]">favorite</span></div>
+            </div>
+            <div class="p-4 flex-1 flex flex-col">
+              <p class="text-[11px] text-gray-500 mb-1">Hà Nội</p>
+              <h4 class="font-bold text-[14px] text-[#0f294d] leading-snug line-clamp-2 mb-1">22land Residence 71 Hàng Bông</h4>
+              <p class="text-yellow-400 text-[12px] mb-2">★★★★</p>
+              <div class="flex items-center gap-1 mt-auto">
+                <span class="bg-[#3264ff] text-white text-[12px] font-bold px-1.5 py-0.5 rounded rounded-br-none">8.7/10</span>
+                <span class="text-[11px] text-[#3264ff]">286 đánh giá</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute right-[-16px] top-[140px] mt-3 -translate-y-1/2 arrow-btn shadow-md z-10">
+          <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+        </div>
+      </div>
+      
+    </div>
+  </main>
+
+  <!-- Sticky Actions (Bottom Right from 3.PNG) -->
+  <div class="fixed bottom-12 right-8 flex flex-col gap-3 z-50">
+    <div class="sticky-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="Lên đầu trang">
+      <span class="material-symbols-outlined">expand_less</span>
+    </div>
+    <div class="sticky-btn" title="Hỗ trợ khách hàng">
+      <span class="material-symbols-outlined">headset_mic</span>
+    </div>
+    <!-- AI Bot Toggle -->
+    <div id="chat-toggle-btn" title="Hỗ trợ AI">
+      <span class="material-symbols-outlined text-white text-[28px] transition-transform duration-300" id="chat-icon">smart_toy</span>
+    </div>
+  </div>
+
+  <!-- AI Chatbot Iframe Container -->
+  <div id="chat-widget-container">
+    <iframe id="chat-iframe" src="../frontend-test/index.html"></iframe>
+  </div>
+
+  <script>
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      if (sidebar.classList.contains('collapsed')) {
+        mainContent.classList.remove('ml-[240px]');
+        mainContent.classList.add('ml-[68px]');
+      } else {
+        mainContent.classList.remove('ml-[68px]');
+        mainContent.classList.add('ml-[240px]');
+      }
+    });
+
+    const chatBtn = document.getElementById('chat-toggle-btn');
+    const chatWidget = document.getElementById('chat-widget-container');
+    const chatIcon = document.getElementById('chat-icon');
+    let isOpen = false;
+
+    chatBtn.addEventListener('click', () => {
+      isOpen = !isOpen;
+      
+      if (isOpen) {
+        chatWidget.classList.add('open');
+      } else {
+        chatWidget.classList.remove('open');
+      }
+      
+      chatIcon.classList.add('rotating');
+      setTimeout(() => {
+        chatIcon.textContent = isOpen ? 'close' : 'smart_toy';
+        chatIcon.classList.remove('rotating');
+      }, 150);
+    });
+  </script>
+</body>
+</html>

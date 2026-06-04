@@ -1,23 +1,27 @@
 {
-  "version": 1,
+  "version": 2,
   "missing_fields": {
     "origin": "Bạn muốn khởi hành từ đâu?",
     "destination": "Bạn muốn đi tới đâu?",
-    "date": "Bạn muốn đi ngày nào?",
     "transport_mode": "Bạn muốn đi máy bay hay tàu hỏa?"
   },
   "no_results": {
-    "same_route_other_mode": "Không có kết quả với phương tiện này. Bạn muốn xem phương tiện khác không?",
-    "same_route_other_date": "Chưa có chuyến phù hợp ngày này. Bạn muốn đổi ngày đi không?",
-    "unsupported_route": "Tuyến này chưa có trong dữ liệu demo."
+    "same_route_other_mode": "Không có dữ liệu với phương tiện này. Bạn muốn xem phương tiện khác không?",
+    "unsupported_route": "Tuyến này chưa có trong dữ liệu demo.",
+    "unsupported_direct_route": "Hiện chưa có dữ liệu đi thẳng bằng phương tiện này trong mock data."
+  },
+  "examples": {
+    "train_to_phu_quoc": "Không có dữ liệu tàu cho tuyến Phú Quốc. Hiện chỉ có dữ liệu máy bay.",
+    "flight_to_sapa": "Không có dữ liệu máy bay trực tiếp đến Sa Pa.",
+    "train_to_sapa": "Chưa có tàu thẳng đến Sa Pa. Có thể tham khảo tuyến tàu Hà Nội - Lào Cai nếu backend có resolver hỗ trợ."
   },
   "provider_follow_up": {
-    "cheaper_available": "Tôi thấy có chuyến rẻ hơn hãng bạn chọn. Bạn muốn xem chuyến rẻ hơn không?",
+    "cheaper_available": "Có chuyến rẻ hơn hãng bạn chọn. Bạn muốn xem không?",
     "no_provider_specified": "Bạn có muốn ưu tiên hãng bay nào không?"
   },
   "safety_notes": [
-    "Không tự động đặt vé trong demo.",
-    "Giá là mock data, không phải realtime.",
-    "Nếu confidence thấp, phải hỏi lại user trước khi search."
+    "Đây là mock data, không phải giá realtime.",
+    "Không scrape web.",
+    "Không tạo tuyến không hợp lý chỉ để có kết quả."
   ]
 }

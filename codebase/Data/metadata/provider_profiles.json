@@ -5,19 +5,18 @@
     "category": "low_cost",
     "display_name": "Vietjet Air",
     "strengths": [
-      "Giá thường tốt",
-      "Nhiều chuyến bay"
+      "Low price",
+      "Many flights"
     ],
     "tradeoffs": [
-      "Dịch vụ cơ bản",
-      "Hành lý ký gửi có thể phát sinh phí"
+      "Basic service",
+      "Checked baggage may cost extra"
     ],
     "best_for": [
       "cheap",
       "flexible_time"
     ],
-    "default_priority": 1,
-    "recommendation_style": "Ưu tiên khi người dùng muốn giá rẻ hoặc không chỉ định hãng."
+    "default_priority": 1
   },
   {
     "provider": "Vietnam Airlines",
@@ -25,19 +24,18 @@
     "category": "full_service",
     "display_name": "Vietnam Airlines",
     "strengths": [
-      "Hãng truyền thống",
-      "Độ ổn định và trải nghiệm tốt"
+      "Stable service",
+      "Good comfort"
     ],
     "tradeoffs": [
-      "Giá thường cao hơn nhóm giá rẻ"
+      "Often more expensive"
     ],
     "best_for": [
       "premium",
       "reliable",
       "business"
     ],
-    "default_priority": 3,
-    "recommendation_style": "Ưu tiên khi người dùng nói rõ hãng, cần độ ổn định, hoặc không quá nhạy cảm về giá."
+    "default_priority": 3
   },
   {
     "provider": "Bamboo Airways",
@@ -45,18 +43,16 @@
     "category": "balanced",
     "display_name": "Bamboo Airways",
     "strengths": [
-      "Cân bằng giữa giá và trải nghiệm",
-      "Tạo thêm lựa chọn để so sánh"
+      "Balanced price and comfort"
     ],
     "tradeoffs": [
-      "Số chuyến trong demo còn ít"
+      "Moderate coverage in mock data"
     ],
     "best_for": [
       "balanced",
       "comfort"
     ],
-    "default_priority": 2,
-    "recommendation_style": "Dùng như lựa chọn cân bằng hoặc lựa chọn xem thêm sau nhóm rẻ nhất."
+    "default_priority": 2
   },
   {
     "provider": "Vietravel Airlines",
@@ -64,18 +60,15 @@
     "category": "value",
     "display_name": "Vietravel Airlines",
     "strengths": [
-      "Giá thường tốt",
-      "Tạo thêm lựa chọn để so sánh"
+      "Extra comparison option"
     ],
     "tradeoffs": [
-      "Số chuyến trong demo còn ít"
+      "Not available on every route"
     ],
     "best_for": [
-      "cheap",
       "more_options"
     ],
-    "default_priority": 2,
-    "recommendation_style": "Dùng để bổ sung lựa chọn giá tốt ở một số tuyến."
+    "default_priority": 2
   },
   {
     "provider": "Sun PhuQuoc Airways",
@@ -83,16 +76,16 @@
     "category": "secondary_option",
     "display_name": "Sun PhuQuoc Airways",
     "strengths": [
-      "Tạo thêm lựa chọn để so sánh"
+      "Extra option for leisure routes"
     ],
     "tradeoffs": [
-      "Số chuyến trong demo còn ít"
+      "Mock-only secondary provider"
     ],
     "best_for": [
-      "more_options"
+      "more_options",
+      "leisure"
     ],
-    "default_priority": 4,
-    "recommendation_style": "Chỉ nên hiện khi người dùng bấm xem thêm hoặc muốn tham khảo nhiều hãng."
+    "default_priority": 4
   },
   {
     "provider": "Vietnam Railways",
@@ -100,18 +93,17 @@
     "category": "rail_operator",
     "display_name": "Vietnam Railways",
     "strengths": [
-      "Đi thẳng từ ga, không cần ra sân bay",
-      "Giá thường thấp hơn máy bay"
+      "Station to station",
+      "Often cheaper than flight"
     ],
     "tradeoffs": [
-      "Thời gian di chuyển dài hơn máy bay"
+      "Long travel time"
     ],
     "best_for": [
       "cheap",
       "experience",
       "flexible_time"
     ],
-    "default_priority": 1,
-    "recommendation_style": "Ưu tiên khi người dùng muốn tiết kiệm, muốn đi tàu, hoặc muốn so sánh với máy bay."
+    "default_priority": 1
   }
 ]

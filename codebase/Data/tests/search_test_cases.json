@@ -1,11 +1,11 @@
 [
   {
-    "name": "one_way_han_danang_flight",
-    "message": "Tìm vé một chiều Hà Nội đi Đà Nẵng ngày 6/6 bằng máy bay",
+    "name": "any_date_han_phuquoc_flight",
+    "message": "Tim ve Ha Noi di Phu Quoc ngay 20/7 bang may bay",
     "query": {
-      "origin": "Hà Nội",
-      "destination": "Đà Nẵng",
-      "date": "2026-06-06",
+      "origin": "H\u00e0 N\u1ed9i",
+      "destination": "Ph\u00fa Qu\u1ed1c",
+      "travel_date": "2026-07-20",
       "trip_type": "one_way",
       "transport_mode": "flight",
       "passengers": 1
@@ -15,28 +15,11 @@
     "expected_price_field": "one_way_price_vnd"
   },
   {
-    "name": "round_trip_han_danang_flight",
-    "message": "Tìm vé khứ hồi Hà Nội đi Đà Nẵng từ 6/6 đến 8/6",
+    "name": "hcm_dalat_flight",
+    "message": "TP.HCM di Da Lat bang may bay",
     "query": {
-      "origin": "Hà Nội",
-      "destination": "Đà Nẵng",
-      "date": "2026-06-06",
-      "return_date": "2026-06-08",
-      "trip_type": "round_trip",
-      "transport_mode": "flight",
-      "passengers": 1
-    },
-    "expected_status": "ok",
-    "expected_min_results": 1,
-    "expected_price_field": "round_trip_price_vnd"
-  },
-  {
-    "name": "reverse_route_danang_han_flight",
-    "message": "Đà Nẵng về Hà Nội ngày 6/6 bằng máy bay",
-    "query": {
-      "origin": "Đà Nẵng",
-      "destination": "Hà Nội",
-      "date": "2026-06-06",
+      "origin": "TP.HCM",
+      "destination": "\u0110\u00e0 L\u1ea1t",
       "trip_type": "one_way",
       "transport_mode": "flight",
       "passengers": 1
@@ -45,32 +28,59 @@
     "expected_min_results": 1
   },
   {
-    "name": "compare_han_hcm_train_or_flight",
-    "message": "Hà Nội đi TP.HCM nên đi tàu hay máy bay",
+    "name": "no_train_to_phuquoc",
+    "message": "Ha Noi di Phu Quoc bang tau",
     "query": {
-      "origin": "Hà Nội",
-      "destination": "TP.HCM",
-      "date": "2026-06-06",
-      "trip_type": "one_way",
-      "transport_mode": null,
-      "passengers": 1
-    },
-    "expected_status": "ok",
-    "expected_min_results": 2,
-    "expected_modes": ["flight", "train"]
-  },
-  {
-    "name": "no_results_out_of_scope_route",
-    "message": "Tìm vé Hà Nội đi Phú Quốc ngày 6/6 bằng tàu",
-    "query": {
-      "origin": "Hà Nội",
-      "destination": "Phú Quốc",
-      "date": "2026-06-06",
+      "origin": "H\u00e0 N\u1ed9i",
+      "destination": "Ph\u00fa Qu\u1ed1c",
       "trip_type": "one_way",
       "transport_mode": "train",
       "passengers": 1
     },
     "expected_status": "no_results",
     "expected_min_results": 0
+  },
+  {
+    "name": "no_flight_to_sapa",
+    "message": "Ha Noi di Sa Pa bang may bay",
+    "query": {
+      "origin": "H\u00e0 N\u1ed9i",
+      "destination": "Sa Pa",
+      "trip_type": "one_way",
+      "transport_mode": "flight",
+      "passengers": 1
+    },
+    "expected_status": "no_results",
+    "expected_min_results": 0
+  },
+  {
+    "name": "han_laocai_train_for_sapa",
+    "message": "Tim tau Ha Noi di Lao Cai",
+    "query": {
+      "origin": "H\u00e0 N\u1ed9i",
+      "destination": "L\u00e0o Cai",
+      "trip_type": "one_way",
+      "transport_mode": "train",
+      "passengers": 1
+    },
+    "expected_status": "ok",
+    "expected_min_results": 1
+  },
+  {
+    "name": "compare_han_hcm_train_or_flight_no_date_required",
+    "message": "Ha Noi di TP.HCM nen di tau hay may bay",
+    "query": {
+      "origin": "H\u00e0 N\u1ed9i",
+      "destination": "TP.HCM",
+      "trip_type": "one_way",
+      "transport_mode": null,
+      "passengers": 1
+    },
+    "expected_status": "ok",
+    "expected_min_results": 2,
+    "expected_modes": [
+      "flight",
+      "train"
+    ]
   }
 ]

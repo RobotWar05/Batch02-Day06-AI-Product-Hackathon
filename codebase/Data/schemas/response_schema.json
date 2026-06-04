@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "endpoint": "POST /api/search-trips",
   "response_shape": {
     "status": "ok | need_more_info | no_results | error",
@@ -31,5 +31,10 @@
       "round_trip_price_vnd",
       "price_label_round_trip"
     ]
+  },
+  "mock_date_policy": {
+    "date_is_required": false,
+    "date_filtering": false,
+    "explanation": "Người dùng có thể nhập bất kỳ ngày đi nào; giá mock vẫn giữ cố định."
   }
 }

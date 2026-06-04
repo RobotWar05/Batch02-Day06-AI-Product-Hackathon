@@ -304,7 +304,6 @@ function renderResultCard(item) {
               <h4 class="font-bold text-text">${escapeHtml(item.provider)} · ${escapeHtml(item.code)}</h4>
               <span class="rounded-full bg-surface-low px-2 py-1 text-xs font-semibold text-muted">${modeLabel}</span>
             </div>
-            <p class="mt-1 text-sm text-muted">${escapeHtml(item.reason)}</p>
           </div>
         </div>
 
@@ -384,6 +383,25 @@ function handleUserMessage(message) {
       addMessage("clarify", "", { slots });
       return;
     }
+
+    if (slots.origin && slots.destination && slots.origin.toLowerCase() === slots.destination.toLowerCase()) {
+      addMessage("bot", "Điểm đi và điểm đến không thể trùng nhau. Vui lòng chọn lại.");
+      slots.warning = "Điểm đi và điểm đến đang trùng nhau.";
+      slots.missing_fields = ["origin", "destination"];
+      addMessage("clarify", "", { slots });
+      return;
+    }
+
+    const flightResults = getSearchResults("flight", slots);
+    const trainResults = getSearchResults("train", slots);
+    if (flightResults.length === 0 && trainResults.length === 0) {
+      addMessage("bot", "Rất tiếc, tôi không tìm thấy chuyến đi nào. Vui lòng thử tuyến đường khác.");
+      slots.warning = "Không có chuyến đi cho tuyến đường này.";
+      slots.missing_fields = ["origin", "destination"];
+      addMessage("clarify", "", { slots });
+      return;
+    }
+
     addMessage("bot", "Tôi đã tìm thấy thông tin chuyến đi của bạn. Dưới đây là các chuyến đi phù hợp:");
     addMessage("widget", "", { slots });
     showResults();
@@ -415,6 +433,18 @@ function updateSlot(field, value) {
   state.currentSlots.warning = "";
   state.currentSlots.confidence = 0.94;
   state.currentSlots.missing_fields = ["origin", "destination", "transport_mode"].filter((key) => !state.currentSlots[key]);
+
+  if (state.currentSlots.origin && state.currentSlots.destination && state.currentSlots.origin.toLowerCase() === state.currentSlots.destination.toLowerCase()) {
+    state.currentSlots.warning = "Điểm đi và điểm đến không thể trùng nhau.";
+    state.currentSlots.missing_fields = ["origin", "destination"];
+  } else if (state.currentSlots.missing_fields.length === 0) {
+    const flightResults = getSearchResults("flight", state.currentSlots);
+    const trainResults = getSearchResults("train", state.currentSlots);
+    if (flightResults.length === 0 && trainResults.length === 0) {
+       state.currentSlots.warning = "Không có chuyến đi cho tuyến đường này.";
+       state.currentSlots.missing_fields = ["origin", "destination"];
+    }
+  }
 
   if (state.currentSlots.missing_fields.length === 0) {
     removeClarificationMessages();

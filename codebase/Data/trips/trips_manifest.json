@@ -1,38 +1,47 @@
 {
-  "version": 1,
+  "version": 2,
   "generated_at": "2026-06-04",
-  "note": "Split mock trip data by transport mode and provider. Backend should read this manifest, load provider files, then apply config files for ranking, query validation, response shape, and fallback handling.",
+  "note": "Dữ liệu mock không phụ thuộc ngày, chỉ gồm máy bay và tàu hỏa. Nếu tuyến trực tiếp không có dữ liệu thì backend nên trả no_results.",
   "aggregate_file": "../trips.json",
   "files": {
-    "flights": {
-      "Vietnam Airlines": "flights/vietnam_airlines.json",
-      "Vietjet Air": "flights/vietjet_air.json",
-      "Bamboo Airways": "flights/bamboo_airways.json",
-      "Vietravel Airlines": "flights/vietravel_airlines.json",
-      "Sun PhuQuoc Airways": "flights/sun_phuquoc_airways.json"
+    "flight": {
+      "Vietnam Airlines": "flight/vietnam_airlines.json",
+      "Vietjet Air": "flight/vietjet_air.json",
+      "Bamboo Airways": "flight/bamboo_airways.json",
+      "Vietravel Airlines": "flight/vietravel_airlines.json",
+      "Sun PhuQuoc Airways": "flight/sun_phuquoc_airways.json"
     },
-    "trains": {
-      "Vietnam Railways": "trains/vietnam_railways.json"
+    "train": {
+      "Vietnam Railways": "train/vietnam_railways.json"
     }
   },
   "counts": {
-    "total": 42,
-    "flights": {
-      "Vietravel Airlines": 2,
-      "Vietjet Air": 14,
-      "Bamboo Airways": 6,
-      "Vietnam Airlines": 7,
-      "Sun PhuQuoc Airways": 1
+    "total": 70,
+    "flight": {
+      "Vietnam Airlines": 14,
+      "Vietjet Air": 20,
+      "Bamboo Airways": 14,
+      "Vietravel Airlines": 6,
+      "Sun PhuQuoc Airways": 0
     },
-    "trains": {
-      "Vietnam Railways": 12
+    "train": {
+      "Vietnam Railways": 16
     }
   },
+  "route_policy": {
+    "date_filtering": false,
+    "supported_transport_modes": [
+      "flight",
+      "train"
+    ],
+    "unsupported_direct_routes_should_return_no_results": true
+  },
   "config_files": {
-    "provider_profiles": "../provider_profiles.json",
-    "ranking_rules": "../ranking_rules.json",
-    "query_schema": "../query_schema.json",
-    "response_schema": "../response_schema.json",
-    "fallback_rules": "../fallback_rules.json"
+    "locations": "../metadata/locations.json",
+    "provider_profiles": "../metadata/provider_profiles.json",
+    "ranking_rules": "../rules/ranking_rules.json",
+    "query_schema": "../schemas/query_schema.json",
+    "response_schema": "../schemas/response_schema.json",
+    "fallback_rules": "../rules/fallback_rules.json"
   }
 }

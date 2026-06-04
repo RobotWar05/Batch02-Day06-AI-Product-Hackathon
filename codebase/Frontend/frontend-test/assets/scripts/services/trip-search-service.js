@@ -8,7 +8,7 @@ function getSearchResults(mode, slots) {
     normalizePlace(item.origin) === normalizePlace(slots.origin) &&
     normalizePlace(item.destination) === normalizePlace(slots.destination)
   ));
-  const scoped = routeMatches.length > 0 ? routeMatches : source;
+  const scoped = routeMatches;
   return prioritizeResults(scoped, mode === "flight" ? slots.preferred_provider : null);
 }
 
