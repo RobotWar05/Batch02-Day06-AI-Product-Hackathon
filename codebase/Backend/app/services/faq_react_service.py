@@ -16,6 +16,16 @@ try:
 except ImportError:
     HAS_GEMINI = False
 
+try:
+    from langchain.agents import create_agent
+    from langchain_core.messages import AIMessage, ToolMessage
+    from langchain_core.tools import tool
+    from langchain_google_genai import ChatGoogleGenerativeAI
+
+    HAS_LANGCHAIN = True
+except ImportError:
+    HAS_LANGCHAIN = False
+
 
 @dataclass(slots=True)
 class FAQAgentResult:
@@ -36,6 +46,7 @@ class FAQReActService:
             "compare_modes": self._tool_compare_modes,
             "rank_options": self._tool_rank_options,
         }
+        self._agent = self._build_langchain_agent() if self._can_use_langchain() else None
 
     def run(self, message: str, session_state: CurrentTripState | None = None) -> FAQAgentResult:
         slots = slot_extractor_service.extract_faq_slots(message=message, session_state=session_state)
@@ -45,6 +56,20 @@ class FAQReActService:
             date=slots.date,
             passengers=slots.passengers or 1,
         )
+        if self._agent is not None:
+            try:
+                return self._run_with_langchain(message=message, query=query)
+            except Exception:
+                pass
+
+        return self._run_legacy_loop(message=message, query=query, session_state=session_state)
+
+    def _run_legacy_loop(
+        self,
+        message: str,
+        query: SearchQuery,
+        session_state: CurrentTripState | None = None,
+    ) -> FAQAgentResult:
         scratchpad: list[str] = []
         tool_calls: list[dict[str, Any]] = []
         parse_failures = 0
@@ -89,6 +114,220 @@ class FAQReActService:
             payload={"query": query.model_dump(mode="json"), "comparison": last_observation},
             tool_calls=tool_calls,
         )
+
+    def _run_with_langchain(self, message: str, query: SearchQuery) -> FAQAgentResult:
+        assert self._agent is not None
+        response = self._agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": self._build_langchain_user_message(message=message, query=query),
+                    }
+                ]
+            }
+        )
+        messages = response["messages"] if isinstance(response, dict) else response
+        tool_calls = self._extract_langchain_tool_calls(messages)
+        final_answer = self._extract_langchain_final_answer(messages)
+        last_observation = self._last_tool_observation(tool_calls)
+
+        if not final_answer:
+            final_answer = self._fallback_answer_from_observation(last_observation)
+
+        return FAQAgentResult(
+            message=final_answer,
+            payload={"query": query.model_dump(mode="json"), "comparison": last_observation},
+            tool_calls=tool_calls,
+        )
+
+    def _build_langchain_agent(self):
+        if not self._can_use_langchain():
+            return None
+
+        model = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash",
+            google_api_key=self._api_key,
+            temperature=0.0,
+        )
+        return create_agent(
+            model=model,
+            tools=self._build_langchain_tools(),
+            system_prompt=(
+                "Ban la travel FAQ agent. "
+                "Muc tieu: tra loi cau hoi FAQ dua tren du lieu trip demo bang cach goi tool khi can. "
+                "Voi cau hoi so sanh may bay va tau hoa, uu tien dung compare_modes. "
+                "Voi cau hoi tim lua chon re nhat, nhanh nhat, tot nhat, dung rank_options. "
+                "Voi cau hoi tim du lieu thong thuong, dung search_trips. "
+                "Chi dua vao du lieu tool tra ve. "
+                "Tra loi cuoi ngan gon bang tieng Viet. "
+                "Khong noi ve quy trinh noi bo hay chain-of-thought."
+            ),
+        )
+
+    def _build_langchain_tools(self):
+        @tool(args_schema=SearchQuery)
+        def search_trips(
+            origin: str | None = None,
+            destination: str | None = None,
+            date: str | None = None,
+            transport_mode: str | None = None,
+            preferred_provider: str | None = None,
+            trip_type: str = "one_way",
+            passengers: int = 1,
+            priority: str = "balanced",
+        ) -> str:
+            """Search matching trip options from local demo data."""
+            payload = {
+                "origin": origin,
+                "destination": destination,
+                "date": date,
+                "transport_mode": transport_mode,
+                "preferred_provider": preferred_provider,
+                "trip_type": trip_type,
+                "passengers": passengers,
+                "priority": priority,
+            }
+            return json.dumps(self._tool_search_trips(payload), ensure_ascii=False)
+
+        @tool(args_schema=SearchQuery)
+        def compare_modes(
+            origin: str | None = None,
+            destination: str | None = None,
+            date: str | None = None,
+            transport_mode: str | None = None,
+            preferred_provider: str | None = None,
+            trip_type: str = "one_way",
+            passengers: int = 1,
+            priority: str = "balanced",
+        ) -> str:
+            """Compare cheapest flight and train options for a route."""
+            payload = {
+                "origin": origin,
+                "destination": destination,
+                "date": date,
+                "transport_mode": transport_mode,
+                "preferred_provider": preferred_provider,
+                "trip_type": trip_type,
+                "passengers": passengers,
+                "priority": priority,
+            }
+            return json.dumps(self._tool_compare_modes(payload), ensure_ascii=False)
+
+        @tool(args_schema=SearchQuery)
+        def rank_options(
+            origin: str | None = None,
+            destination: str | None = None,
+            date: str | None = None,
+            transport_mode: str | None = None,
+            preferred_provider: str | None = None,
+            trip_type: str = "one_way",
+            passengers: int = 1,
+            priority: str = "balanced",
+        ) -> str:
+            """Rank trip options by user preference such as cheap or fast."""
+            payload = {
+                "origin": origin,
+                "destination": destination,
+                "date": date,
+                "transport_mode": transport_mode,
+                "preferred_provider": preferred_provider,
+                "trip_type": trip_type,
+                "passengers": passengers,
+                "priority": priority,
+            }
+            return json.dumps(self._tool_rank_options(payload), ensure_ascii=False)
+
+        return [search_trips, compare_modes, rank_options]
+
+    def _build_langchain_user_message(self, message: str, query: SearchQuery) -> str:
+        return (
+            f"Cau hoi nguoi dung: {message}\n"
+            f"Query da chuan hoa: {json.dumps(query.model_dump(mode='json'), ensure_ascii=False)}\n"
+            "Neu cau hoi la so sanh may bay va tau hoa, hay goi compare_modes truoc khi tra loi."
+        )
+
+    def _extract_langchain_tool_calls(self, messages: list[Any]) -> list[dict[str, Any]]:
+        pending: dict[str, dict[str, Any]] = {}
+        records: list[dict[str, Any]] = []
+
+        for message in messages:
+            if isinstance(message, AIMessage):
+                for tool_call in getattr(message, "tool_calls", []) or []:
+                    pending[tool_call["id"]] = {
+                        "tool": tool_call["name"],
+                        "input": tool_call.get("args", {}) or {},
+                    }
+            elif isinstance(message, ToolMessage):
+                metadata = pending.pop(message.tool_call_id, {})
+                records.append(
+                    {
+                        "tool": metadata.get("tool", str(getattr(message, "name", ""))),
+                        "input": metadata.get("input", {}),
+                        "observation": self._parse_tool_content(message.content),
+                    }
+                )
+
+        for metadata in pending.values():
+            records.append(
+                {
+                    "tool": metadata["tool"],
+                    "input": metadata["input"],
+                    "observation": None,
+                }
+            )
+        return records
+
+    def _extract_langchain_final_answer(self, messages: list[Any]) -> str:
+        for message in reversed(messages):
+            if isinstance(message, AIMessage):
+                content = self._stringify_message_content(message.content)
+                if content:
+                    return content
+        return ""
+
+    @staticmethod
+    def _parse_tool_content(content: Any) -> Any:
+        text = FAQReActService._stringify_message_content(content)
+        if not text:
+            return None
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            return text
+
+    @staticmethod
+    def _stringify_message_content(content: Any) -> str:
+        if isinstance(content, str):
+            return content.strip()
+        if isinstance(content, list):
+            parts: list[str] = []
+            for item in content:
+                if isinstance(item, str):
+                    parts.append(item)
+                elif isinstance(item, dict) and item.get("type") == "text":
+                    parts.append(str(item.get("text", "")))
+            return "\n".join(part for part in parts if part).strip()
+        return str(content).strip() if content is not None else ""
+
+    @staticmethod
+    def _last_tool_observation(tool_calls: list[dict[str, Any]]) -> dict[str, Any] | None:
+        for record in reversed(tool_calls):
+            if isinstance(record.get("observation"), dict):
+                return record["observation"]
+        return None
+
+    def _fallback_answer_from_observation(self, observation: dict[str, Any] | None) -> str:
+        if observation is None:
+            return "Tôi chưa thể hoàn tất phép so sánh này từ dữ liệu demo hiện có."
+        if "cheapest_flight" in observation and "cheapest_train" in observation:
+            return self._comparison_answer(observation)
+        if "message" in observation and isinstance(observation["message"], str):
+            return observation["message"]
+        return "Tôi đã kiểm tra dữ liệu demo nhưng chưa tìm thấy đủ thông tin để so sánh sâu hơn."
+
+    def _can_use_langchain(self) -> bool:
+        return HAS_LANGCHAIN and bool(self._api_key)
 
     def _generate_step(
         self,

@@ -73,6 +73,36 @@ async def test_passenger_follow_up_extracts_relational_phrase_and_executes_searc
 
 
 @pytest.mark.anyio
+async def test_new_route_message_clears_stale_slots_and_returns_slot_filling() -> None:
+    reset_data_files()
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
+        session = await create_user_and_session(client, "route-reset")
+        await client.post(
+            f"/sessions/{session['id']}/messages",
+            json={"content": "Tìm 2 vé tàu hỏa từ Hà Nội đi Đà Nẵng ngày 6/6"},
+        )
+        response = await client.post(
+            f"/sessions/{session['id']}/messages",
+            json={"content": "Vé máy bay từ TP.HCM tới Hà Nội"},
+        )
+
+    payload = response.json()
+
+    assert response.status_code == 200
+    assert payload["response"]["response_type"] == "slot_filling"
+    assert payload["response"]["payload"]["pending_slot"] == "date"
+    assert payload["session"]["current_trip_state"]["slots"] == {
+        "departure": "TP.HCM",
+        "destination": "Hà Nội",
+        "date": None,
+        "transport": "flight",
+        "passengers": None,
+    }
+    assert payload["session"]["current_trip_state"]["missing_slots"] == ["date", "passengers"]
+
+
+@pytest.mark.anyio
 async def test_patch_trip_state_keeps_other_values_and_returns_results_when_complete() -> None:
     reset_data_files()
 

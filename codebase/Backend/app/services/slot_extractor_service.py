@@ -67,21 +67,27 @@ class SlotExtractorService:
         message: str,
         session_state: CurrentTripState | None = None,
     ) -> SlotExtractionResult:
-        base_slots = session_state.slots.model_copy(deep=True) if session_state else TripSlots()
+        existing_slots = session_state.slots.model_copy(deep=True) if session_state else TripSlots()
         normalized = self._normalize_text(message)
         pending_slot = session_state.pending_slot if session_state else None
+        route_slots = self._extract_route(normalized)
+        route_changed = self._route_changed(existing_slots=existing_slots, route_slots=route_slots)
+        base_slots = TripSlots() if route_changed else existing_slots.model_copy(deep=True)
 
         if HAS_GEMINI and self._api_key:
-            llm_slots = self._extract_with_gemini(message=message, base_slots=base_slots, pending_slot=pending_slot)
+            llm_slots = self._extract_with_gemini(
+                message=message,
+                base_slots=base_slots,
+                pending_slot=None if route_changed else pending_slot,
+            )
             if llm_slots is not None:
                 base_slots = llm_slots
 
-        if pending_slot:
+        if pending_slot and not route_changed:
             extracted_value = self._extract_pending_slot_value(pending_slot=pending_slot, message=message, normalized=normalized)
             if extracted_value is not None:
                 setattr(base_slots, pending_slot, extracted_value)
 
-        route_slots = self._extract_route(normalized)
         if route_slots["departure"] is not None:
             base_slots.departure = route_slots["departure"]
         if route_slots["destination"] is not None:
@@ -237,6 +243,15 @@ class SlotExtractorService:
         if has_spouse or has_child:
             return 1 + int(has_spouse) + int(has_child)
         return None
+
+    @staticmethod
+    def _route_changed(existing_slots: TripSlots, route_slots: dict[str, str | None]) -> bool:
+        for field_name in ("departure", "destination"):
+            next_value = route_slots[field_name]
+            current_value = getattr(existing_slots, field_name)
+            if next_value is not None and current_value is not None and next_value != current_value:
+                return True
+        return False
 
     def _find_cities(self, normalized_fragment: str) -> list[str]:
         hits: list[tuple[int, str]] = []

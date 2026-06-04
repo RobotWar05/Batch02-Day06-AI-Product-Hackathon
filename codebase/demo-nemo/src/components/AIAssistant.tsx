@@ -194,6 +194,21 @@ function mapStateToSlots(state: BackendTripState | null, fallback: SearchSlots):
     return fallback;
   }
 
+  const routeChanged = Boolean(
+    (state.slots.departure && fallback.departure && state.slots.departure !== fallback.departure) ||
+      (state.slots.destination && fallback.destination && state.slots.destination !== fallback.destination)
+  );
+
+  if (routeChanged) {
+    return {
+      departure: state.slots.departure,
+      destination: state.slots.destination,
+      travelDate: state.slots.date,
+      transportType: state.slots.transport,
+      passengerCount: state.slots.passengers ?? 1,
+    };
+  }
+
   return {
     departure: state.slots.departure ?? fallback.departure,
     destination: state.slots.destination ?? fallback.destination,
