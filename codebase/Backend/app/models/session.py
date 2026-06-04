@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import AliasChoices, BaseModel, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 
 
 class TripSlots(BaseModel):
@@ -18,6 +18,19 @@ class CurrentTripState(BaseModel):
     confidence: float = Field(..., ge=0.0, le=1.0)
     missing_slots: list[str] = Field(default_factory=list)
     raw_message: str
+
+
+class SlotQuestion(BaseModel):
+    slot: Literal["departure", "destination", "date", "transport", "passengers"]
+    question: str
+    options: list[str] = Field(default_factory=list)
+
+
+class AssistantTurnResponse(BaseModel):
+    response_type: Literal["text", "slot_filling", "trip_widget", "confirm_low_confidence", "error"]
+    message: str
+    payload: dict[str, Any] = Field(default_factory=dict)
+    next_action: str | None = None
 
 
 class SessionMessage(BaseModel):
@@ -83,3 +96,32 @@ class PostMessageResponse(BaseModel):
     session: ChatSessionRecord
     user_message: SessionMessage
     assistant_message: SessionMessage
+    response: AssistantTurnResponse
+
+
+class TripStatePatchFields(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    departure: str | None = None
+    destination: str | None = None
+    date: str | None = None
+    transport: str | None = None
+    passengers: int | None = Field(default=None, ge=1)
+
+
+class PatchTripStateRequest(BaseModel):
+    updates: TripStatePatchFields
+
+    @model_validator(mode="after")
+    def validate_updates_not_empty(self) -> "PatchTripStateRequest":
+        if not self.updates.model_dump(exclude_none=True):
+            raise ValueError("updates must include at least one supported field.")
+        return self
+
+
+class PatchTripStateResponse(BaseModel):
+    status: Literal["ok"] = "ok"
+    session: ChatSessionRecord
+    trip_state: CurrentTripState
+    assistant_message: SessionMessage
+    response: AssistantTurnResponse

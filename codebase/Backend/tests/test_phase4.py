@@ -204,6 +204,8 @@ async def test_phase4_message_endpoint_persists_current_trip_state_and_parser_pa
     reloaded_session = reload_response.json()["session"]
 
     assert post_response.status_code == 200
+    assert post_payload["response"]["response_type"] == "trip_widget"
+    assert post_payload["response"]["next_action"] == "show_widget"
     assert post_payload["assistant_message"]["payload"]["intent"] == "search_trip"
     assert post_payload["assistant_message"]["payload"]["missing_slots"] == []
     assert post_payload["assistant_message"]["payload"]["slots"]["transport"] == "train"

@@ -2,6 +2,8 @@ import re
 import unicodedata
 from datetime import date
 
+from fastapi import HTTPException, status
+
 from app.models.session import CurrentTripState, TripSlots
 
 
@@ -89,6 +91,24 @@ class AIParserService:
             missing_slots=missing_slots,
             raw_message=raw_message,
         )
+
+    def normalize_slot_updates(self, updates: dict[str, object]) -> TripSlots:
+        normalized_updates: dict[str, object] = {}
+        for field_name, raw_value in updates.items():
+            if field_name in {"departure", "destination"}:
+                normalized_updates[field_name] = self._normalize_city_value(field_name, raw_value)
+            elif field_name == "transport":
+                normalized_updates[field_name] = self._normalize_transport_value(raw_value)
+            elif field_name == "date":
+                normalized_updates[field_name] = self._normalize_date_value(raw_value)
+            elif field_name == "passengers":
+                normalized_updates[field_name] = self._normalize_passenger_value(raw_value)
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                    detail=f"Unsupported trip state field: {field_name}.",
+                )
+        return TripSlots(**normalized_updates)
 
     def _detect_intent(self, normalized: str) -> str:
         if any(hint in normalized for hint in self._FAQ_HINTS):
@@ -210,11 +230,7 @@ class AIParserService:
 
     def _extract_transport(self, normalized: str) -> tuple[str | None, bool]:
         matches = set()
-        transport_patterns = {
-            "train": (r"\btau hoa\b", r"\bxe lua\b", r"\btrain\b"),
-            "flight": (r"\bmay bay\b", r"\bflight\b", r"\bplane\b"),
-            "bus": (r"\bxe khach\b", r"\bbus\b"),
-        }
+        transport_patterns = self._transport_patterns()
         for canonical, patterns in transport_patterns.items():
             if any(re.search(pattern, normalized) for pattern in patterns):
                 matches.add(canonical)
@@ -228,7 +244,11 @@ class AIParserService:
     def _extract_date(self, normalized: str) -> str | None:
         iso_match = re.search(r"\b(20\d{2})-(\d{1,2})-(\d{1,2})\b", normalized)
         if iso_match:
-            return f"{int(iso_match.group(1)):04d}-{int(iso_match.group(2)):02d}-{int(iso_match.group(3)):02d}"
+            return self._format_valid_date(
+                year=int(iso_match.group(1)),
+                month=int(iso_match.group(2)),
+                day=int(iso_match.group(3)),
+            )
 
         short_match = re.search(r"\b(\d{1,2})[/-](\d{1,2})\b", normalized)
         if not short_match:
@@ -237,7 +257,7 @@ class AIParserService:
         current_year = date.today().year
         day = int(short_match.group(1))
         month = int(short_match.group(2))
-        return f"{current_year:04d}-{month:02d}-{day:02d}"
+        return self._format_valid_date(year=current_year, month=month, day=day)
 
     def _extract_passengers(self, normalized: str) -> tuple[int | None, bool]:
         patterns = (
@@ -287,6 +307,86 @@ class AIParserService:
             getattr(state.slots, field_name) not in (None, "")
             for field_name in ("departure", "destination", "date", "transport")
         )
+
+    def _normalize_city_value(self, field_name: str, raw_value: object) -> str:
+        if not isinstance(raw_value, str) or not raw_value.strip():
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=f"{field_name} must be a non-empty string.",
+            )
+
+        matches = self._find_cities_in_fragment(raw_value)
+        if len(matches) != 1:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=f"Invalid {field_name} value.",
+            )
+        return matches[0]
+
+    def _normalize_transport_value(self, raw_value: object) -> str:
+        if not isinstance(raw_value, str) or not raw_value.strip():
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="transport must be a non-empty string.",
+            )
+
+        normalized = self._normalize_text(raw_value)
+        matches = [
+            canonical
+            for canonical, patterns in self._transport_patterns().items()
+            if any(re.search(pattern, normalized) for pattern in patterns)
+        ]
+        if len(matches) != 1:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid transport value.",
+            )
+        return matches[0]
+
+    def _normalize_date_value(self, raw_value: object) -> str:
+        if not isinstance(raw_value, str) or not raw_value.strip():
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="date must be a non-empty string.",
+            )
+
+        normalized = self._normalize_text(raw_value)
+        parsed_date = self._extract_date(normalized)
+        if parsed_date is None:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid date value.",
+            )
+        return parsed_date
+
+    def _normalize_passenger_value(self, raw_value: object) -> int:
+        if not isinstance(raw_value, int):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="passengers must be an integer.",
+            )
+        if raw_value <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="passengers must be greater than 0.",
+            )
+        return raw_value
+
+    @staticmethod
+    def _transport_patterns() -> dict[str, tuple[str, ...]]:
+        return {
+            "train": (r"\btau hoa\b", r"\bxe lua\b", r"\btrain\b"),
+            "flight": (r"\bmay bay\b", r"\bflight\b", r"\bplane\b"),
+            "bus": (r"\bxe khach\b", r"\bbus\b"),
+        }
+
+    @staticmethod
+    def _format_valid_date(year: int, month: int, day: int) -> str | None:
+        try:
+            parsed = date(year, month, day)
+        except ValueError:
+            return None
+        return parsed.isoformat()
 
     @staticmethod
     def _normalize_text(value: str) -> str:

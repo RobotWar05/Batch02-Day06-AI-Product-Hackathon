@@ -1,1 +1,119 @@
-[]
+[
+  {
+    "id": "5c8d9f04-ef3f-4d36-b348-b199e08602ef",
+    "user_id": "b667c5c3-67b3-4459-8654-95477f6b0fe1",
+    "title": "Trip",
+    "messages": [
+      {
+        "id": "a92dbfcc-341d-4f2e-9f62-95e60125bb84",
+        "role": "user",
+        "content": "Tìm vé máy bay đi Đà Nẵng ngày 10/6",
+        "created_at": "2026-06-04T04:31:57.718274Z",
+        "response_type": null,
+        "payload": null,
+        "next_action": null
+      },
+      {
+        "id": "36e6b4dd-099c-454b-bbc0-b929bd9c6295",
+        "role": "assistant",
+        "content": "Tôi cần thêm thông tin để tìm chuyến đi phù hợp.",
+        "created_at": "2026-06-04T04:31:57.718274Z",
+        "response_type": "slot_filling",
+        "payload": {
+          "intent": "search_trip",
+          "slots": {
+            "departure": null,
+            "destination": "Đà Nẵng",
+            "date": "2026-06-10",
+            "transport": "flight",
+            "passengers": 1
+          },
+          "confidence": 0.84,
+          "missing_slots": [
+            "departure"
+          ],
+          "raw_message": "Tìm vé máy bay đi Đà Nẵng ngày 10/6"
+        },
+        "next_action": "ask_follow_up"
+      },
+      {
+        "id": "d90a2adc-8436-4421-a71e-c383e7b12ec1",
+        "role": "assistant",
+        "content": "Thông tin chuyến đi đã được cập nhật.",
+        "created_at": "2026-06-04T04:31:57.719717Z",
+        "response_type": "trip_widget",
+        "payload": {
+          "intent": "search_trip",
+          "slots": {
+            "departure": "TP.HCM",
+            "destination": "Đà Nẵng",
+            "date": "2026-06-10",
+            "transport": "flight",
+            "passengers": 1
+          },
+          "confidence": 0.92,
+          "missing_slots": [],
+          "raw_message": "[correction] departure=TP.HCM, passengers=1"
+        },
+        "next_action": "ready_to_search"
+      },
+      {
+        "id": "7e0b12ad-9e52-460e-bdeb-3620bbd7b55e",
+        "role": "assistant",
+        "content": "Thông tin chuyến đi đã được cập nhật.",
+        "created_at": "2026-06-04T04:31:57.720774Z",
+        "response_type": "trip_widget",
+        "payload": {
+          "intent": "search_trip",
+          "slots": {
+            "departure": "TP.HCM",
+            "destination": "Đà Nẵng",
+            "date": "2026-06-10",
+            "transport": "train",
+            "passengers": 1
+          },
+          "confidence": 0.92,
+          "missing_slots": [],
+          "raw_message": "[correction] transport=train, passengers=1"
+        },
+        "next_action": "ready_to_search"
+      },
+      {
+        "id": "68a29496-5625-4a8f-84ee-c7436c987856",
+        "role": "assistant",
+        "content": "Thông tin chuyến đi đã được cập nhật.",
+        "created_at": "2026-06-04T04:31:57.721924Z",
+        "response_type": "trip_widget",
+        "payload": {
+          "intent": "search_trip",
+          "slots": {
+            "departure": "TP.HCM",
+            "destination": "Đà Nẵng",
+            "date": "2026-06-11",
+            "transport": "train",
+            "passengers": 3
+          },
+          "confidence": 0.92,
+          "missing_slots": [],
+          "raw_message": "[correction] date=2026-06-11, passengers=3"
+        },
+        "next_action": "ready_to_search"
+      }
+    ],
+    "current_trip_state": {
+      "intent": "search_trip",
+      "slots": {
+        "departure": "TP.HCM",
+        "destination": "Đà Nẵng",
+        "date": "2026-06-11",
+        "transport": "train",
+        "passengers": 3
+      },
+      "confidence": 0.92,
+      "missing_slots": [],
+      "raw_message": "[correction] date=2026-06-11, passengers=3"
+    },
+    "created_at": "2026-06-04T04:31:57.717082Z",
+    "updated_at": "2026-06-04T04:31:57.721924Z"
+  }
+]
