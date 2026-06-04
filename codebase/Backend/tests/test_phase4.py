@@ -3,6 +3,7 @@ from httpx import ASGITransport, AsyncClient
 
 from app.main import app
 from app.services.auth_service import auth_service
+from app.services.intent_classifier_service import IntentClassification, intent_classifier_service
 from app.services.session_service import session_service
 
 
@@ -85,6 +86,32 @@ async def test_parse_uses_session_state_to_fill_pending_passenger_slot() -> None
     assert payload["slots"]["passengers"] == 2
     assert payload["missing_slots"] == []
     assert payload["search_status"] == "ready"
+
+
+@pytest.mark.anyio
+async def test_parse_prefers_llm_intent_for_route_comparison_queries(monkeypatch: pytest.MonkeyPatch) -> None:
+    reset_data_files()
+
+    monkeypatch.setattr(
+        intent_classifier_service,
+        "_classify_with_gemini",
+        lambda message, session_state: IntentClassification(intent="faq", confidence=0.97),
+    )
+    monkeypatch.setattr(intent_classifier_service, "_api_key", "test-key")
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
+        response = await client.post(
+            "/api/parse",
+            json={"message": "Đi từ Sài Gòn Đà Nẵng thì phương tiện nào tiện hơn"},
+        )
+
+    payload = response.json()["parsed"]
+
+    assert response.status_code == 200
+    assert payload["intent"] == "faq"
+    assert payload["slots"]["departure"] == "TP.HCM"
+    assert payload["slots"]["destination"] == "Đà Nẵng"
+    assert payload["search_status"] == "not_applicable"
 
 
 @pytest.mark.anyio

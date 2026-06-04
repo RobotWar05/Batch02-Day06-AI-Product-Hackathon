@@ -1,1 +1,204 @@
-[]
+[
+  {
+    "id": "61186a22-1cf7-4342-90fc-7b9a3b3ce07a",
+    "user_id": "1a771840-0dd8-4fc8-9e2c-4bd809c3e110",
+    "title": "Trip",
+    "messages": [
+      {
+        "id": "02cceb10-1ab5-43dc-9ac5-ef20f3dc187f",
+        "role": "user",
+        "content": "Tìm 2 vé tàu hỏa từ Hà Nội đi Đà Nẵng ngày 6/6",
+        "created_at": "2026-06-04T08:43:50.055600Z",
+        "response_type": null,
+        "payload": null,
+        "next_action": null
+      },
+      {
+        "id": "00274934-7a02-4614-b4b1-8a97d7dbb7a4",
+        "role": "assistant",
+        "content": "Tôi đã tìm thấy 2 lựa chọn phù hợp cho hành trình của bạn.",
+        "created_at": "2026-06-04T08:43:50.055600Z",
+        "response_type": "search_results",
+        "payload": {
+          "intent": "search_trip",
+          "slots": {
+            "departure": "Hà Nội",
+            "destination": "Đà Nẵng",
+            "date": "2026-06-06",
+            "transport": "train",
+            "passengers": 2
+          },
+          "confidence": 0.93,
+          "missing_slots": [],
+          "pending_slot": null,
+          "search_status": "searched",
+          "is_unsafe": false,
+          "last_tool_calls": [],
+          "raw_message": "Tìm 2 vé tàu hỏa từ Hà Nội đi Đà Nẵng ngày 6/6",
+          "assistant_response": {
+            "response_type": "search_results",
+            "message": "Tôi đã tìm thấy 2 lựa chọn phù hợp cho hành trình của bạn.",
+            "payload": {
+              "status": "ok",
+              "query": {
+                "origin": "Hà Nội",
+                "destination": "Đà Nẵng",
+                "date": "2026-06-06",
+                "transport_mode": "train",
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 2,
+                "priority": "balanced"
+              },
+              "grouped_results": {
+                "flight": {
+                  "default": [],
+                  "see_more": []
+                },
+                "train": {
+                  "default": [
+                    {
+                      "id": "train_han_dad_se3_20260606",
+                      "provider": "Vietnam Railways",
+                      "code": "SE3",
+                      "transport_mode": "train",
+                      "trip_type_supported": [
+                        "one_way",
+                        "round_trip"
+                      ],
+                      "origin": "Hà Nội",
+                      "destination": "Đà Nẵng",
+                      "date": "2026-06-06",
+                      "return_date": "2026-06-08",
+                      "departure_time": "19:25",
+                      "arrival_time": "10:35+1",
+                      "duration_minutes": 910,
+                      "duration_label": "15h10m",
+                      "is_direct": true,
+                      "one_way_price_vnd": 760000,
+                      "round_trip_price_vnd": 1520000,
+                      "price_label_one_way": "760.000đ",
+                      "price_label_round_trip": "1.520.000đ",
+                      "available_seats": 26,
+                      "pickup_location": "Ga Hà Nội",
+                      "dropoff_location": "Ga Đà Nẵng",
+                      "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+                      "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+                      "comfort_score": 6,
+                      "reliability_score": 7,
+                      "time_score": 5,
+                      "price_score": 10,
+                      "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+                      "pros": [
+                        "Đi thẳng từ ga",
+                        "Giá thường thấp hơn máy bay",
+                        "Phù hợp nếu không cần đến quá gấp"
+                      ],
+                      "cons": [
+                        "Thời gian di chuyển dài",
+                        "Không phù hợp với lịch trình gấp"
+                      ],
+                      "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến Hà Nội đi Đà Nẵng.",
+                      "data_source_type": "mock",
+                      "display_group": "train_options",
+                      "directness_label": "Đi thẳng",
+                      "provider_preference_tags": [
+                        "vietnam_railways",
+                        "cheap"
+                      ],
+                      "display_rank": 1,
+                      "default_visible": true,
+                      "reveal_group": "default"
+                    },
+                    {
+                      "id": "train_han_dad_se1_20260606",
+                      "provider": "Vietnam Railways",
+                      "code": "SE1",
+                      "transport_mode": "train",
+                      "trip_type_supported": [
+                        "one_way",
+                        "round_trip"
+                      ],
+                      "origin": "Hà Nội",
+                      "destination": "Đà Nẵng",
+                      "date": "2026-06-06",
+                      "return_date": "2026-06-08",
+                      "departure_time": "22:20",
+                      "arrival_time": "12:32+1",
+                      "duration_minutes": 852,
+                      "duration_label": "14h12m",
+                      "is_direct": true,
+                      "one_way_price_vnd": 820000,
+                      "round_trip_price_vnd": 1640000,
+                      "price_label_one_way": "820.000đ",
+                      "price_label_round_trip": "1.640.000đ",
+                      "available_seats": 20,
+                      "pickup_location": "Ga Hà Nội",
+                      "dropoff_location": "Ga Đà Nẵng",
+                      "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+                      "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+                      "comfort_score": 7,
+                      "reliability_score": 7,
+                      "time_score": 5,
+                      "price_score": 9,
+                      "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+                      "pros": [
+                        "Đi thẳng từ ga",
+                        "Giá thường thấp hơn máy bay",
+                        "Phù hợp nếu không cần đến quá gấp"
+                      ],
+                      "cons": [
+                        "Thời gian di chuyển dài",
+                        "Không phù hợp với lịch trình gấp"
+                      ],
+                      "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến Hà Nội đi Đà Nẵng.",
+                      "data_source_type": "mock",
+                      "display_group": "train_options",
+                      "directness_label": "Đi thẳng",
+                      "provider_preference_tags": [
+                        "vietnam_railways",
+                        "cheap"
+                      ],
+                      "display_rank": 2,
+                      "default_visible": true,
+                      "reveal_group": "default"
+                    }
+                  ],
+                  "see_more": []
+                }
+              },
+              "recommendation": {
+                "best_option_id": "train_han_dad_se3_20260606",
+                "reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến Hà Nội đi Đà Nẵng.",
+                "confidence": 0.88
+              },
+              "follow_up_question": null,
+              "message": "Tôi đã tìm thấy 2 lựa chọn phù hợp cho hành trình của bạn."
+            },
+            "next_action": "search_completed"
+          }
+        },
+        "next_action": "search_completed"
+      }
+    ],
+    "current_trip_state": {
+      "intent": "search_trip",
+      "slots": {
+        "departure": "Hà Nội",
+        "destination": "Đà Nẵng",
+        "date": "2026-06-06",
+        "transport": "train",
+        "passengers": 2
+      },
+      "confidence": 0.93,
+      "missing_slots": [],
+      "pending_slot": null,
+      "search_status": "searched",
+      "is_unsafe": false,
+      "last_tool_calls": [],
+      "raw_message": "Tìm 2 vé tàu hỏa từ Hà Nội đi Đà Nẵng ngày 6/6"
+    },
+    "created_at": "2026-06-04T08:43:50.054617Z",
+    "updated_at": "2026-06-04T08:43:50.055600Z"
+  }
+]

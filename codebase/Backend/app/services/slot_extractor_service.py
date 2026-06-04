@@ -6,7 +6,10 @@ from datetime import date, timedelta
 
 from fastapi import HTTPException, status
 
+from app.core.env import load_local_env
 from app.models.session import CurrentTripState, TripSlots
+
+load_local_env()
 
 try:
     import google.generativeai as genai
@@ -68,42 +71,57 @@ class SlotExtractorService:
         session_state: CurrentTripState | None = None,
     ) -> SlotExtractionResult:
         existing_slots = session_state.slots.model_copy(deep=True) if session_state else TripSlots()
-        normalized = self._normalize_text(message)
         pending_slot = session_state.pending_slot if session_state else None
-        route_slots = self._extract_route(normalized)
-        route_changed = self._route_changed(existing_slots=existing_slots, route_slots=route_slots)
-        base_slots = TripSlots() if route_changed else existing_slots.model_copy(deep=True)
+        normalized = self._normalize_text(message)
+        llm_slots = None
 
         if HAS_GEMINI and self._api_key:
             llm_slots = self._extract_with_gemini(
                 message=message,
+                base_slots=existing_slots,
+                pending_slot=pending_slot,
+            )
+
+        if llm_slots is not None:
+            route_slots = {
+                "departure": llm_slots.departure,
+                "destination": llm_slots.destination,
+            }
+            route_changed = self._route_changed(existing_slots=existing_slots, route_slots=route_slots)
+            base_slots = TripSlots() if route_changed else existing_slots.model_copy(deep=True)
+            base_slots = self._merge_slot_values(base_slots=base_slots, new_slots=llm_slots)
+            base_slots = self._fill_missing_with_heuristics(
                 base_slots=base_slots,
+                message=message,
+                normalized=normalized,
                 pending_slot=None if route_changed else pending_slot,
             )
-            if llm_slots is not None:
-                base_slots = llm_slots
+        else:
+            route_slots = self._extract_route(normalized)
+            route_changed = self._route_changed(existing_slots=existing_slots, route_slots=route_slots)
+            base_slots = TripSlots() if route_changed else existing_slots.model_copy(deep=True)
 
-        if pending_slot and not route_changed:
-            extracted_value = self._extract_pending_slot_value(pending_slot=pending_slot, message=message, normalized=normalized)
-            if extracted_value is not None:
-                setattr(base_slots, pending_slot, extracted_value)
+            if pending_slot and not route_changed:
+                extracted_value = self._extract_pending_slot_value(pending_slot=pending_slot, message=message, normalized=normalized)
+                if extracted_value is not None:
+                    setattr(base_slots, pending_slot, extracted_value)
 
-        if route_slots["departure"] is not None:
-            base_slots.departure = route_slots["departure"]
-        if route_slots["destination"] is not None:
-            base_slots.destination = route_slots["destination"]
+            if route_slots["departure"] is not None:
+                base_slots.departure = route_slots["departure"]
+            if route_slots["destination"] is not None:
+                base_slots.destination = route_slots["destination"]
 
-        parsed_date = self._extract_date(normalized)
-        if parsed_date is not None:
-            base_slots.date = parsed_date
+            parsed_date = self._extract_date(normalized)
+            if parsed_date is not None:
+                base_slots.date = parsed_date
 
-        parsed_transport = self._extract_transport(normalized)
-        if parsed_transport is not None:
-            base_slots.transport = parsed_transport
+            parsed_transport = self._extract_transport(normalized)
+            if parsed_transport is not None:
+                base_slots.transport = parsed_transport
 
-        parsed_passengers = self._extract_passengers(normalized)
-        if parsed_passengers is not None:
-            base_slots.passengers = parsed_passengers
+            parsed_passengers = self._extract_passengers(normalized)
+            if parsed_passengers is not None:
+                base_slots.passengers = parsed_passengers
 
         missing_slots = [slot_name for slot_name in ASK_ORDER if getattr(base_slots, slot_name) in (None, "")]
         next_pending = missing_slots[0] if missing_slots else None
@@ -142,6 +160,56 @@ class SlotExtractorService:
                     detail=f"Unsupported trip state field: {field_name}.",
                 )
         return TripSlots(**normalized_updates)
+
+    def _fill_missing_with_heuristics(
+        self,
+        base_slots: TripSlots,
+        message: str,
+        normalized: str,
+        pending_slot: str | None,
+    ) -> TripSlots:
+        enriched = base_slots.model_copy(deep=True)
+
+        if pending_slot and getattr(enriched, pending_slot) in (None, ""):
+            extracted_value = self._extract_pending_slot_value(
+                pending_slot=pending_slot,
+                message=message,
+                normalized=normalized,
+            )
+            if extracted_value is not None:
+                setattr(enriched, pending_slot, extracted_value)
+
+        route_slots = self._extract_route(normalized)
+        if enriched.departure is None and route_slots["departure"] is not None:
+            enriched.departure = route_slots["departure"]
+        if enriched.destination is None and route_slots["destination"] is not None:
+            enriched.destination = route_slots["destination"]
+
+        if enriched.date is None:
+            parsed_date = self._extract_date(normalized)
+            if parsed_date is not None:
+                enriched.date = parsed_date
+
+        if enriched.transport is None:
+            parsed_transport = self._extract_transport(normalized)
+            if parsed_transport is not None:
+                enriched.transport = parsed_transport
+
+        if enriched.passengers is None:
+            parsed_passengers = self._extract_passengers(normalized)
+            if parsed_passengers is not None:
+                enriched.passengers = parsed_passengers
+
+        return enriched
+
+    @staticmethod
+    def _merge_slot_values(base_slots: TripSlots, new_slots: TripSlots) -> TripSlots:
+        merged = base_slots.model_copy(deep=True)
+        for field_name in ASK_ORDER:
+            next_value = getattr(new_slots, field_name)
+            if next_value not in (None, ""):
+                setattr(merged, field_name, next_value)
+        return merged
 
     def _extract_pending_slot_value(self, pending_slot: str, message: str, normalized: str) -> object | None:
         if pending_slot in {"departure", "destination"}:
@@ -279,13 +347,21 @@ class SlotExtractorService:
                 generation_config={"response_mime_type": "application/json"},
                 system_instruction=(
                     "Trich xuat slot dat ve du lich thanh JSON. "
-                    "Truong hop pending_slot=passengers phai suy luan cac cum nhu 'di voi vo' = 2, 'di voi chong va con' = 3, 'mot minh' = 1. "
-                    "Chi tra ve JSON object voi cac field departure, destination, date, transport, passengers."
+                    "Uu tien hieu nghia cau noi tu nhien thay vi regex. "
+                    "Neu nguoi dung dang tra loi cho pending_slot, hay dien dung slot do dua tren ngu canh hoi dap. "
+                    "Can phat hien khi nguoi dung doi hanh trinh moi va cap nhat departure, destination tu message moi. "
+                    "Chuan hoa transport thanh flight hoac train. "
+                    "Chuan hoa date thanh YYYY-MM-DD dua tren moc tham chieu 2026-06-04. "
+                    "Chuan hoa city thanh mot trong: Hà Nội, TP.HCM, Đà Nẵng, Phú Quốc, Nha Trang. "
+                    "Truong hop passengers co the suy luan tu cum nhu 'di voi vo'=2, 'di voi chong va con'=3, 'mot minh'=1. "
+                    "Chi tra ve JSON object voi cac field departure, destination, date, transport, passengers. "
+                    "Khong doan field khong chac; dung null neu khong ro."
                 ),
             )
             prompt = (
                 f"Pending slot: {pending_slot}\n"
                 f"Current slots: {base_slots.model_dump(mode='json')}\n"
+                "Reference date: 2026-06-04\n"
                 f"Message: {message}"
             )
             response = model.generate_content(prompt)

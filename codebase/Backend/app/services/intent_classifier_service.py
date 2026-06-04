@@ -2,7 +2,10 @@ import os
 import re
 from dataclasses import dataclass
 
+from app.core.env import load_local_env
 from app.models.session import CurrentTripState
+
+load_local_env()
 
 try:
     import google.generativeai as genai
@@ -37,6 +40,7 @@ class IntentClassifierService:
         "so sanh",
         "re hon",
         "nhanh hon",
+        "tien hon",
         "bao nhieu",
         "chenh lech",
         "tong tien",
@@ -68,13 +72,14 @@ class IntentClassifierService:
 
         if self._is_unsafe(normalized):
             return IntentClassification(intent="unrelated", confidence=1.0, is_unsafe=True)
-        if self._is_out_of_scope(normalized):
-            return IntentClassification(intent="unrelated", confidence=0.93)
 
         if HAS_GEMINI and self._api_key:
             llm_result = self._classify_with_gemini(message=message, session_state=session_state)
             if llm_result is not None:
                 return llm_result
+
+        if self._is_out_of_scope(normalized):
+            return IntentClassification(intent="unrelated", confidence=0.93)
 
         has_search_hint = any(hint in normalized for hint in self._SEARCH_HINTS)
         has_faq_hint = any(hint in normalized for hint in self._FAQ_HINTS)

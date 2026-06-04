@@ -4,10 +4,13 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+from app.core.env import load_local_env
 from app.models.session import CurrentTripState
 from app.models.trip_search import SearchQuery
 from app.services.slot_extractor_service import slot_extractor_service
 from app.services.trip_search_service import trip_search_service
+
+load_local_env()
 
 try:
     import google.generativeai as genai

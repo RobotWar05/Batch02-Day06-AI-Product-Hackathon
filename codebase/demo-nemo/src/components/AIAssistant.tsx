@@ -331,8 +331,12 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
       const data = await postChatMessage(sessionId, textToSend);
       const state = data.session.current_trip_state;
       const nextSlots = mapStateToSlots(state, currentSlots);
+      const shouldShowWidget =
+        data.response.response_type === "search_results" &&
+        state?.intent === "search_trip" &&
+        state?.search_status === "searched";
       const widgetData =
-        state?.intent === "search_trip"
+        shouldShowWidget
           ? await enrichSlotsWithRouteData(nextSlots)
           : null;
 
