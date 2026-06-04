@@ -18,7 +18,10 @@ test_prompts = [
     
     # 3. Implicit Context & Anchoring
     "Đặt vé về quê",
-    "chiều mai ra sân bay bay vô Đà Lạt"
+    "chiều mai ra sân bay bay vô Đà Lạt",
+    
+    # 4. Multi-Intent / Round-trip Confusion
+    "10/6 đi Đà Nẵng, t7 tuần sau về"
 ]
 
 print("=== CHẠY KIỂM THỬ CÁC LỖI THƯỜNG GẶP (EDGE CASES) ===\n")

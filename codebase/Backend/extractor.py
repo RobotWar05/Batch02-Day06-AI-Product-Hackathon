@@ -163,6 +163,8 @@ Hãy dùng mốc thời gian này để tính chính xác các cụm từ thời
     "departure": "Tên thành phố xuất phát (đã chuẩn hóa thành TP.HCM, Hà Nội, Đà Nẵng...) hoặc null",
     "destination": "Tên thành phố đích đến (đã chuẩn hóa) hoặc null",
     "date": "Ngày đi dạng YYYY-MM-DD hoặc null",
+    "return_date": "Ngày về dạng YYYY-MM-DD hoặc null (nếu khứ hồi)",
+    "is_round_trip": "boolean (true nếu là khứ hồi, false nếu một chiều)",
     "transport": "plane" (máy bay), "train" (tàu hỏa), "coach" (xe khách/limousine) hoặc null,
     "passengers": "số lượng hành khách dưới dạng số nguyên (mặc định là 1 nếu không nhắc tới). Dịch các từ số lượng như 'một', 'hai', 'ba', 'bốn' -> 1, 2, 3, 4; các cụm từ ẩn ý như 'chỉ mình tôi', 'một mình' -> 1; 'cặp đôi', 'hai vợ chồng', 'hai đứa' -> 2"
   },
@@ -220,6 +222,8 @@ def _extract_entities_core(user_prompt: str) -> dict:
             "departure": None,
             "destination": None,
             "date": None,
+            "return_date": None,
+            "is_round_trip": False,
             "transport": None,
             "passengers": 1
         },
@@ -313,19 +317,25 @@ def _extract_entities_core(user_prompt: str) -> dict:
         
     # Nhận diện hành khách (hỗ trợ số viết bằng chữ & cụm từ đặc biệt)
     passengers_detected = None
-    cleaned_no_age = re.sub(r'\d+\s*tuổi', '', cleaned)
+    # Loại bỏ tuổi và các mốc ngày tháng/thứ để tránh nhầm số lượng hành khách
+    cleaned_no_age_or_date = re.sub(r'\d+\s*tuổi', '', cleaned)
+    cleaned_no_age_or_date = re.sub(r'\d{1,2}[/-]\d{1,2}', '', cleaned_no_age_or_date)
+    cleaned_no_age_or_date = re.sub(r'ngày\s*\d{1,2}(\s*tháng\s*\d{1,2})?', '', cleaned_no_age_or_date)
+    cleaned_no_age_or_date = re.sub(r'tháng\s*\d{1,2}', '', cleaned_no_age_or_date)
+    cleaned_no_age_or_date = re.sub(r'\bt\d{1,2}\b', '', cleaned_no_age_or_date)
+    cleaned_no_age_or_date = re.sub(r'thứ\s*\d{1,2}', '', cleaned_no_age_or_date)
     
-    has_family_phrase = "gia đình" in cleaned_no_age
+    has_family_phrase = "gia đình" in cleaned_no_age_or_date
     if has_family_phrase:
         passengers_detected = None
         result["raw_analysis"] = "Phát hiện entity 'gia đình' nhưng không có số lượng cụ thể."
     else:
         total_pass = 0
-        matches = re.findall(r'(\d+)\s*(vé|người|đứa|bé|trẻ|hành khách)?', cleaned_no_age)
+        matches = re.findall(r'(\d+)\s*(vé|người|đứa|bé|trẻ|hành khách)?', cleaned_no_age_or_date)
         if matches:
             for num_str, unit in matches:
                 total_pass += int(num_str)
-            if "vợ chồng" in cleaned_no_age and not any(int(m[0]) == 2 for m in matches):
+            if "vợ chồng" in cleaned_no_age_or_date and not any(int(m[0]) == 2 for m in matches):
                 total_pass += 2
         else:
             phrase_map = {
@@ -340,7 +350,7 @@ def _extract_entities_core(user_prompt: str) -> dict:
                 "tôi và chồng": 2
             }
             for phrase, val in phrase_map.items():
-                if phrase in cleaned_no_age:
+                if phrase in cleaned_no_age_or_date:
                     total_pass = val
                     break
             
@@ -350,12 +360,12 @@ def _extract_entities_core(user_prompt: str) -> dict:
                     "sáu": 6, "bảy": 7, "tám": 8, "chín": 9, "mười": 10
                 }
                 for word, val in word_to_num.items():
-                    if re.search(rf'\b{word}\b\s*(vé|người|hành khách|đứa)', cleaned_no_age):
+                    if re.search(rf'\b{word}\b\s*(vé|người|hành khách|đứa)', cleaned_no_age_or_date):
                         total_pass = val
                         break
                 if total_pass == 0:
                     for word, val in word_to_num.items():
-                        if rf" {word} " in f" {cleaned_no_age} ":
+                        if rf" {word} " in f" {cleaned_no_age_or_date} ":
                             total_pass = val
                             break
                             
@@ -367,20 +377,48 @@ def _extract_entities_core(user_prompt: str) -> dict:
     elif not has_family_phrase:
         result["entities"]["passengers"] = 1
         
-    # Nhận diện ngày
-    date_found = None
+    # Nhận diện ngày đi (date) và ngày về (return_date)
+    date_dep = None
+    date_ret = None
+    is_round_trip = False
+    
+    if any(w in cleaned for w in ["về", "khứ hồi", "lượt về", "chiều về"]):
+        is_round_trip = True
+        
+    found_dates = []
     if "10/6" in cleaned or "10 tháng 6" in cleaned:
-        date_found = "2026-06-10"
-    elif "mai" in cleaned or "ngày mai" in cleaned:
-        date_found = "2026-06-05"
-    elif "hôm nay" in cleaned:
-        date_found = "2026-06-04"
-    elif "cuối tuần" in cleaned:
-        date_found = "2026-06-06"
-    result["entities"]["date"] = date_found
+        found_dates.append(("2026-06-10", cleaned.index("10/6") if "10/6" in cleaned else cleaned.index("10 tháng 6")))
+    if "ngày mai" in cleaned or "mai" in cleaned:
+        idx = cleaned.index("ngày mai") if "ngày mai" in cleaned else cleaned.index("mai")
+        found_dates.append(("2026-06-05", idx))
+    if "hôm nay" in cleaned:
+        found_dates.append(("2026-06-04", cleaned.index("hôm nay")))
+    if "cuối tuần" in cleaned:
+        found_dates.append(("2026-06-06", cleaned.index("cuối tuần")))
+    if "t7 tuần sau" in cleaned or "thứ 7 tuần sau" in cleaned or "thứ bảy tuần sau" in cleaned:
+        idx = cleaned.index("t7 tuần sau") if "t7 tuần sau" in cleaned else (cleaned.index("thứ 7 tuần sau") if "thứ 7 tuần sau" in cleaned else cleaned.index("thứ bảy tuần sau"))
+        found_dates.append(("2026-06-13", idx))
+        
+    found_dates.sort(key=lambda x: x[1])
+    
+    if len(found_dates) >= 2:
+        date_dep = found_dates[0][0]
+        date_ret = found_dates[1][0]
+        is_round_trip = True
+    elif len(found_dates) == 1:
+        date_str, pos = found_dates[0]
+        if "về" in cleaned and abs(pos - cleaned.index("về")) < 15:
+            date_ret = date_str
+            is_round_trip = True
+        else:
+            date_dep = date_str
+            
+    result["entities"]["date"] = date_dep
+    result["entities"]["return_date"] = date_ret
+    result["entities"]["is_round_trip"] = is_round_trip
         
     # Phân loại Intent và Trình bày
-    has_travel_entities = len(found_cities) > 0 or transport_found is not None or passengers_detected is not None or date_found is not None or has_family_phrase
+    has_travel_entities = len(found_cities) > 0 or transport_found is not None or passengers_detected is not None or date_dep is not None or date_ret is not None or has_family_phrase
     is_search = any(kw in cleaned for kw in search_keywords) or has_travel_entities
     
     if is_search:
@@ -425,6 +463,14 @@ def _write_log(prompt: str, result: dict):
 
 def extract_entities(user_prompt: str) -> dict:
     result = _extract_entities_core(user_prompt)
+    
+    # Đảm bảo return_date và is_round_trip luôn tồn tại trong cấu trúc JSON đầu ra
+    if "entities" in result:
+        if "return_date" not in result["entities"]:
+            result["entities"]["return_date"] = None
+        if "is_round_trip" not in result["entities"]:
+            result["entities"]["is_round_trip"] = False
+            
     _write_log(user_prompt, result)
     return result
 
