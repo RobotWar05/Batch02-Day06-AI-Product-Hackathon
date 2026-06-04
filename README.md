@@ -1,103 +1,180 @@
-# Batch 02 · Day 06 — AI Product Hackathon
+# AI Di Khong - Trip Planning Demo
 
-> SPEC → Prototype → Demo. Hôm nay không có bài giảng mới — hôm nay chứng minh: SPEC là giả thuyết, prototype là bằng chứng, demo là thuyết phục.
+Prototype repo for Day 06 hackathon. Repo contains:
 
----
+- `codebase/Backend`: FastAPI backend for login, chat session storage, trip parsing, search, and compare APIs.
+- `codebase/demo-nemo`: React + Vite frontend, served through a small Express proxy.
+- `codebase/Data`: mock travel datasets, schemas, and search rules.
+- `spec`: product spec and hackathon docs.
 
-## Cách nộp bài
+## Team
 
-**Đại diện nhóm tạo MỘT repo nhóm**, đặt tên:
+`Dương Trường Giang - 2A202600990`
+`Hoàng Lê Bách - 2A202600694`
+`Trần Công Minh - 2A202600913`
+`Nguyễn Việt Lương - 2A202600956`
 
+## Prerequisites
+
+- Python `3.11+` recommended
+- Node.js `18+`
+- `npm`
+
+Optional:
+
+- `GEMINI_API_KEY` if you want real Gemini calls. Without it, backend falls back to heuristic/mock behavior.
+
+## Quick Start
+
+Run backend first, then frontend.
+
+### 1. Start backend
+
+```bash
+cd codebase/Backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
 ```
-Day06-Lop-NhomXX
+
+If you have a Gemini key, add it to `codebase/Backend/.env`:
+
+```env
+GEMINI_API_KEY=your_key_here
 ```
 
-Ví dụ: `Day06-C401-Nhom03`
+Start FastAPI:
 
-- **README của repo nhóm phải liệt kê đủ thành viên** — mỗi người gồm **mã học viên + họ và tên**.
-- Đại diện nhóm nộp **link repo** lên LMS. **Hạn nộp: 23:59 ngày 04/06/2026.**
-- Mỗi thành viên cần **ít nhất một commit thực chất** trong repo (không commit = mất điểm cá nhân).
-
-### Cấu trúc repo nhóm
-
-```
-Day06-Lop-NhomXX/
-├── README.md        ← Danh sách thành viên (mã HV + họ tên) + mô tả ngắn sản phẩm
-├── spec/            ← SPEC sản phẩm (xem hướng dẫn trong spec/)
-└── codebase/        ← Toàn bộ code prototype (xem hướng dẫn trong codebase/)
+```bash
+uvicorn app.main:app --reload
 ```
 
----
+Backend runs at `http://127.0.0.1:8000`.
 
-## Lịch ngày 06 — 04/06/2026
+Health check:
 
-| Giờ | Mốc | Cần đạt |
-|-----|-----|---------|
-| Sáng | Build | Bắt đầu từ SPEC nhẹ đã làm ở Day 5 |
-| **11:00** | Checkpoint 1 | **Show được ít nhất mockup/prototype chạy được** |
-| **13:00** | Checkpoint 2 | **Lắp được AI vào ít nhất 1 flow** |
-| **15:30** | Checkpoint 3 | **Chuẩn bị xong tài liệu demo + slide** |
-| **16:00** | Demo round | Trình bày trong zone, 10 phút/nhóm |
+```bash
+curl http://127.0.0.1:8000/health
+```
 
----
+Expected response:
 
-## Tracks
+```json
+{"status":"ok"}
+```
 
-Mỗi nhóm chọn một lĩnh vực, lấy một app thật trong đó để soi và cải tiến:
+### 2. Start frontend
 
-| Track | App thật gợi ý |
-|-------|----------------|
-| **Learning OS** (Vin AI Thực Chiến) | LMS khóa học, Discord lớp |
-| **Travel & Hospitality** | Vinpearl, Sun World / SunGroup |
-| **Food & Local Delivery** | ShopeeFood, GrabFood, BeFood, Xanh SM Ngon |
-| **Personal Finance** | MoMo, ZaloPay, app ngân hàng |
-| **Healthcare** | Vinmec, Long Châu, Pharmacity |
+Open new terminal:
 
-> Các nhóm **cùng track** ngồi **cùng một zone** khi demo.
+```bash
+cd codebase/demo-nemo
+cp .env.example .env
+npm install
+npm run dev
+```
 
----
+Frontend runs at `http://127.0.0.1:3000`.
 
-## Kỳ vọng mỗi demo
+Default proxy config in `codebase/demo-nemo/.env`:
 
-1. **Product Canvas** — giới thiệu ý tưởng và nỗi đau (painpoint) của người dùng.
-2. **Demo full luồng end-to-end** — show cả happy case lẫn error case.
-3. **AI chạy thật trong ít nhất 1 flow** — không chỉ mockup tĩnh.
+```env
+BACKEND_URL="http://127.0.0.1:8000"
+APP_URL="MY_APP_URL"
+```
 
----
+Open browser:
 
-## Demo round (16:00)
+```text
+http://127.0.0.1:3000
+```
 
-- Mỗi nhóm **10 phút** (≈ 5 phút trình bày + 5 phút Q&A).
-- Các nhóm khác **phản biện, đặt câu hỏi**.
-- **Đánh giá chéo qua form**: thành viên các nhóm khác chấm điểm.
-- **Tổng kết**: nhóm điểm cao nhất mỗi zone được **bonus**; còn thời gian thì các nhóm điểm cao **present trước cả lớp**; giảng viên đánh giá.
+## How Demo Works
 
-Chi tiết luật chơi + cách chấm: [`hackathon-rules.md`](hackathon-rules.md)
+1. Frontend sends API calls to `/backend/...`.
+2. `codebase/demo-nemo/server.ts` proxies those calls to FastAPI at `BACKEND_URL`.
+3. Backend reads mock trip data from `codebase/Data` and local JSON state in `codebase/Backend/data`.
+4. If Gemini key exists, parser and FAQ flows can call Gemini. If not, fallback logic still lets demo run.
 
----
+## Useful Run Commands
 
-## Chấm điểm (Day 5 + Day 6 = 100 điểm)
+### Frontend typecheck
 
-| Hạng mục | Điểm |
-|----------|------|
-| SPEC | 25 |
-| Prototype | 15 |
-| Demo Day | 25 |
-| Bài tập UX (Day 5) | 10 |
-| Phản ánh cá nhân (reflection) | 25 |
+```bash
+cd codebase/demo-nemo
+npm run lint
+```
 
-**Điều kiện chặn:** prototype không có lời gọi AI thật → giới hạn 4/10 · không có commit → mất điểm cá nhân · không giải thích được phần mình khi bị hỏi → 0 điểm demo cá nhân.
+### Backend tests
 
----
+Run after venv setup and dependency install:
 
-## Tài liệu trong repo này
+```bash
+cd codebase/Backend
+source .venv/bin/activate
+python -m pytest -q
+```
 
-| Folder / file | Nội dung |
-|---------------|----------|
-| [`hackathon-rules.md`](hackathon-rules.md) | Luật chơi, lịch, demo round, cách chấm |
-| [`spec/`](spec/) | Hướng dẫn viết SPEC sản phẩm (nối tiếp SPEC nhẹ Day 5) |
-| [`codebase/`](codebase/) | Yêu cầu nộp code prototype |
+### Extractor CLI only
 
----
+If you want to test entity extraction without opening frontend:
 
-*Batch 02 · Ngày 06 — VinUni A20 · AI Thực Chiến · 2026*
+```bash
+cd codebase/Backend
+source .venv/bin/activate
+python cli.py
+```
+
+Or pass one prompt directly:
+
+```bash
+python cli.py "Tìm 2 vé máy bay từ Hà Nội đi Phú Quốc cuối tuần này"
+```
+
+## API Smoke Tests
+
+### Demo login
+
+```bash
+curl -X POST http://127.0.0.1:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"demo user","password":"demo-nemo"}'
+```
+
+### Trip search
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "origin":"Hà Nội",
+    "destination":"Phú Quốc",
+    "date":"2026-06-07",
+    "transport_mode":"flight",
+    "passengers":2
+  }'
+```
+
+## Repo Structure
+
+```text
+.
+├── README.md
+├── spec/
+└── codebase/
+    ├── Backend/
+    ├── Data/
+    └── demo-nemo/
+```
+
+## Troubleshooting
+
+- `pytest: command not found`
+  Use the backend virtual environment, then run `python -m pytest -q`.
+
+- Frontend cannot reach backend
+  Check FastAPI is running on `127.0.0.1:8000` and `codebase/demo-nemo/.env` still points `BACKEND_URL` there.
+
+- AI responses show warning about missing Gemini
+  Expected when `GEMINI_API_KEY` is not set. Demo still works with fallback logic.

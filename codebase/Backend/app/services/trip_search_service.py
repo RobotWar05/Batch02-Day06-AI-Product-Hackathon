@@ -125,17 +125,24 @@ class TripSearchService:
     def _filter_trips(self, query: SearchQuery) -> list[dict[str, Any]]:
         matched: list[dict[str, Any]] = []
         for trip in self._trips:
-            if query.origin and trip["origin"] != query.origin:
+            trip_origin = trip.get("origin")
+            trip_destination = trip.get("destination")
+            trip_date = trip.get("date")
+            trip_mode = trip.get("transport_mode")
+            trip_provider = trip.get("provider")
+            trip_types = trip.get("trip_type_supported", [])
+
+            if query.origin and trip_origin != query.origin:
                 continue
-            if query.destination and trip["destination"] != query.destination:
+            if query.destination and trip_destination != query.destination:
                 continue
-            if query.date and trip["date"] != query.date:
+            if query.date and trip_date != query.date:
                 continue
-            if query.transport_mode and trip["transport_mode"] != query.transport_mode:
+            if query.transport_mode and trip_mode != query.transport_mode:
                 continue
-            if query.preferred_provider and trip["provider"] != query.preferred_provider and query.priority == "provider_first":
+            if query.preferred_provider and trip_provider != query.preferred_provider and query.priority == "provider_first":
                 continue
-            if query.trip_type not in trip["trip_type_supported"]:
+            if query.trip_type not in trip_types:
                 continue
             matched.append(trip)
         return matched

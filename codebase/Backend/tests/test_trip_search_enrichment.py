@@ -39,6 +39,21 @@ def test_compare_modes_uses_fallback_date_for_existing_route():
     assert result.cheapest_train is not None
 
 
+def test_rank_options_uses_dated_trip_manifest_without_key_errors():
+    ranked = trip_search_service.rank_options(
+        SearchQuery(
+            origin="Phú Quốc",
+            destination="Đà Nẵng",
+            date="2026-06-05",
+            priority="cheap",
+        )
+    )
+
+    assert ranked
+    assert ranked[0]["provider"] == "Sun PhuQuoc Airways"
+    assert all(trip["date"] == "2026-06-05" for trip in ranked)
+
+
 def test_slot_extractor_supports_flexible_date_requests():
     extracted = slot_extractor_service.extract_search_state(
         "Từ Hà Nội đi Đà Nẵng ngày nào cũng được, đi máy bay cho 2 người"

@@ -28209,5 +28209,910 @@
     },
     "created_at": "2026-06-04T10:30:08.445254Z",
     "updated_at": "2026-06-04T10:31:52.926314Z"
+  },
+  {
+    "id": "42aae525-ef68-47d5-9120-e289b0b05281",
+    "user_id": "1bc8a50c-41ae-4b7d-ab4b-326f7f6e8229",
+    "title": "Neo frontend session",
+    "messages": [],
+    "current_trip_state": null,
+    "created_at": "2026-06-04T11:03:46.861136Z",
+    "updated_at": "2026-06-04T11:03:46.861136Z"
+  },
+  {
+    "id": "b0f799e8-14ca-4285-89f2-e5727acb1203",
+    "user_id": "1bc8a50c-41ae-4b7d-ab4b-326f7f6e8229",
+    "title": "Neo frontend session",
+    "messages": [
+      {
+        "id": "84094b00-fd13-42d8-836b-a92a018fb706",
+        "role": "user",
+        "content": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này",
+        "created_at": "2026-06-04T11:06:35.257866Z",
+        "response_type": null,
+        "payload": null,
+        "next_action": null
+      },
+      {
+        "id": "f77a839f-c533-4a56-be72-3403d8e0741b",
+        "role": "assistant",
+        "content": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.",
+        "created_at": "2026-06-04T11:06:35.257866Z",
+        "response_type": "text",
+        "payload": {
+          "intent": "faq",
+          "slots": {
+            "departure": "Hà Nội",
+            "destination": "Phú Quốc",
+            "date": "2026-06-06",
+            "transport": null,
+            "passengers": 1
+          },
+          "confidence": 0.88,
+          "missing_slots": [],
+          "pending_slot": null,
+          "search_status": "not_applicable",
+          "is_unsafe": false,
+          "system_warning": null,
+          "last_tool_calls": [
+            {
+              "tool": "rank_options",
+              "input": {
+                "origin": "Hà Nội",
+                "destination": "Phú Quốc",
+                "date": "2026-06-06",
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "cheap"
+              },
+              "observation": {
+                "query": {
+                  "origin": "Hà Nội",
+                  "destination": "Phú Quốc",
+                  "date": "2026-06-06",
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "cheap"
+                },
+                "grouped_results": {
+                  "flight": {
+                    "default": [
+                      {
+                        "id": "flight_hà nội_phú quốc_vietjet_air_20260606_16",
+                        "provider": "Vietjet Air",
+                        "code": "VI-HÀPH-166",
+                        "transport_mode": "flight",
+                        "trip_type_supported": [
+                          "one_way",
+                          "round_trip"
+                        ],
+                        "origin": "Hà Nội",
+                        "destination": "Phú Quốc",
+                        "date": "2026-06-06",
+                        "return_date": "2026-06-08",
+                        "departure_time": "12:30",
+                        "arrival_time": "14:40",
+                        "duration_minutes": 130,
+                        "duration_label": "2h10m",
+                        "is_direct": true,
+                        "one_way_price_vnd": 1640000,
+                        "round_trip_price_vnd": 3280000,
+                        "price_label_one_way": "1.640.000đ",
+                        "price_label_round_trip": "3.280.000đ",
+                        "available_seats": 19,
+                        "pickup_location": "Sân bay Nội Bài",
+                        "dropoff_location": "Sân bay Phú Quốc",
+                        "baggage_policy": "Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé",
+                        "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                        "comfort_score": 8,
+                        "reliability_score": 8,
+                        "time_score": 8,
+                        "price_score": 8,
+                        "best_for": "Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước",
+                        "pros": [
+                          "Bay thẳng",
+                          "Tiết kiệm thời gian",
+                          "Phù hợp cho lịch trình du lịch ngắn ngày"
+                        ],
+                        "cons": [
+                          "Giá có thể tăng theo ngày cao điểm",
+                          "Cần thêm thời gian di chuyển ra sân bay"
+                        ],
+                        "recommendation_reason": "Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.",
+                        "data_source_type": "mock",
+                        "display_group": "flight_options",
+                        "directness_label": "Đi thẳng",
+                        "provider_preference_tags": [
+                          "vietjet_air",
+                          "popular_route"
+                        ],
+                        "display_rank": 2,
+                        "default_visible": false,
+                        "reveal_group": "see_more"
+                      }
+                    ],
+                    "see_more": []
+                  },
+                  "train": {
+                    "default": [],
+                    "see_more": []
+                  }
+                },
+                "recommendation": {
+                  "best_option_id": "flight_hà nội_phú quốc_vietjet_air_20260606_16"
+                },
+                "message": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn."
+              }
+            }
+          ],
+          "debug_trace": [
+            {
+              "event": "intent_classifier.prompt",
+              "prompt": "User message: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nCurrent session state: null\nPhân loại intent theo đúng quy tắc. Nếu đây là câu trả lời cho slot còn thiếu thì nghiêng về search_trip.",
+              "session_state": null
+            },
+            {
+              "event": "intent_classifier.mode",
+              "mode": "heuristic",
+              "intent": "faq",
+              "message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này"
+            },
+            {
+              "event": "faq.mode",
+              "mode": "legacy_loop",
+              "query": {
+                "origin": "Hà Nội",
+                "destination": "Phú Quốc",
+                "date": "2026-06-06",
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "balanced"
+              },
+              "message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này"
+            },
+            {
+              "event": "faq.prompt",
+              "mode": "react_step_llm",
+              "prompt": "User question: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nNormalized query: {'origin': 'Hà Nội', 'destination': 'Phú Quốc', 'date': '2026-06-06', 'transport_mode': None, 'preferred_provider': None, 'trip_type': 'one_way', 'passengers': 1, 'priority': 'balanced'}\nAvailable tools: search_trips, compare_modes, rank_options\nScratchpad:\n",
+              "scratchpad": [
+                "Thought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}",
+                "Observation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}"
+              ]
+            },
+            {
+              "event": "faq.tool_call",
+              "tool": "rank_options",
+              "input": {
+                "origin": "Hà Nội",
+                "destination": "Phú Quốc",
+                "date": "2026-06-06",
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "cheap"
+              },
+              "observation": {
+                "query": {
+                  "origin": "Hà Nội",
+                  "destination": "Phú Quốc",
+                  "date": "2026-06-06",
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "cheap"
+                },
+                "grouped_results": {
+                  "flight": {
+                    "default": [
+                      {
+                        "id": "flight_hà nội_phú quốc_vietjet_air_20260606_16",
+                        "provider": "Vietjet Air",
+                        "code": "VI-HÀPH-166",
+                        "transport_mode": "flight",
+                        "trip_type_supported": [
+                          "one_way",
+                          "round_trip"
+                        ],
+                        "origin": "Hà Nội",
+                        "destination": "Phú Quốc",
+                        "date": "2026-06-06",
+                        "return_date": "2026-06-08",
+                        "departure_time": "12:30",
+                        "arrival_time": "14:40",
+                        "duration_minutes": 130,
+                        "duration_label": "2h10m",
+                        "is_direct": true,
+                        "one_way_price_vnd": 1640000,
+                        "round_trip_price_vnd": 3280000,
+                        "price_label_one_way": "1.640.000đ",
+                        "price_label_round_trip": "3.280.000đ",
+                        "available_seats": 19,
+                        "pickup_location": "Sân bay Nội Bài",
+                        "dropoff_location": "Sân bay Phú Quốc",
+                        "baggage_policy": "Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé",
+                        "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                        "comfort_score": 8,
+                        "reliability_score": 8,
+                        "time_score": 8,
+                        "price_score": 8,
+                        "best_for": "Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước",
+                        "pros": [
+                          "Bay thẳng",
+                          "Tiết kiệm thời gian",
+                          "Phù hợp cho lịch trình du lịch ngắn ngày"
+                        ],
+                        "cons": [
+                          "Giá có thể tăng theo ngày cao điểm",
+                          "Cần thêm thời gian di chuyển ra sân bay"
+                        ],
+                        "recommendation_reason": "Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.",
+                        "data_source_type": "mock",
+                        "display_group": "flight_options",
+                        "directness_label": "Đi thẳng",
+                        "provider_preference_tags": [
+                          "vietjet_air",
+                          "popular_route"
+                        ],
+                        "display_rank": 2,
+                        "default_visible": false,
+                        "reveal_group": "see_more"
+                      }
+                    ],
+                    "see_more": []
+                  },
+                  "train": {
+                    "default": [],
+                    "see_more": []
+                  }
+                },
+                "recommendation": {
+                  "best_option_id": "flight_hà nội_phú quốc_vietjet_air_20260606_16"
+                },
+                "message": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn."
+              }
+            },
+            {
+              "event": "faq.prompt",
+              "mode": "react_step_llm",
+              "prompt": "User question: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nNormalized query: {'origin': 'Hà Nội', 'destination': 'Phú Quốc', 'date': '2026-06-06', 'transport_mode': None, 'preferred_provider': None, 'trip_type': 'one_way', 'passengers': 1, 'priority': 'balanced'}\nAvailable tools: search_trips, compare_modes, rank_options\nScratchpad:\nThought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}\nObservation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}",
+              "scratchpad": [
+                "Thought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}",
+                "Observation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}"
+              ]
+            }
+          ],
+          "raw_message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này",
+          "assistant_response": {
+            "response_type": "text",
+            "message": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.",
+            "payload": {
+              "query": {
+                "origin": "Hà Nội",
+                "destination": "Phú Quốc",
+                "date": "2026-06-06",
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "balanced"
+              },
+              "comparison": {
+                "query": {
+                  "origin": "Hà Nội",
+                  "destination": "Phú Quốc",
+                  "date": "2026-06-06",
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "cheap"
+                },
+                "grouped_results": {
+                  "flight": {
+                    "default": [
+                      {
+                        "id": "flight_hà nội_phú quốc_vietjet_air_20260606_16",
+                        "provider": "Vietjet Air",
+                        "code": "VI-HÀPH-166",
+                        "transport_mode": "flight",
+                        "trip_type_supported": [
+                          "one_way",
+                          "round_trip"
+                        ],
+                        "origin": "Hà Nội",
+                        "destination": "Phú Quốc",
+                        "date": "2026-06-06",
+                        "return_date": "2026-06-08",
+                        "departure_time": "12:30",
+                        "arrival_time": "14:40",
+                        "duration_minutes": 130,
+                        "duration_label": "2h10m",
+                        "is_direct": true,
+                        "one_way_price_vnd": 1640000,
+                        "round_trip_price_vnd": 3280000,
+                        "price_label_one_way": "1.640.000đ",
+                        "price_label_round_trip": "3.280.000đ",
+                        "available_seats": 19,
+                        "pickup_location": "Sân bay Nội Bài",
+                        "dropoff_location": "Sân bay Phú Quốc",
+                        "baggage_policy": "Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé",
+                        "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                        "comfort_score": 8,
+                        "reliability_score": 8,
+                        "time_score": 8,
+                        "price_score": 8,
+                        "best_for": "Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước",
+                        "pros": [
+                          "Bay thẳng",
+                          "Tiết kiệm thời gian",
+                          "Phù hợp cho lịch trình du lịch ngắn ngày"
+                        ],
+                        "cons": [
+                          "Giá có thể tăng theo ngày cao điểm",
+                          "Cần thêm thời gian di chuyển ra sân bay"
+                        ],
+                        "recommendation_reason": "Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.",
+                        "data_source_type": "mock",
+                        "display_group": "flight_options",
+                        "directness_label": "Đi thẳng",
+                        "provider_preference_tags": [
+                          "vietjet_air",
+                          "popular_route"
+                        ],
+                        "display_rank": 2,
+                        "default_visible": false,
+                        "reveal_group": "see_more"
+                      }
+                    ],
+                    "see_more": []
+                  },
+                  "train": {
+                    "default": [],
+                    "see_more": []
+                  }
+                },
+                "recommendation": {
+                  "best_option_id": "flight_hà nội_phú quốc_vietjet_air_20260606_16"
+                },
+                "message": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn."
+              },
+              "trace": [
+                {
+                  "event": "faq.mode",
+                  "mode": "legacy_loop",
+                  "query": {
+                    "origin": "Hà Nội",
+                    "destination": "Phú Quốc",
+                    "date": "2026-06-06",
+                    "transport_mode": null,
+                    "preferred_provider": null,
+                    "trip_type": "one_way",
+                    "passengers": 1,
+                    "priority": "balanced"
+                  },
+                  "message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này"
+                },
+                {
+                  "event": "faq.prompt",
+                  "mode": "react_step_llm",
+                  "prompt": "User question: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nNormalized query: {'origin': 'Hà Nội', 'destination': 'Phú Quốc', 'date': '2026-06-06', 'transport_mode': None, 'preferred_provider': None, 'trip_type': 'one_way', 'passengers': 1, 'priority': 'balanced'}\nAvailable tools: search_trips, compare_modes, rank_options\nScratchpad:\n",
+                  "scratchpad": [
+                    "Thought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}",
+                    "Observation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}"
+                  ]
+                },
+                {
+                  "event": "faq.tool_call",
+                  "tool": "rank_options",
+                  "input": {
+                    "origin": "Hà Nội",
+                    "destination": "Phú Quốc",
+                    "date": "2026-06-06",
+                    "transport_mode": null,
+                    "preferred_provider": null,
+                    "trip_type": "one_way",
+                    "passengers": 1,
+                    "priority": "cheap"
+                  },
+                  "observation": {
+                    "query": {
+                      "origin": "Hà Nội",
+                      "destination": "Phú Quốc",
+                      "date": "2026-06-06",
+                      "transport_mode": null,
+                      "preferred_provider": null,
+                      "trip_type": "one_way",
+                      "passengers": 1,
+                      "priority": "cheap"
+                    },
+                    "grouped_results": {
+                      "flight": {
+                        "default": [
+                          {
+                            "id": "flight_hà nội_phú quốc_vietjet_air_20260606_16",
+                            "provider": "Vietjet Air",
+                            "code": "VI-HÀPH-166",
+                            "transport_mode": "flight",
+                            "trip_type_supported": [
+                              "one_way",
+                              "round_trip"
+                            ],
+                            "origin": "Hà Nội",
+                            "destination": "Phú Quốc",
+                            "date": "2026-06-06",
+                            "return_date": "2026-06-08",
+                            "departure_time": "12:30",
+                            "arrival_time": "14:40",
+                            "duration_minutes": 130,
+                            "duration_label": "2h10m",
+                            "is_direct": true,
+                            "one_way_price_vnd": 1640000,
+                            "round_trip_price_vnd": 3280000,
+                            "price_label_one_way": "1.640.000đ",
+                            "price_label_round_trip": "3.280.000đ",
+                            "available_seats": 19,
+                            "pickup_location": "Sân bay Nội Bài",
+                            "dropoff_location": "Sân bay Phú Quốc",
+                            "baggage_policy": "Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé",
+                            "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                            "comfort_score": 8,
+                            "reliability_score": 8,
+                            "time_score": 8,
+                            "price_score": 8,
+                            "best_for": "Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước",
+                            "pros": [
+                              "Bay thẳng",
+                              "Tiết kiệm thời gian",
+                              "Phù hợp cho lịch trình du lịch ngắn ngày"
+                            ],
+                            "cons": [
+                              "Giá có thể tăng theo ngày cao điểm",
+                              "Cần thêm thời gian di chuyển ra sân bay"
+                            ],
+                            "recommendation_reason": "Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.",
+                            "data_source_type": "mock",
+                            "display_group": "flight_options",
+                            "directness_label": "Đi thẳng",
+                            "provider_preference_tags": [
+                              "vietjet_air",
+                              "popular_route"
+                            ],
+                            "display_rank": 2,
+                            "default_visible": false,
+                            "reveal_group": "see_more"
+                          }
+                        ],
+                        "see_more": []
+                      },
+                      "train": {
+                        "default": [],
+                        "see_more": []
+                      }
+                    },
+                    "recommendation": {
+                      "best_option_id": "flight_hà nội_phú quốc_vietjet_air_20260606_16"
+                    },
+                    "message": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn."
+                  }
+                },
+                {
+                  "event": "faq.prompt",
+                  "mode": "react_step_llm",
+                  "prompt": "User question: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nNormalized query: {'origin': 'Hà Nội', 'destination': 'Phú Quốc', 'date': '2026-06-06', 'transport_mode': None, 'preferred_provider': None, 'trip_type': 'one_way', 'passengers': 1, 'priority': 'balanced'}\nAvailable tools: search_trips, compare_modes, rank_options\nScratchpad:\nThought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}\nObservation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}",
+                  "scratchpad": [
+                    "Thought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}",
+                    "Observation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}"
+                  ]
+                }
+              ],
+              "debug_trace": [
+                {
+                  "event": "intent_classifier.prompt",
+                  "prompt": "User message: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nCurrent session state: null\nPhân loại intent theo đúng quy tắc. Nếu đây là câu trả lời cho slot còn thiếu thì nghiêng về search_trip.",
+                  "session_state": null
+                },
+                {
+                  "event": "intent_classifier.mode",
+                  "mode": "heuristic",
+                  "intent": "faq",
+                  "message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này"
+                },
+                {
+                  "event": "faq.mode",
+                  "mode": "legacy_loop",
+                  "query": {
+                    "origin": "Hà Nội",
+                    "destination": "Phú Quốc",
+                    "date": "2026-06-06",
+                    "transport_mode": null,
+                    "preferred_provider": null,
+                    "trip_type": "one_way",
+                    "passengers": 1,
+                    "priority": "balanced"
+                  },
+                  "message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này"
+                },
+                {
+                  "event": "faq.prompt",
+                  "mode": "react_step_llm",
+                  "prompt": "User question: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nNormalized query: {'origin': 'Hà Nội', 'destination': 'Phú Quốc', 'date': '2026-06-06', 'transport_mode': None, 'preferred_provider': None, 'trip_type': 'one_way', 'passengers': 1, 'priority': 'balanced'}\nAvailable tools: search_trips, compare_modes, rank_options\nScratchpad:\n",
+                  "scratchpad": [
+                    "Thought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}",
+                    "Observation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}"
+                  ]
+                },
+                {
+                  "event": "faq.tool_call",
+                  "tool": "rank_options",
+                  "input": {
+                    "origin": "Hà Nội",
+                    "destination": "Phú Quốc",
+                    "date": "2026-06-06",
+                    "transport_mode": null,
+                    "preferred_provider": null,
+                    "trip_type": "one_way",
+                    "passengers": 1,
+                    "priority": "cheap"
+                  },
+                  "observation": {
+                    "query": {
+                      "origin": "Hà Nội",
+                      "destination": "Phú Quốc",
+                      "date": "2026-06-06",
+                      "transport_mode": null,
+                      "preferred_provider": null,
+                      "trip_type": "one_way",
+                      "passengers": 1,
+                      "priority": "cheap"
+                    },
+                    "grouped_results": {
+                      "flight": {
+                        "default": [
+                          {
+                            "id": "flight_hà nội_phú quốc_vietjet_air_20260606_16",
+                            "provider": "Vietjet Air",
+                            "code": "VI-HÀPH-166",
+                            "transport_mode": "flight",
+                            "trip_type_supported": [
+                              "one_way",
+                              "round_trip"
+                            ],
+                            "origin": "Hà Nội",
+                            "destination": "Phú Quốc",
+                            "date": "2026-06-06",
+                            "return_date": "2026-06-08",
+                            "departure_time": "12:30",
+                            "arrival_time": "14:40",
+                            "duration_minutes": 130,
+                            "duration_label": "2h10m",
+                            "is_direct": true,
+                            "one_way_price_vnd": 1640000,
+                            "round_trip_price_vnd": 3280000,
+                            "price_label_one_way": "1.640.000đ",
+                            "price_label_round_trip": "3.280.000đ",
+                            "available_seats": 19,
+                            "pickup_location": "Sân bay Nội Bài",
+                            "dropoff_location": "Sân bay Phú Quốc",
+                            "baggage_policy": "Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé",
+                            "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                            "comfort_score": 8,
+                            "reliability_score": 8,
+                            "time_score": 8,
+                            "price_score": 8,
+                            "best_for": "Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước",
+                            "pros": [
+                              "Bay thẳng",
+                              "Tiết kiệm thời gian",
+                              "Phù hợp cho lịch trình du lịch ngắn ngày"
+                            ],
+                            "cons": [
+                              "Giá có thể tăng theo ngày cao điểm",
+                              "Cần thêm thời gian di chuyển ra sân bay"
+                            ],
+                            "recommendation_reason": "Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.",
+                            "data_source_type": "mock",
+                            "display_group": "flight_options",
+                            "directness_label": "Đi thẳng",
+                            "provider_preference_tags": [
+                              "vietjet_air",
+                              "popular_route"
+                            ],
+                            "display_rank": 2,
+                            "default_visible": false,
+                            "reveal_group": "see_more"
+                          }
+                        ],
+                        "see_more": []
+                      },
+                      "train": {
+                        "default": [],
+                        "see_more": []
+                      }
+                    },
+                    "recommendation": {
+                      "best_option_id": "flight_hà nội_phú quốc_vietjet_air_20260606_16"
+                    },
+                    "message": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn."
+                  }
+                },
+                {
+                  "event": "faq.prompt",
+                  "mode": "react_step_llm",
+                  "prompt": "User question: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nNormalized query: {'origin': 'Hà Nội', 'destination': 'Phú Quốc', 'date': '2026-06-06', 'transport_mode': None, 'preferred_provider': None, 'trip_type': 'one_way', 'passengers': 1, 'priority': 'balanced'}\nAvailable tools: search_trips, compare_modes, rank_options\nScratchpad:\nThought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}\nObservation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}",
+                  "scratchpad": [
+                    "Thought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}",
+                    "Observation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}"
+                  ]
+                }
+              ]
+            },
+            "next_action": "answered"
+          }
+        },
+        "next_action": "answered"
+      }
+    ],
+    "current_trip_state": {
+      "intent": "faq",
+      "slots": {
+        "departure": "Hà Nội",
+        "destination": "Phú Quốc",
+        "date": "2026-06-06",
+        "transport": null,
+        "passengers": 1
+      },
+      "confidence": 0.88,
+      "missing_slots": [],
+      "pending_slot": null,
+      "search_status": "not_applicable",
+      "is_unsafe": false,
+      "system_warning": null,
+      "last_tool_calls": [
+        {
+          "tool": "rank_options",
+          "input": {
+            "origin": "Hà Nội",
+            "destination": "Phú Quốc",
+            "date": "2026-06-06",
+            "transport_mode": null,
+            "preferred_provider": null,
+            "trip_type": "one_way",
+            "passengers": 1,
+            "priority": "cheap"
+          },
+          "observation": {
+            "query": {
+              "origin": "Hà Nội",
+              "destination": "Phú Quốc",
+              "date": "2026-06-06",
+              "transport_mode": null,
+              "preferred_provider": null,
+              "trip_type": "one_way",
+              "passengers": 1,
+              "priority": "cheap"
+            },
+            "grouped_results": {
+              "flight": {
+                "default": [
+                  {
+                    "id": "flight_hà nội_phú quốc_vietjet_air_20260606_16",
+                    "provider": "Vietjet Air",
+                    "code": "VI-HÀPH-166",
+                    "transport_mode": "flight",
+                    "trip_type_supported": [
+                      "one_way",
+                      "round_trip"
+                    ],
+                    "origin": "Hà Nội",
+                    "destination": "Phú Quốc",
+                    "date": "2026-06-06",
+                    "return_date": "2026-06-08",
+                    "departure_time": "12:30",
+                    "arrival_time": "14:40",
+                    "duration_minutes": 130,
+                    "duration_label": "2h10m",
+                    "is_direct": true,
+                    "one_way_price_vnd": 1640000,
+                    "round_trip_price_vnd": 3280000,
+                    "price_label_one_way": "1.640.000đ",
+                    "price_label_round_trip": "3.280.000đ",
+                    "available_seats": 19,
+                    "pickup_location": "Sân bay Nội Bài",
+                    "dropoff_location": "Sân bay Phú Quốc",
+                    "baggage_policy": "Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé",
+                    "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                    "comfort_score": 8,
+                    "reliability_score": 8,
+                    "time_score": 8,
+                    "price_score": 8,
+                    "best_for": "Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước",
+                    "pros": [
+                      "Bay thẳng",
+                      "Tiết kiệm thời gian",
+                      "Phù hợp cho lịch trình du lịch ngắn ngày"
+                    ],
+                    "cons": [
+                      "Giá có thể tăng theo ngày cao điểm",
+                      "Cần thêm thời gian di chuyển ra sân bay"
+                    ],
+                    "recommendation_reason": "Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.",
+                    "data_source_type": "mock",
+                    "display_group": "flight_options",
+                    "directness_label": "Đi thẳng",
+                    "provider_preference_tags": [
+                      "vietjet_air",
+                      "popular_route"
+                    ],
+                    "display_rank": 2,
+                    "default_visible": false,
+                    "reveal_group": "see_more"
+                  }
+                ],
+                "see_more": []
+              },
+              "train": {
+                "default": [],
+                "see_more": []
+              }
+            },
+            "recommendation": {
+              "best_option_id": "flight_hà nội_phú quốc_vietjet_air_20260606_16"
+            },
+            "message": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn."
+          }
+        }
+      ],
+      "debug_trace": [
+        {
+          "event": "intent_classifier.prompt",
+          "prompt": "User message: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nCurrent session state: null\nPhân loại intent theo đúng quy tắc. Nếu đây là câu trả lời cho slot còn thiếu thì nghiêng về search_trip.",
+          "session_state": null
+        },
+        {
+          "event": "intent_classifier.mode",
+          "mode": "heuristic",
+          "intent": "faq",
+          "message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này"
+        },
+        {
+          "event": "faq.mode",
+          "mode": "legacy_loop",
+          "query": {
+            "origin": "Hà Nội",
+            "destination": "Phú Quốc",
+            "date": "2026-06-06",
+            "transport_mode": null,
+            "preferred_provider": null,
+            "trip_type": "one_way",
+            "passengers": 1,
+            "priority": "balanced"
+          },
+          "message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này"
+        },
+        {
+          "event": "faq.prompt",
+          "mode": "react_step_llm",
+          "prompt": "User question: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nNormalized query: {'origin': 'Hà Nội', 'destination': 'Phú Quốc', 'date': '2026-06-06', 'transport_mode': None, 'preferred_provider': None, 'trip_type': 'one_way', 'passengers': 1, 'priority': 'balanced'}\nAvailable tools: search_trips, compare_modes, rank_options\nScratchpad:\n",
+          "scratchpad": [
+            "Thought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}",
+            "Observation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}"
+          ]
+        },
+        {
+          "event": "faq.tool_call",
+          "tool": "rank_options",
+          "input": {
+            "origin": "Hà Nội",
+            "destination": "Phú Quốc",
+            "date": "2026-06-06",
+            "transport_mode": null,
+            "preferred_provider": null,
+            "trip_type": "one_way",
+            "passengers": 1,
+            "priority": "cheap"
+          },
+          "observation": {
+            "query": {
+              "origin": "Hà Nội",
+              "destination": "Phú Quốc",
+              "date": "2026-06-06",
+              "transport_mode": null,
+              "preferred_provider": null,
+              "trip_type": "one_way",
+              "passengers": 1,
+              "priority": "cheap"
+            },
+            "grouped_results": {
+              "flight": {
+                "default": [
+                  {
+                    "id": "flight_hà nội_phú quốc_vietjet_air_20260606_16",
+                    "provider": "Vietjet Air",
+                    "code": "VI-HÀPH-166",
+                    "transport_mode": "flight",
+                    "trip_type_supported": [
+                      "one_way",
+                      "round_trip"
+                    ],
+                    "origin": "Hà Nội",
+                    "destination": "Phú Quốc",
+                    "date": "2026-06-06",
+                    "return_date": "2026-06-08",
+                    "departure_time": "12:30",
+                    "arrival_time": "14:40",
+                    "duration_minutes": 130,
+                    "duration_label": "2h10m",
+                    "is_direct": true,
+                    "one_way_price_vnd": 1640000,
+                    "round_trip_price_vnd": 3280000,
+                    "price_label_one_way": "1.640.000đ",
+                    "price_label_round_trip": "3.280.000đ",
+                    "available_seats": 19,
+                    "pickup_location": "Sân bay Nội Bài",
+                    "dropoff_location": "Sân bay Phú Quốc",
+                    "baggage_policy": "Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé",
+                    "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                    "comfort_score": 8,
+                    "reliability_score": 8,
+                    "time_score": 8,
+                    "price_score": 8,
+                    "best_for": "Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước",
+                    "pros": [
+                      "Bay thẳng",
+                      "Tiết kiệm thời gian",
+                      "Phù hợp cho lịch trình du lịch ngắn ngày"
+                    ],
+                    "cons": [
+                      "Giá có thể tăng theo ngày cao điểm",
+                      "Cần thêm thời gian di chuyển ra sân bay"
+                    ],
+                    "recommendation_reason": "Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.",
+                    "data_source_type": "mock",
+                    "display_group": "flight_options",
+                    "directness_label": "Đi thẳng",
+                    "provider_preference_tags": [
+                      "vietjet_air",
+                      "popular_route"
+                    ],
+                    "display_rank": 2,
+                    "default_visible": false,
+                    "reveal_group": "see_more"
+                  }
+                ],
+                "see_more": []
+              },
+              "train": {
+                "default": [],
+                "see_more": []
+              }
+            },
+            "recommendation": {
+              "best_option_id": "flight_hà nội_phú quốc_vietjet_air_20260606_16"
+            },
+            "message": "Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn."
+          }
+        },
+        {
+          "event": "faq.prompt",
+          "mode": "react_step_llm",
+          "prompt": "User question: Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này\nNormalized query: {'origin': 'Hà Nội', 'destination': 'Phú Quốc', 'date': '2026-06-06', 'transport_mode': None, 'preferred_provider': None, 'trip_type': 'one_way', 'passengers': 1, 'priority': 'balanced'}\nAvailable tools: search_trips, compare_modes, rank_options\nScratchpad:\nThought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}\nObservation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}",
+          "scratchpad": [
+            "Thought: I should rank available options using the requested preference.\nAction: rank_options\nAction Input: {\"origin\":\"Hà Nội\",\"destination\":\"Phú Quốc\",\"date\":\"2026-06-06\",\"transport_mode\":null,\"preferred_provider\":null,\"trip_type\":\"one_way\",\"passengers\":1,\"priority\":\"cheap\"}",
+            "Observation: {\"query\": {\"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"transport_mode\": null, \"preferred_provider\": null, \"trip_type\": \"one_way\", \"passengers\": 1, \"priority\": \"cheap\"}, \"grouped_results\": {\"flight\": {\"default\": [{\"id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\", \"provider\": \"Vietjet Air\", \"code\": \"VI-HÀPH-166\", \"transport_mode\": \"flight\", \"trip_type_supported\": [\"one_way\", \"round_trip\"], \"origin\": \"Hà Nội\", \"destination\": \"Phú Quốc\", \"date\": \"2026-06-06\", \"return_date\": \"2026-06-08\", \"departure_time\": \"12:30\", \"arrival_time\": \"14:40\", \"duration_minutes\": 130, \"duration_label\": \"2h10m\", \"is_direct\": true, \"one_way_price_vnd\": 1640000, \"round_trip_price_vnd\": 3280000, \"price_label_one_way\": \"1.640.000đ\", \"price_label_round_trip\": \"3.280.000đ\", \"available_seats\": 19, \"pickup_location\": \"Sân bay Nội Bài\", \"dropoff_location\": \"Sân bay Phú Quốc\", \"baggage_policy\": \"Hành lý xách tay cơ bản, có thể kèm hành lý ký gửi tùy hạng vé\", \"refund_policy\": \"Đổi/hủy tùy điều kiện vé\", \"comfort_score\": 8, \"reliability_score\": 8, \"time_score\": 8, \"price_score\": 8, \"best_for\": \"Người muốn di chuyển nhanh giữa các điểm du lịch phổ biến trong nước\", \"pros\": [\"Bay thẳng\", \"Tiết kiệm thời gian\", \"Phù hợp cho lịch trình du lịch ngắn ngày\"], \"cons\": [\"Giá có thể tăng theo ngày cao điểm\", \"Cần thêm thời gian di chuyển ra sân bay\"], \"recommendation_reason\": \"Phù hợp nếu bạn muốn đi nhanh tuyến Hà Nội - Phú Quốc.\", \"data_source_type\": \"mock\", \"display_group\": \"flight_options\", \"directness_label\": \"Đi thẳng\", \"provider_preference_tags\": [\"vietjet_air\", \"popular_route\"], \"display_rank\": 2, \"default_visible\": false, \"reveal_group\": \"see_more\"}], \"see_more\": []}, \"train\": {\"default\": [], \"see_more\": []}}, \"recommendation\": {\"best_option_id\": \"flight_hà nội_phú quốc_vietjet_air_20260606_16\"}, \"message\": \"Tôi đã xếp hạng 1 lựa chọn theo ưu tiên của bạn.\"}"
+          ]
+        }
+      ],
+      "raw_message": "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này"
+    },
+    "created_at": "2026-06-04T11:06:33.510919Z",
+    "updated_at": "2026-06-04T11:06:35.257866Z"
   }
 ]

@@ -1,46 +1,35 @@
 {
   "version": 2,
   "generated_at": "2026-06-04",
-  "note": "D? li?u mock kh?ng ph? thu?c ng?y, ch? g?m m?y bay v? t?u h?a. N?u tuy?n tr?c ti?p kh?ng c? d? li?u th? backend n?n tr? no_results.",
+  "note": "Dữ liệu mock có gắn ngày cho máy bay và tàu hỏa. Nếu ngày người dùng hỏi không có chuyến phù hợp thì backend dùng ngày gần nhất trên cùng tuyến; nếu tuyến không tồn tại thì trả về no_results.",
   "aggregate_file": "../trips.json",
   "files": {
     "flight": {
-      "Vietnam Airlines": "flight/vietnam_airlines.json",
-      "Vietjet Air": "flight/vietjet_air.json",
-      "Bamboo Airways": "flight/bamboo_airways.json",
-      "Vietravel Airlines": "flight/vietravel_airlines.json"
+      "Vietnam Airlines": "flights/vietnam_airlines.json",
+      "Vietjet Air": "flights/vietjet_air.json",
+      "Bamboo Airways": "flights/bamboo_airways.json",
+      "Vietravel Airlines": "flights/vietravel_airlines.json",
+      "Sun PhuQuoc Airways": "flights/sun_phuquoc_airways.json"
     },
     "train": {
-      "Vietnam Railways": "train/vietnam_railways.json"
+      "Vietnam Railways": "trains/vietnam_railways.json"
     }
   },
   "counts": {
-<<<<<<< HEAD
-    "total": 70,
-    "flight": {
-      "Vietnam Airlines": 14,
-      "Vietjet Air": 20,
-      "Bamboo Airways": 14,
-      "Vietravel Airlines": 6
-    },
-    "train": {
-      "Vietnam Railways": 16
-=======
     "total": 436,
-    "flights": {
-      "Vietnam Airlines": 85,
-      "Vietjet Air": 94,
+    "flight": {
+      "Vietnam Airlines": 94,
+      "Vietjet Air": 85,
       "Bamboo Airways": 52,
       "Vietravel Airlines": 41,
       "Sun PhuQuoc Airways": 20
     },
-    "trains": {
+    "train": {
       "Vietnam Railways": 144
->>>>>>> ac97775 (feat: added alot of debugs)
     }
   },
   "route_policy": {
-    "date_filtering": false,
+    "date_filtering": true,
     "supported_transport_modes": [
       "flight",
       "train"
