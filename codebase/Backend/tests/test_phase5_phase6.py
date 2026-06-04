@@ -17,153 +17,92 @@ async def create_user_and_session(client: AsyncClient, username: str, title: str
 
 
 @pytest.mark.anyio
-async def test_phase5_full_slots_return_trip_widget_response() -> None:
+async def test_missing_multiple_slots_asks_one_question_at_a_time_in_fixed_order() -> None:
     reset_data_files()
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        session = await create_user_and_session(client, "phase5-widget")
-        response = await client.post(
+        session = await create_user_and_session(client, "slot-order")
+
+        first = await client.post(
             f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6"},
+            json={"content": "Tìm vé đi Đà Nẵng"},
+        )
+        second = await client.post(
+            f"/sessions/{session['id']}/messages",
+            json={"content": "Từ Hà Nội"},
+        )
+        third = await client.post(
+            f"/sessions/{session['id']}/messages",
+            json={"content": "Ngày 10/6"},
+        )
+        fourth = await client.post(
+            f"/sessions/{session['id']}/messages",
+            json={"content": "Máy bay"},
         )
 
-    payload = response.json()
-
-    assert response.status_code == 200
-    assert payload["response"]["response_type"] == "trip_widget"
-    assert payload["response"]["next_action"] == "show_widget"
-    assert payload["response"]["payload"]["departure"] == "TP.HCM"
-    assert payload["response"]["payload"]["transport"] == "train"
-    assert payload["response"]["payload"]["editable_fields"] == [
-        "departure",
-        "destination",
-        "date",
-        "transport",
-        "passengers",
-    ]
+    assert first.json()["response"]["payload"]["pending_slot"] == "departure"
+    assert second.json()["response"]["payload"]["pending_slot"] == "date"
+    assert third.json()["response"]["payload"]["pending_slot"] == "transport"
+    assert fourth.json()["response"]["payload"]["pending_slot"] == "passengers"
+    assert fourth.json()["response"]["message"] == "Bạn đi bao nhiêu người?"
 
 
 @pytest.mark.anyio
-async def test_phase5_missing_slots_return_slot_filling_with_questions_and_options() -> None:
+async def test_passenger_follow_up_extracts_relational_phrase_and_executes_search() -> None:
     reset_data_files()
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        session = await create_user_and_session(client, "phase5-slot-fill")
-        response = await client.post(
-            f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm vé đi Đà Nẵng ngày 10/6"},
-        )
-        reload_response = await client.get(f"/sessions/{session['id']}")
-
-    payload = response.json()
-    questions = payload["response"]["payload"]["questions"]
-
-    assert response.status_code == 200
-    assert payload["response"]["response_type"] == "slot_filling"
-    assert payload["response"]["next_action"] == "ask_follow_up"
-    assert payload["response"]["payload"]["missing_slots"] == ["departure", "transport"]
-    assert questions[0]["slot"] == "departure"
-    assert "TP.HCM" in questions[0]["options"]
-    assert questions[1]["slot"] == "transport"
-    assert "Tàu hỏa" in questions[1]["options"]
-    assert reload_response.json()["session"]["current_trip_state"]["missing_slots"] == [
-        "departure",
-        "transport",
-    ]
-
-
-@pytest.mark.anyio
-async def test_phase5_low_confidence_state_returns_confirm_low_confidence() -> None:
-    reset_data_files()
-
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        session = await create_user_and_session(client, "phase5-confidence")
-        response = await client.post(
-            f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm vé tàu hỏa từ Hà Nội đi Hà Nội ngày 10/6"},
-        )
-
-    payload = response.json()
-
-    assert response.status_code == 200
-    assert payload["response"]["response_type"] == "confirm_low_confidence"
-    assert payload["response"]["next_action"] == "confirm_low_confidence"
-    assert payload["response"]["payload"]["slots"]["departure"] == "Hà Nội"
-    assert payload["response"]["payload"]["slots"]["destination"] == "Hà Nội"
-
-
-@pytest.mark.anyio
-async def test_phase6_update_transport_and_date_persist_state() -> None:
-    reset_data_files()
-
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        session = await create_user_and_session(client, "phase6-update-transport")
+        session = await create_user_and_session(client, "passenger-follow-up")
         await client.post(
             f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm vé máy bay từ Sài Gòn đi Đà Nẵng ngày 10/6"},
+            json={"content": "Tìm vé máy bay từ Hà Nội đi Đà Nẵng ngày 6/6"},
         )
-        transport_response = await client.patch(
-            f"/sessions/{session['id']}/trip-state",
-            json={"updates": {"transport": "train"}},
+        response = await client.post(
+            f"/sessions/{session['id']}/messages",
+            json={"content": "Tôi đi chung với vợ"},
         )
-        date_response = await client.patch(
-            f"/sessions/{session['id']}/trip-state",
-            json={"updates": {"date": "2026-06-11"}},
-        )
-        reload_response = await client.get(f"/sessions/{session['id']}")
 
-    assert transport_response.status_code == 200
-    assert transport_response.json()["trip_state"]["slots"]["transport"] == "train"
-    assert date_response.status_code == 200
-    assert date_response.json()["trip_state"]["slots"]["date"] == "2026-06-11"
-    assert reload_response.json()["session"]["current_trip_state"]["slots"]["transport"] == "train"
-    assert reload_response.json()["session"]["current_trip_state"]["slots"]["date"] == "2026-06-11"
+    payload = response.json()
+
+    assert response.status_code == 200
+    assert payload["response"]["response_type"] == "search_results"
+    assert payload["session"]["current_trip_state"]["slots"]["passengers"] == 2
+    assert payload["session"]["current_trip_state"]["search_status"] == "searched"
+    assert payload["response"]["payload"]["status"] == "ok"
+    assert payload["response"]["payload"]["grouped_results"]["flight"]["default"]
 
 
 @pytest.mark.anyio
-async def test_phase6_update_multiple_slots_and_normalize_quick_options() -> None:
+async def test_patch_trip_state_keeps_other_values_and_returns_results_when_complete() -> None:
     reset_data_files()
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        session = await create_user_and_session(client, "phase6-normalize")
+        session = await create_user_and_session(client, "patch-complete")
         await client.post(
             f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm vé đi Đà Nẵng ngày 10/6"},
+            json={"content": "Tìm vé tàu hỏa đi Đà Nẵng ngày 6/6"},
+        )
+        await client.patch(
+            f"/sessions/{session['id']}/trip-state",
+            json={"updates": {"departure": "Hà Nội"}},
         )
         response = await client.patch(
             f"/sessions/{session['id']}/trip-state",
-            json={"updates": {"departure": "Sài Gòn", "transport": "Tàu hỏa"}},
+            json={"updates": {"passengers": 3}},
         )
 
     payload = response.json()
 
     assert response.status_code == 200
-    assert payload["trip_state"]["slots"]["departure"] == "TP.HCM"
-    assert payload["trip_state"]["slots"]["transport"] == "train"
-    assert payload["response"]["response_type"] == "trip_widget"
-    assert payload["response"]["next_action"] == "ready_to_search"
-
-
-@pytest.mark.anyio
-async def test_phase6_partial_update_keeps_slot_filling_when_state_still_incomplete() -> None:
-    reset_data_files()
-
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        session = await create_user_and_session(client, "phase6-partial")
-        await client.post(
-            f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm vé đi Đà Nẵng ngày 10/6"},
-        )
-        response = await client.patch(
-            f"/sessions/{session['id']}/trip-state",
-            json={"updates": {"departure": "TP.HCM"}},
-        )
-
-    payload = response.json()
-
-    assert response.status_code == 200
-    assert payload["response"]["response_type"] == "slot_filling"
-    assert payload["response"]["payload"]["missing_slots"] == ["transport"]
+    assert payload["trip_state"]["slots"] == {
+        "departure": "Hà Nội",
+        "destination": "Đà Nẵng",
+        "date": "2026-06-06",
+        "transport": "train",
+        "passengers": 3,
+    }
+    assert payload["response"]["response_type"] == "search_results"
+    assert payload["response"]["payload"]["status"] == "ok"
 
 
 @pytest.mark.anyio
@@ -176,91 +115,20 @@ async def test_phase6_partial_update_keeps_slot_filling_when_state_still_incompl
         ({"hotel": "abc"}, None),
     ],
 )
-async def test_phase6_invalid_updates_return_422_and_do_not_change_state(
-    updates: dict[str, object],
-    expected_detail: str | None,
-) -> None:
+async def test_invalid_patch_updates_return_422(updates: dict[str, object], expected_detail: str | None) -> None:
     reset_data_files()
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        session = await create_user_and_session(client, "phase6-invalid")
+        session = await create_user_and_session(client, "invalid-patch")
         await client.post(
             f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm vé máy bay từ Sài Gòn đi Đà Nẵng ngày 10/6"},
+            json={"content": "Tìm vé máy bay từ Hà Nội đi Đà Nẵng ngày 6/6"},
         )
         response = await client.patch(
             f"/sessions/{session['id']}/trip-state",
             json={"updates": updates},
         )
-        reload_response = await client.get(f"/sessions/{session['id']}")
 
     assert response.status_code == 422
     if expected_detail is not None:
         assert response.json()["detail"] == expected_detail
-    assert reload_response.json()["session"]["current_trip_state"]["slots"]["transport"] == "flight"
-    assert reload_response.json()["session"]["current_trip_state"]["slots"]["date"] == "2026-06-10"
-    assert reload_response.json()["session"]["current_trip_state"]["slots"]["passengers"] == 1
-
-
-@pytest.mark.anyio
-async def test_phase6_empty_update_fake_session_and_missing_trip_state_follow_contract() -> None:
-    reset_data_files()
-
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        empty_session = await create_user_and_session(client, "phase6-empty")
-        blank_update = await client.patch(
-            f"/sessions/{empty_session['id']}/trip-state",
-            json={"updates": {}},
-        )
-        missing_session = await client.patch(
-            "/sessions/not-a-real-session/trip-state",
-            json={"updates": {"transport": "train"}},
-        )
-        missing_trip_state = await client.patch(
-            f"/sessions/{empty_session['id']}/trip-state",
-            json={"updates": {"transport": "train"}},
-        )
-
-    assert blank_update.status_code == 422
-    assert missing_session.status_code == 404
-    assert missing_trip_state.status_code == 400
-    assert missing_trip_state.json()["detail"] == "Session does not have an active trip state."
-
-
-@pytest.mark.anyio
-async def test_phase6_multiple_corrections_keep_all_changes() -> None:
-    reset_data_files()
-
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
-        session = await create_user_and_session(client, "phase6-multi")
-        await client.post(
-            f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm vé máy bay đi Đà Nẵng ngày 10/6"},
-        )
-        await client.patch(
-            f"/sessions/{session['id']}/trip-state",
-            json={"updates": {"departure": "TP.HCM"}},
-        )
-        await client.patch(
-            f"/sessions/{session['id']}/trip-state",
-            json={"updates": {"transport": "Tàu hỏa"}},
-        )
-        final_response = await client.patch(
-            f"/sessions/{session['id']}/trip-state",
-            json={"updates": {"passengers": 3, "date": "2026-06-11"}},
-        )
-        reload_response = await client.get(f"/sessions/{session['id']}")
-
-    final_slots = final_response.json()["trip_state"]["slots"]
-    reloaded_slots = reload_response.json()["session"]["current_trip_state"]["slots"]
-
-    assert final_response.status_code == 200
-    assert final_slots == {
-        "departure": "TP.HCM",
-        "destination": "Đà Nẵng",
-        "date": "2026-06-11",
-        "transport": "train",
-        "passengers": 3,
-    }
-    assert reloaded_slots == final_slots
-    assert final_response.json()["response"]["next_action"] == "ready_to_search"

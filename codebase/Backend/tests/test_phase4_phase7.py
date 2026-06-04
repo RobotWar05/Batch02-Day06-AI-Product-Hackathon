@@ -1,117 +1,76 @@
-import json
 import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import app
 from app.services.auth_service import auth_service
 from app.services.session_service import session_service
-from app.services.trip_service import trip_service
 
 
 def reset_data_files() -> None:
     auth_service.user_store.write([])
     session_service.session_store.write([])
-    trip_service.state_store.write({})
+
+
+async def create_user_and_session(client: AsyncClient, username: str, title: str = "Trip") -> dict:
+    user = (await client.post("/auth/login", json={"username": username, "password": "x"})).json()["user"]
+    return (await client.post(f"/users/{user['id']}/sessions", json={"title": title})).json()["session"]
 
 
 @pytest.mark.anyio
-async def test_agent_loop_slot_filling_and_search_flow() -> None:
+async def test_faq_react_flow_returns_tool_grounded_answer_and_trace() -> None:
     reset_data_files()
 
-    async with AsyncClient(
-        transport=ASGITransport(app=app),
-        base_url="http://testserver",
-    ) as client:
-        # 1. Login user
-        user = (
-            await client.post("/auth/login", json={"username": "Hoang Bach", "password": "123"})
-        ).json()["user"]
-
-        # 2. Create session
-        session = (
-            await client.post(
-                f"/users/{user['id']}/sessions",
-                json={"title": "Hanoi trip"},
-            )
-        ).json()["session"]
-
-        # 3. Post incomplete message (missing departure, transport)
-        # Prompt: "Tìm vé đi Đà Nẵng ngày 10/6"
-        res_msg = await client.post(
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
+        session = await create_user_and_session(client, "faq-react")
+        response = await client.post(
             f"/sessions/{session['id']}/messages",
-            json={"content": "Tìm vé đi Đà Nẵng ngày 10/6"},
+            json={"content": "Đi từ Hà Nội Đà Nẵng vé máy bay rẻ hơn tàu hỏa bao nhiêu cho 2 người"},
         )
-        assert res_msg.status_code == 200
-        payload = res_msg.json()
-        assert "assistant_message" in payload
-        
-        # Check assistant content is serialized JSON containing slot filling
-        assistant_json = json.loads(payload["assistant_message"]["content"])
-        assert assistant_json["response_type"] == "slot_filling"
-        assert assistant_json["payload"]["destination"] == "Đà Nẵng"
-        assert assistant_json["payload"]["date"] == "2026-06-10"
-        assert assistant_json["payload"]["departure"] is None
-        assert assistant_json["next_action"] == "awaiting_departure"
 
-        # 4. Answer the departure slot
-        # User answer: "Khởi hành từ TP.HCM"
-        res_msg2 = await client.post(
-            f"/sessions/{session['id']}/messages",
-            json={"content": "Khởi hành từ TP.HCM"},
-        )
-        assert res_msg2.status_code == 200
-        payload2 = res_msg2.json()
-        assistant_json2 = json.loads(payload2["assistant_message"]["content"])
-        assert assistant_json2["payload"]["departure"] == "TP.HCM"
-        assert assistant_json2["payload"]["transport"] is None
-        assert assistant_json2["next_action"] == "awaiting_transport"
+    payload = response.json()
 
-        # 5. Patch the transport mode directly via PATCH /sessions/{session_id}/trip-state
-        res_patch = await client.patch(
-            f"/sessions/{session['id']}/trip-state",
-            json={"transport": "train"},
-        )
-        assert res_patch.status_code == 200
-        patch_json = res_patch.json()
-        assert patch_json["response_type"] == "trip_widget"
-        assert patch_json["payload"]["transport"] == "train"
-        assert patch_json["payload"]["departure"] == "TP.HCM"
-        assert patch_json["payload"]["destination"] == "Đà Nẵng"
-        assert patch_json["payload"]["date"] == "2026-06-10"
-        assert patch_json["next_action"] == "ready_to_search"
-
-        # 6. Execute search via POST /sessions/{session_id}/search
-        res_search = await client.post(f"/sessions/{session['id']}/search")
-        assert res_search.status_code == 200
-        search_json = res_search.json()
-        assert search_json["response_type"] == "trip_results"
-        assert len(search_json["payload"]["results"]) > 0
-        assert search_json["payload"]["results"][0]["id"] == "train-se1-001"
+    assert response.status_code == 200
+    assert payload["response"]["response_type"] == "text"
+    assert "2 người" in payload["response"]["message"]
+    assert payload["session"]["current_trip_state"]["intent"] == "faq"
+    assert payload["session"]["current_trip_state"]["last_tool_calls"]
+    assert payload["session"]["current_trip_state"]["last_tool_calls"][0]["tool"] == "compare_modes"
 
 
 @pytest.mark.anyio
-async def test_guardrail_safety_block_in_loop() -> None:
+async def test_unrelated_message_stays_out_of_scope_without_tools() -> None:
     reset_data_files()
 
-    async with AsyncClient(
-        transport=ASGITransport(app=app),
-        base_url="http://testserver",
-    ) as client:
-        user = (
-            await client.post("/auth/login", json={"username": "UserGuardrail", "password": "123"})
-        ).json()["user"]
-        session = (
-            await client.post(f"/users/{user['id']}/sessions", json={})
-        ).json()["session"]
-
-        # Post dangerous message: "Tôi muốn mua bom để mang lên máy bay"
-        res_msg = await client.post(
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
+        session = await create_user_and_session(client, "unrelated")
+        response = await client.post(
             f"/sessions/{session['id']}/messages",
-            json={"content": "Tôi muốn mua bom để mang lên máy bay"},
+            json={"content": "Tôi có được đem đồ lên máy bay không"},
         )
-        assert res_msg.status_code == 200
-        payload = res_msg.json()
-        assistant_json = json.loads(payload["assistant_message"]["content"])
-        assert assistant_json["response_type"] == "error"
-        assert "Từ chối hỗ trợ" in assistant_json["message"]
-        assert assistant_json["next_action"] == "blocked"
+
+    payload = response.json()
+
+    assert response.status_code == 200
+    assert payload["response"]["response_type"] == "text"
+    assert payload["response"]["next_action"] == "out_of_scope"
+    assert payload["session"]["current_trip_state"]["intent"] == "unrelated"
+    assert payload["session"]["current_trip_state"]["last_tool_calls"] == []
+
+
+@pytest.mark.anyio
+async def test_complete_search_returns_manifest_backed_ranked_results() -> None:
+    reset_data_files()
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
+        session = await create_user_and_session(client, "search-ranked")
+        response = await client.post(
+            f"/sessions/{session['id']}/messages",
+            json={"content": "Tìm 2 vé tàu hỏa từ Hà Nội đi Đà Nẵng ngày 6/6"},
+        )
+
+    payload = response.json()["response"]["payload"]
+
+    assert payload["status"] == "ok"
+    assert payload["grouped_results"]["train"]["default"]
+    assert payload["grouped_results"]["train"]["default"][0]["provider"] == "Vietnam Railways"
+    assert payload["grouped_results"]["flight"]["default"] == []

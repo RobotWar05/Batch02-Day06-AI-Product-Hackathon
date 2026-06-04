@@ -9,14 +9,18 @@ class TripSlots(BaseModel):
     destination: str | None = None
     date: str | None = None
     transport: str | None = None
-    passengers: int = 1
+    passengers: int | None = None
 
 
 class CurrentTripState(BaseModel):
-    intent: Literal["search_trip", "faq", "unknown"]
+    intent: Literal["search_trip", "faq", "unrelated"]
     slots: TripSlots
     confidence: float = Field(..., ge=0.0, le=1.0)
     missing_slots: list[str] = Field(default_factory=list)
+    pending_slot: Literal["departure", "destination", "date", "transport", "passengers"] | None = None
+    search_status: Literal["collecting", "ready", "searched", "not_applicable"] = "not_applicable"
+    is_unsafe: bool = False
+    last_tool_calls: list[dict[str, Any]] = Field(default_factory=list)
     raw_message: str
 
 
@@ -27,7 +31,7 @@ class SlotQuestion(BaseModel):
 
 
 class AssistantTurnResponse(BaseModel):
-    response_type: Literal["text", "slot_filling", "trip_widget", "confirm_low_confidence", "error"]
+    response_type: Literal["text", "slot_filling", "trip_widget", "search_results", "error"]
     message: str
     payload: dict[str, Any] = Field(default_factory=dict)
     next_action: str | None = None

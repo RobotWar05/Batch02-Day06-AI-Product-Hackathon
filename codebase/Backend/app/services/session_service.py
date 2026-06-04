@@ -76,7 +76,10 @@ class SessionService:
                 message=message_content,
                 session_state=session.current_trip_state,
             )
-            response = trip_state_service.build_decision(parsed_state)
+            persisted_state, response = trip_state_service.build_decision(
+                trip_state=parsed_state,
+                session_state=session.current_trip_state,
+            )
             user_message = SessionMessage(
                 id=str(uuid4()),
                 role="user",
@@ -89,12 +92,15 @@ class SessionService:
                 content=response.message,
                 created_at=now,
                 response_type=response.response_type,
-                payload=parsed_state.model_dump(mode="json"),
+                payload={
+                    **persisted_state.model_dump(mode="json"),
+                    "assistant_response": response.model_dump(mode="json"),
+                },
                 next_action=response.next_action,
             )
 
             session.messages.extend([user_message, assistant_message])
-            session.current_trip_state = parsed_state
+            session.current_trip_state = persisted_state
             session.updated_at = now
             sessions[index] = session
             self.session_store.write(
@@ -134,26 +140,32 @@ class SessionService:
                     for field_name, value in normalized_updates.model_dump(exclude_none=True).items()
                 ),
             )
-            response = trip_state_service.build_decision(updated_state)
+            persisted_state, response = trip_state_service.build_decision(
+                trip_state=updated_state,
+                session_state=session.current_trip_state,
+            )
             now = datetime.now(timezone.utc)
             assistant_message = SessionMessage(
                 id=str(uuid4()),
                 role="assistant",
-                content="Thông tin chuyến đi đã được cập nhật.",
+                content=response.message,
                 created_at=now,
                 response_type=response.response_type,
-                payload=updated_state.model_dump(mode="json"),
+                payload={
+                    **persisted_state.model_dump(mode="json"),
+                    "assistant_response": response.model_dump(mode="json"),
+                },
                 next_action=response.next_action,
             )
 
-            session.current_trip_state = updated_state
+            session.current_trip_state = persisted_state
             session.messages.append(assistant_message)
             session.updated_at = now
             sessions[index] = session
             self.session_store.write(
                 [stored_session.model_dump(mode="json") for stored_session in sessions]
             )
-            return session, updated_state, assistant_message, response
+            return session, persisted_state, assistant_message, response
 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

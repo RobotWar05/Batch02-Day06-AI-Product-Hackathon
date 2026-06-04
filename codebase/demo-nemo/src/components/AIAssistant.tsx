@@ -1,6 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Sparkles, Send, Bot, User, Brain, X, Maximize2, Minimize2, Calendar, Users, Plane, Train, ArrowRight, Check, AlertTriangle, ChevronRight, HelpCircle, DollarSign, Clock } from "lucide-react";
 import Markdown from "react-markdown";
+import {
+  compareTrips,
+  createChatSession,
+  loginDemoUser,
+  postChatMessage,
+  searchTrips,
+  type BackendAssistantResponse,
+  type BackendSearchResultSet,
+  type BackendTripOption,
+  type BackendTripState,
+} from "../lib/backend";
 
 export interface SearchSlots {
   departure: string | null;
@@ -21,7 +32,15 @@ export interface RouteOption {
   type: "flight" | "train";
 }
 
-export function getRouteComparison(dep: string, dest: string): { flights: RouteOption[]; trains: RouteOption[]; recommendation: string; savingCost: string; savingTime: string } {
+interface RouteDeckData {
+  flights: RouteOption[];
+  trains: RouteOption[];
+  recommendation: string;
+  savingCost: string;
+  savingTime: string;
+}
+
+export function getRouteComparison(dep: string, dest: string): RouteDeckData {
   const d = (dep || "").trim();
   const a = (dest || "").trim();
   
@@ -119,6 +138,7 @@ export interface ChatMessage {
   searchWidget?: {
     slots: SearchSlots;
     isComplete?: boolean;
+    routeData?: RouteDeckData;
     activeTab?: "compare" | "flights" | "trains";
     selectedTripId?: string;
     bookingStep?: "select" | "passenger_info" | "success";
@@ -134,6 +154,53 @@ export interface ChatMessage {
 interface AIAssistantProps {
   onTriggerSearch?: (category: "flight" | "train" | "hotel" | "attraction", destination: string) => void;
   onUpdateSearchDest?: (dest: string) => void;
+}
+
+function formatSavingsCost(value: number | null): string {
+  if (!value) {
+    return "0đ";
+  }
+  return `${value.toLocaleString("vi-VN")}đ`;
+}
+
+function formatSavingsTime(minutes: number | null): string {
+  if (!minutes) {
+    return "0h";
+  }
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  return remainder ? `${hours}h ${remainder}m` : `${hours}h`;
+}
+
+function mapTripOption(option: BackendTripOption): RouteOption {
+  return {
+    id: option.id,
+    code: option.code,
+    provider: option.provider,
+    time: `${option.departure_time} - ${option.arrival_time}`,
+    price: option.one_way_price_vnd || option.total_price_vnd || 0,
+    duration: option.duration_label,
+    note: option.recommendation_reason || option.reason,
+    type: option.transport_mode,
+  };
+}
+
+function flattenTrips(group: { default: BackendTripOption[]; see_more: BackendTripOption[] }): RouteOption[] {
+  return [...group.default, ...group.see_more].map(mapTripOption);
+}
+
+function mapStateToSlots(state: BackendTripState | null, fallback: SearchSlots): SearchSlots {
+  if (!state) {
+    return fallback;
+  }
+
+  return {
+    departure: state.slots.departure ?? fallback.departure,
+    destination: state.slots.destination ?? fallback.destination,
+    travelDate: state.slots.date ?? fallback.travelDate,
+    transportType: state.slots.transport ?? fallback.transportType,
+    passengerCount: state.slots.passengers ?? fallback.passengerCount ?? 1,
+  };
 }
 
 export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIAssistantProps) {
@@ -156,6 +223,8 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
   const [inputMsg, setInputMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const sessionIdRef = useRef<string | null>(null);
+  const sessionBootRef = useRef<Promise<string> | null>(null);
 
   const quickPrompts = [
     "Săn vé rẻ nhất từ Hà Nội đi Phú Quốc cuối tuần này",
@@ -168,70 +237,107 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
+  useEffect(() => {
+    void ensureSession();
+  }, []);
+
+  const loadRouteData = async (slots: SearchSlots): Promise<RouteDeckData | null> => {
+    if (!slots.departure || !slots.destination || !slots.travelDate) {
+      return null;
+    }
+
+    const query = {
+      origin: slots.departure,
+      destination: slots.destination,
+      date: slots.travelDate,
+      transport_mode: null,
+      passengers: slots.passengerCount || 1,
+      priority: "balanced",
+    };
+
+    const [searchData, compareData] = await Promise.all([
+      searchTrips(query),
+      compareTrips(query),
+    ]);
+
+    return {
+      flights: flattenTrips(searchData.grouped_results.flight),
+      trains: flattenTrips(searchData.grouped_results.train),
+      recommendation: compareData.summary || searchData.recommendation.reason || searchData.message,
+      savingCost: formatSavingsCost(compareData.price_delta_vnd),
+      savingTime: formatSavingsTime(compareData.duration_delta_minutes),
+    };
+  };
+
+  const enrichSlotsWithRouteData = async (slots: SearchSlots): Promise<{
+    slots: SearchSlots;
+    routeData?: RouteDeckData;
+    isComplete: boolean;
+  }> => {
+    const routeData = await loadRouteData(slots).catch(() => null);
+    return {
+      slots,
+      routeData: routeData || undefined,
+      isComplete: !!(slots.departure && slots.destination && slots.travelDate && slots.transportType),
+    };
+  };
+
+  const ensureSession = async () => {
+    if (sessionIdRef.current) {
+      return sessionIdRef.current;
+    }
+    if (sessionBootRef.current) {
+      return sessionBootRef.current;
+    }
+
+    sessionBootRef.current = (async () => {
+      const user = await loginDemoUser("Demo Nemo");
+      const session = await createChatSession(user.id, "Neo frontend session");
+      sessionIdRef.current = session.id;
+      return session.id;
+    })();
+
+    try {
+      return await sessionBootRef.current;
+    } finally {
+      sessionBootRef.current = null;
+    }
+  };
+
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim()) return;
 
-    // Append user message
     setMessages((prev) => [...prev, { sender: "user", text: textToSend }]);
     setInputMsg("");
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/ai-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: textToSend,
-          currentSlots: currentSlots,
-        }),
-      });
-      const data = await response.json();
+      const sessionId = await ensureSession();
+      const data = await postChatMessage(sessionId, textToSend);
+      const state = data.session.current_trip_state;
+      const nextSlots = mapStateToSlots(state, currentSlots);
+      const widgetData =
+        state?.intent === "search_trip"
+          ? await enrichSlotsWithRouteData(nextSlots)
+          : null;
 
-      if (data.replyText) {
-        // Safe check for unsafe content
-        const isUnsafe = !!data.isUnsafe;
-        
-        let slots: SearchSlots | undefined = undefined;
-        if (data.classification === "search_trip" && data.extractedSlots) {
-          slots = {
-            departure: data.extractedSlots.departure || currentSlots.departure,
-            destination: data.extractedSlots.destination || currentSlots.destination,
-            travelDate: data.extractedSlots.travelDate || currentSlots.travelDate,
-            transportType: data.extractedSlots.transportType || currentSlots.transportType,
-            passengerCount: typeof data.extractedSlots.passengerCount === "number" 
-              ? data.extractedSlots.passengerCount 
-              : currentSlots.passengerCount,
-          };
-          // Set current slots global state
-          setCurrentSlots(slots);
+      setCurrentSlots(nextSlots);
 
-          // Real-time live filtering filter syncing if destination got parsed
-          if (slots.destination && onUpdateSearchDest) {
-            onUpdateSearchDest(slots.destination);
-          }
-        }
-
-        const newMsg: ChatMessage = {
-          sender: "bot",
-          text: data.replyText,
-          isUnsafe,
-        };
-
-        if (slots) {
-          const isComplete = !!(slots.departure && slots.destination && slots.travelDate && slots.transportType);
-          newMsg.searchWidget = {
-            slots,
-            isComplete,
-          };
-        }
-
-        setMessages((prev) => [...prev, newMsg]);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          { sender: "bot", text: "Xin lỗi, hiện tại hệ thống AI bận rộn. Bạn vui lòng thử lại sau chút lát!" },
-        ]);
+      if (nextSlots.destination && onUpdateSearchDest) {
+        onUpdateSearchDest(nextSlots.destination);
       }
+
+      const newMsg: ChatMessage = {
+        sender: "bot",
+        text: data.response.message,
+        isUnsafe: state?.is_unsafe || false,
+      };
+
+      if (widgetData) {
+        newMsg.searchWidget = widgetData;
+      }
+
+      setMessages((prev) => [...prev, newMsg]);
     } catch (e) {
       console.error(e);
       setMessages((prev) => [
@@ -243,11 +349,14 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
     }
   };
 
-  const handleUpdateWidgetSlot = (msgIndex: number, field: keyof SearchSlots, value: any) => {
+  const handleUpdateWidgetSlot = async (msgIndex: number, field: keyof SearchSlots, value: any) => {
+    let updatedSlotsSnapshot: SearchSlots | null = null;
+
     setMessages((prev) =>
       prev.map((m, idx) => {
         if (idx === msgIndex && m.searchWidget) {
           const updatedSlots = { ...m.searchWidget.slots, [field]: value };
+          updatedSlotsSnapshot = updatedSlots;
           const isComplete = !!(
             updatedSlots.departure &&
             updatedSlots.destination &&
@@ -268,12 +377,45 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
               ...m.searchWidget,
               slots: updatedSlots,
               isComplete,
+              routeData: undefined,
             },
           };
         }
         return m;
       })
     );
+
+    if (!updatedSlotsSnapshot) {
+      return;
+    }
+
+    try {
+      const routeData = await loadRouteData(updatedSlotsSnapshot);
+      setMessages((prev) =>
+        prev.map((m, idx) => {
+          if (idx === msgIndex && m.searchWidget) {
+            const selectedTripStillExists = routeData
+              ? [...routeData.flights, ...routeData.trains].some(
+                  (trip) => trip.id === m.searchWidget?.selectedTripId
+                )
+              : false;
+
+            return {
+              ...m,
+              searchWidget: {
+                ...m.searchWidget,
+                routeData: routeData || undefined,
+                selectedTripId: selectedTripStillExists ? m.searchWidget.selectedTripId : undefined,
+                selectedTripDetails: selectedTripStillExists ? m.searchWidget.selectedTripDetails : undefined,
+              },
+            };
+          }
+          return m;
+        })
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleExecuteSearch = (slots: SearchSlots) => {
@@ -818,7 +960,9 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
 
                           {/* Dynamic Flight & Train Comparison Deck */}
                           {msg.searchWidget.slots.departure && msg.searchWidget.slots.destination && (() => {
-                            const compData = getRouteComparison(msg.searchWidget.slots.departure, msg.searchWidget.slots.destination);
+                            const compData =
+                              msg.searchWidget.routeData ||
+                              getRouteComparison(msg.searchWidget.slots.departure, msg.searchWidget.slots.destination);
                             const activeTab = msg.searchWidget.activeTab || "compare";
                             const selectedTripId = msg.searchWidget.selectedTripId;
 
@@ -829,7 +973,9 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
                                     const nextSlots = { ...m.searchWidget.slots, transportType: type };
                                     setCurrentSlots(nextSlots);
                                     
-                                    const comp = getRouteComparison(nextSlots.departure || "", nextSlots.destination || "");
+                                    const comp =
+                                      m.searchWidget.routeData ||
+                                      getRouteComparison(nextSlots.departure || "", nextSlots.destination || "");
                                     const matchedList = type === "flight" ? comp.flights : comp.trains;
                                     const matchedDetails = matchedList.find((t) => t.id === tripId);
 
