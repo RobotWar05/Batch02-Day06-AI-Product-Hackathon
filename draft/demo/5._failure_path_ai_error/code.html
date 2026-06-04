@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trip Assistant - Review Itinerary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-on-surface": "#f0f1f3",
+                        "background": "#f8f9fb",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#aec6ff",
+                        "tertiary-fixed": "#dce1ff",
+                        "on-tertiary-container": "#fffbff",
+                        "on-surface-variant": "#414754",
+                        "secondary": "#485f86",
+                        "surface-dim": "#d9dadc",
+                        "surface": "#f8f9fb",
+                        "on-secondary-fixed-variant": "#30476d",
+                        "on-surface": "#191c1e",
+                        "tertiary-fixed-dim": "#b7c4ff",
+                        "secondary-fixed": "#d6e3ff",
+                        "on-tertiary-fixed": "#001552",
+                        "surface-container-low": "#f2f4f6",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e1e2e4",
+                        "slate-text": "#455873",
+                        "primary": "#0058be",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface-container-high": "#e7e8ea",
+                        "inverse-primary": "#aec6ff",
+                        "secondary-container": "#bbd2ff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b0c7f4",
+                        "tertiary": "#004ae7",
+                        "on-primary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "success": "#12B76A",
+                        "warning": "#F79009",
+                        "outline-variant": "#c1c6d7",
+                        "primary-container": "#0570ec",
+                        "on-background": "#191c1e",
+                        "on-secondary-container": "#435a81",
+                        "inverse-surface": "#2e3132",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#d8e2ff",
+                        "on-secondary-fixed": "#001b3d",
+                        "surface-container-highest": "#e1e2e4",
+                        "surface-container": "#edeef0",
+                        "surface-tint": "#005ac2",
+                        "outline": "#727786",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-fixed-variant": "#0038b6",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#3666ff",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#f8f9fb",
+                        "error": "#F04438"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "container-margin-mobile": "16px",
+                        "container-margin-desktop": "32px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "24px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md-mobile": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "title-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+                        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-md-mobile": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased flex h-screen overflow-hidden">
+<!-- Desktop Side Navigation (from JSON) -->
+<nav class="hidden md:flex flex-col w-64 h-full bg-surface-container-lowest border-r border-outline-variant shadow-sm z-40 fixed left-0 top-0">
+<div class="px-container-margin-desktop py-stack-lg border-b border-outline-variant flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-title-sm">
+                TA
+            </div>
+<div>
+<h1 class="text-headline-md font-headline-md text-primary tracking-tight">Trip Assistant</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase mt-1">Personal Concierge</p>
+</div>
+</div>
+<div class="flex-1 py-stack-md px-3 flex flex-col gap-unit">
+<!-- Navigation Items. No active state explicitly matched to 'Failure path', defaulting to inactive styling for structural purposes, or treating it as a contextual overlay. We'll leave them inactive. -->
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="text-label-md font-label-md">History</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span class="text-label-md font-label-md">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col h-full w-full md:ml-64 relative bg-surface-bright">
+<!-- Mobile Top Navigation (from JSON) -->
+<header class="md:hidden flex justify-between items-center w-full px-container-margin-mobile h-16 bg-surface border-b border-outline-variant z-30 sticky top-0">
+<div class="text-title-sm font-title-sm font-bold text-primary">
+                Trip Assistant
+            </div>
+<div class="flex items-center gap-2 text-primary">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-container-margin-mobile md:p-container-margin-desktop flex flex-col items-center justify-start pt-8 md:pt-16">
+<!-- Trip Overview Widget (Bento Grid Style) -->
+<div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden flex flex-col animate-[fadeIn_0.3s_ease-out]">
+<!-- AI Error Warning Banner -->
+<div class="bg-warning/10 border-b border-warning/20 px-4 py-3 flex items-start gap-3">
+<span class="material-symbols-outlined text-warning text-[20px] mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="flex-1">
+<p class="text-body-md font-body-md text-on-background font-medium">
+                            Hãy kiểm tra thông tin trước khi tiếp tục.
+                        </p>
+<p class="text-label-md font-label-md text-on-surface-variant mt-1">
+                            Trợ lý AI nhận thấy có sự bất hợp lý trong kế hoạch di chuyển của bạn.
+                        </p>
+</div>
+</div>
+<!-- Widget Header / Map Area -->
+<div class="h-40 w-full relative bg-surface-container-low overflow-hidden">
+<!-- Placeholder for Map/Destination Image -->
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container to-surface-variant opacity-50"></div>
+<img alt="Đà Lạt" class="w-full h-full object-cover mix-blend-multiply opacity-80" data-alt="A serene, high-quality landscape photograph of a misty valley in Da Lat, Vietnam during early morning. Soft, cool lighting illuminates the rolling pine hills, creating a tranquil and inviting atmosphere. The color palette emphasizes natural greens, gentle morning blues, and soft whites. This image serves as a premium, light-mode background header for a modern travel application UI." data-location="Đà Lạt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSn5Kw8-IjC35mjixTYiamscbmYc1gMqrp5NC10wBr3kW0WxrxZA2UMnbftujdiaOO91PABXvosRFjapQX_MCTRNmIJv4XytelP4LkqJ-DyGYthV_rLj656PsIZyxtn1xnTKpRFo8OKyBkW9lqPB6leSF3Y892oGl8CZEH3UUOPateu4KUxzy-ANhNIchse-cfIzqJS4xXll62n15v-T7NtX66VMZMWZ_QvNjoLf-nafvGXBpuyvNSgE-U_HgUmRZcnDayyRTYoPtQ"/>
+<div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+<div>
+<span class="inline-block px-2 py-1 bg-surface-container-lowest/80 backdrop-blur-md text-on-surface text-label-sm font-label-sm rounded uppercase tracking-wider mb-2">Bản nháp</span>
+<h2 class="text-headline-md font-headline-md text-on-surface font-bold drop-shadow-sm">Hành trình Đà Lạt</h2>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-on-surface hover:bg-surface-container-lowest transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Details Grid (Bento Style) -->
+<div class="p-stack-sm bg-surface-container-low grid grid-cols-1 md:grid-cols-2 gap-stack-sm">
+<!-- Date Info -->
+<div class="bg-surface-container-lowest rounded-lg p-4 shadow-sm border border-transparent">
+<div class="flex items-center gap-2 mb-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+<span class="text-label-sm font-label-sm uppercase">Thời gian</span>
+</div>
+<p class="text-body-lg font-body-lg text-on-surface font-medium">15/10 - 18/10, 2024</p>
+<p class="text-label-md font-label-md text-on-surface-variant mt-1">3 ngày 2 đêm</p>
+</div>
+<!-- Transport Info (The Error Field) -->
+<div class="bg-warning/5 rounded-lg p-4 shadow-sm border border-warning/40 relative overflow-hidden ring-1 ring-warning/20">
+<!-- Pulsing indicator for error -->
+<div class="absolute top-3 right-3 w-2 h-2 rounded-full bg-warning animate-pulse"></div>
+<div class="flex items-center gap-2 mb-3 text-warning">
+<span class="material-symbols-outlined text-[18px]">commute</span>
+<span class="text-label-sm font-label-sm uppercase font-bold">Phương tiện</span>
+</div>
+<!-- Incorrect Data highlighted -->
+<div class="flex items-center gap-2">
+<p class="text-body-lg font-body-lg text-on-surface font-bold">✈️ Máy bay</p>
+<span class="material-symbols-outlined text-warning text-[16px]">error</span>
+</div>
+<p class="text-label-md font-label-md text-on-surface-variant mt-1">
+                            Khoảng cách quá ngắn cho chuyến bay nội địa.
+                        </p>
+<!-- Inline Action to fix -->
+<button class="mt-3 text-label-md font-label-md text-primary hover:underline flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-[14px]">swap_horiz</span>
+                            Đổi sang Ô tô / Xe khách
+                        </button>
+</div>
+<!-- Companions -->
+<div class="bg-surface-container-lowest rounded-lg p-4 shadow-sm border border-transparent md:col-span-2 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">group</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm uppercase text-on-surface-variant mb-0.5">Thành viên</p>
+<p class="text-body-md font-body-md text-on-surface font-medium">2 Người lớn, 1 Trẻ em</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-lowest flex items-center justify-end gap-3">
+<button class="px-4 py-2 rounded-lg text-label-md font-label-md font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                        Sửa chi tiết
+                    </button>
+<!-- Primary Confirm Button -->
+<button class="px-6 py-2 rounded-lg bg-primary text-on-primary text-label-md font-label-md font-medium hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
+                        Xác nhận
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Contextual padding at bottom -->
+<div class="h-16"></div>
+</div>
+</main>
+<style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</body></html>

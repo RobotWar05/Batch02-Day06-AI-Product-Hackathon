@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trip Assistant - AI Trip Summary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#f0f1f3",
+                    "background": "#f8f9fb",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#aec6ff",
+                    "tertiary-fixed": "#dce1ff",
+                    "on-tertiary-container": "#fffbff",
+                    "on-surface-variant": "#414754",
+                    "secondary": "#485f86",
+                    "surface-dim": "#d9dadc",
+                    "surface": "#f8f9fb",
+                    "on-secondary-fixed-variant": "#30476d",
+                    "on-surface": "#191c1e",
+                    "tertiary-fixed-dim": "#b7c4ff",
+                    "secondary-fixed": "#d6e3ff",
+                    "on-tertiary-fixed": "#001552",
+                    "surface-container-low": "#f2f4f6",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e1e2e4",
+                    "slate-text": "#455873",
+                    "primary": "#0058be",
+                    "on-primary-fixed-variant": "#004395",
+                    "surface-container-high": "#e7e8ea",
+                    "inverse-primary": "#aec6ff",
+                    "secondary-container": "#bbd2ff",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b0c7f4",
+                    "tertiary": "#004ae7",
+                    "on-primary-container": "#fefcff",
+                    "on-error-container": "#93000a",
+                    "success": "#12B76A",
+                    "warning": "#F79009",
+                    "outline-variant": "#c1c6d7",
+                    "primary-container": "#0570ec",
+                    "on-background": "#191c1e",
+                    "on-secondary-container": "#435a81",
+                    "inverse-surface": "#2e3132",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#d8e2ff",
+                    "on-secondary-fixed": "#001b3d",
+                    "surface-container-highest": "#e1e2e4",
+                    "surface-container": "#edeef0",
+                    "surface-tint": "#005ac2",
+                    "outline": "#727786",
+                    "on-primary-fixed": "#001a42",
+                    "on-tertiary-fixed-variant": "#0038b6",
+                    "on-primary": "#ffffff",
+                    "tertiary-container": "#3666ff",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f8f9fb",
+                    "error": "#F04438"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "unit": "4px",
+                    "container-margin-mobile": "16px",
+                    "container-margin-desktop": "32px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "stack-lg": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md-mobile": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-container-margin-desktop h-16 md:hidden">
+<div class="flex items-center gap-2">
+<span class="text-title-sm font-title-sm font-bold text-primary">Trip Assistant</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full p-2">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col z-40 bg-surface-container-lowest border-r border-outline-variant shadow-sm h-full w-64 p-4 gap-4 flex-shrink-0">
+<div class="mb-8 mt-4 px-4">
+<h1 class="text-headline-md font-headline-md text-primary">Trip Assistant</h1>
+<p class="text-label-md font-label-md text-on-surface-variant mt-1">Personal Concierge</p>
+</div>
+<div class="flex flex-col gap-2 flex-1">
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-label-md font-label-md">History</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-md font-label-md">Profile</span>
+</a>
+</div>
+<div class="mt-auto px-4 pb-4">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col h-full overflow-hidden items-center">
+<div class="w-full max-w-[800px] flex-1 overflow-y-auto px-container-margin-mobile md:px-0 py-stack-lg flex flex-col gap-stack-lg no-scrollbar">
+<!-- AI Chat Bubble -->
+<div class="flex items-start gap-3 w-full animate-fade-in-up">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">robot_2</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-2xl rounded-tl-sm p-4 shadow-[0px_4px_12px_rgba(15,41,77,0.05)] text-body-md font-body-md text-on-surface group relative max-w-[85%]">
+<p>Tôi đã tìm thấy thông tin chuyến đi của bạn. Vui lòng kiểm tra trước khi tìm kiếm.</p>
+<div class="absolute -right-12 top-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
+<button class="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant" title="Copy">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Trip Widget Card (Bento Style) -->
+<div class="ml-11 w-full max-w-[90%] md:max-w-md animate-fade-in-up" style="animation-delay: 0.1s;">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(15,41,77,0.05)] overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0px_12px_24px_rgba(15,41,77,0.12)]">
+<!-- Header -->
+<div class="bg-surface-container-low px-4 py-3 flex justify-between items-center border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">flight_takeoff</span>
+<h3 class="text-title-sm font-title-sm text-on-surface">Chi tiết hành trình</h3>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant transition-colors group" title="Edit All">
+<span class="material-symbols-outlined text-[18px] group-hover:text-primary">edit</span>
+</button>
+</div>
+<!-- Data Grid -->
+<div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-stack-md">
+<!-- Field: Origin -->
+<div class="flex items-center justify-between group">
+<div class="flex items-start gap-3">
+<div class="mt-0.5 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">location_on</span></div>
+<div>
+<p class="text-label-sm font-label-sm text-slate-text uppercase">Điểm đi</p>
+<p class="text-body-md font-body-md text-on-surface font-medium mt-0.5">TP.HCM</p>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<!-- Field: Destination -->
+<div class="flex items-center justify-between group">
+<div class="flex items-start gap-3">
+<div class="mt-0.5 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">flag</span></div>
+<div>
+<p class="text-label-sm font-label-sm text-slate-text uppercase">Điểm đến</p>
+<p class="text-body-md font-body-md text-on-surface font-medium mt-0.5">Đà Nẵng</p>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<div class="col-span-1 sm:col-span-2 h-[1px] bg-surface-variant my-1"></div>
+<!-- Field: Date -->
+<div class="flex items-center justify-between group">
+<div class="flex items-start gap-3">
+<div class="mt-0.5 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">calendar_today</span></div>
+<div>
+<p class="text-label-sm font-label-sm text-slate-text uppercase">Ngày đi</p>
+<p class="text-body-md font-body-md text-on-surface font-medium mt-0.5">10/06/2026</p>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<!-- Field: Transport -->
+<div class="flex items-center justify-between group">
+<div class="flex items-start gap-3">
+<div class="mt-0.5 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">train</span></div>
+<div>
+<p class="text-label-sm font-label-sm text-slate-text uppercase">Phương tiện</p>
+<p class="text-body-md font-body-md text-on-surface font-medium mt-0.5">Tàu hỏa</p>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<!-- Field: Passengers -->
+<div class="flex items-center justify-between group col-span-1 sm:col-span-2">
+<div class="flex items-start gap-3">
+<div class="mt-0.5 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">group</span></div>
+<div>
+<p class="text-label-sm font-label-sm text-slate-text uppercase">Hành khách</p>
+<p class="text-body-md font-body-md text-on-surface font-medium mt-0.5">2 người lớn</p>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Actions -->
+<div class="p-4 bg-surface-bright border-t border-outline-variant flex flex-col sm:flex-row gap-3">
+<button class="flex-1 bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                                Tìm chuyến đi
+                            </button>
+<button class="sm:w-auto w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md py-2.5 px-4 rounded-lg transition-colors border border-outline-variant">
+                                Sửa tất cả
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Input Box -->
+<div class="w-full bg-background/80 backdrop-blur-md border-t border-outline-variant p-4 md:px-0 flex justify-center z-10 shrink-0">
+<div class="w-full max-w-[800px] relative flex items-center">
+<button class="absolute left-3 w-8 h-8 flex items-center justify-center rounded-full text-secondary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-full py-3 pl-12 pr-14 text-body-md font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-[0px_4px_12px_rgba(15,41,77,0.05)] transition-shadow" placeholder="Gõ yêu cầu khác hoặc thay đổi..." type="text"/>
+<button class="absolute right-2 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-on-primary hover:bg-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+    </style>
+</body></html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Search Results - Trip Assistant</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config from Brand Anchors -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#f0f1f3",
+                    "background": "#f8f9fb",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#aec6ff",
+                    "tertiary-fixed": "#dce1ff",
+                    "on-tertiary-container": "#fffbff",
+                    "on-surface-variant": "#414754",
+                    "secondary": "#485f86",
+                    "surface-dim": "#d9dadc",
+                    "surface": "#f8f9fb",
+                    "on-secondary-fixed-variant": "#30476d",
+                    "on-surface": "#191c1e",
+                    "tertiary-fixed-dim": "#b7c4ff",
+                    "secondary-fixed": "#d6e3ff",
+                    "on-tertiary-fixed": "#001552",
+                    "surface-container-low": "#f2f4f6",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e1e2e4",
+                    "slate-text": "#455873",
+                    "primary": "#0058be",
+                    "on-primary-fixed-variant": "#004395",
+                    "surface-container-high": "#e7e8ea",
+                    "inverse-primary": "#aec6ff",
+                    "secondary-container": "#bbd2ff",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b0c7f4",
+                    "tertiary": "#004ae7",
+                    "on-primary-container": "#fefcff",
+                    "on-error-container": "#93000a",
+                    "success": "#12B76A",
+                    "warning": "#F79009",
+                    "outline-variant": "#c1c6d7",
+                    "primary-container": "#0570ec",
+                    "on-background": "#191c1e",
+                    "on-secondary-container": "#435a81",
+                    "inverse-surface": "#2e3132",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#d8e2ff",
+                    "on-secondary-fixed": "#001b3d",
+                    "surface-container-highest": "#e1e2e4",
+                    "surface-container": "#edeef0",
+                    "surface-tint": "#005ac2",
+                    "outline": "#727786",
+                    "on-primary-fixed": "#001a42",
+                    "on-tertiary-fixed-variant": "#0038b6",
+                    "on-primary": "#ffffff",
+                    "tertiary-container": "#3666ff",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f8f9fb",
+                    "error": "#F04438"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "unit": "4px",
+                    "container-margin-mobile": "16px",
+                    "container-margin-desktop": "32px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "stack-lg": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md-mobile": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Ambient shadows for cards */
+        .ambient-shadow {
+            box-shadow: 0px 4px 12px rgba(15, 41, 77, 0.05);
+        }
+        .ambient-shadow-hover:hover {
+            box-shadow: 0px 8px 20px rgba(15, 41, 77, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        /* Hide scrollbar for chips */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar (Desktop Only) -->
+<nav class="hidden md:flex flex-col z-40 bg-surface-container-lowest border-r border-outline-variant shadow-sm h-full w-64 flex-shrink-0">
+<div class="px-6 py-8 flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<img alt="User Avatar" class="w-10 h-10 rounded-full" data-alt="A small circular user avatar image showing a minimalist profile placeholder against a primary blue background. The style is modern, clean, and typical of high-end web applications." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzwTILtnx-MxA1CYcClcOvtDJKoXjwEXvEu4u5P7_IaDcxMqR_UcXS_mdRdURAxH8kx-VHUdp887xcIp_dg8OaLOqYejFUUjll2hiomRpX51bBQnK6Kz2UWEzfe-dkDkritdURmfpp3gb8FwYj54-oWEE514c6nzLoYb_pyg2mPY-_sulK0HrAWKYxMVXZwttW1Fw38d9_vF6rg4yZkM_sh2TP1MvviAJXwS8GKVgo2pulxj5SlKxWXM_hkFijffuGzxfuV6IwehoP"/>
+<div>
+<h1 class="text-headline-md font-headline-md text-primary">Trip Assistant</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">Personal Concierge</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col px-2 gap-1 flex-1 mt-4">
+<!-- All inactive since this is a search result page, no direct match -->
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-label-md font-label-md">History</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-label-md font-label-md">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- TopNavBar -->
+<header class="bg-surface flex justify-between items-center w-full px-container-margin-mobile md:px-container-margin-desktop h-16 border-b border-outline-variant flex-shrink-0 z-30 relative">
+<div class="flex items-center gap-3">
+<!-- Mobile menu / Back button -->
+<button class="md:hidden text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 -ml-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<span class="text-title-sm font-title-sm font-bold text-primary md:hidden">Trip Assistant</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-primary hover:bg-surface-container-low transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 overflow-y-auto w-full relative scroll-smooth p-container-margin-mobile md:p-container-margin-desktop flex justify-center">
+<!-- AI Chat Thread / Results Container Max Width -->
+<div class="w-full max-w-[800px] flex flex-col gap-stack-lg pb-24">
+<!-- Query Context (User Intent) -->
+<div class="flex justify-end w-full mb-2">
+<div class="bg-primary text-on-primary rounded-2xl rounded-tr-sm px-4 py-3 max-w-[85%] sm:max-w-[70%]">
+<p class="text-body-md font-body-md">Tìm vé tàu từ TP.HCM đi Đà Nẵng ngày mai</p>
+</div>
+</div>
+<!-- AI Response Bubble -->
+<div class="flex items-start gap-3 w-full">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-on-secondary-container text-sm" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant ambient-shadow rounded-2xl rounded-tl-sm px-4 py-3 max-w-[90%] md:max-w-[75%] relative group">
+<p class="text-body-md font-body-md text-on-surface">Tôi tìm thấy 8 chuyến phù hợp cho bạn.</p>
+<!-- Hover actions -->
+<div class="absolute -right-12 top-2 hidden group-hover:flex flex-col gap-1">
+<button class="p-1 rounded-full text-outline hover:text-primary transition-colors bg-surface-container-lowest border border-outline-variant shadow-sm" title="Copy">
+<span class="material-symbols-outlined text-[16px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Filters / Chips -->
+<div class="flex overflow-x-auto no-scrollbar gap-2 py-1 -mx-4 px-4 md:mx-0 md:px-0">
+<button class="flex items-center gap-1 bg-surface-container-lowest border border-primary text-primary px-4 h-[32px] rounded-full text-label-md font-label-md whitespace-nowrap flex-shrink-0 transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="sort">sort</span>
+                        Khởi hành sớm nhất
+                    </button>
+<button class="flex items-center gap-1 bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-outline hover:text-on-surface px-4 h-[32px] rounded-full text-label-md font-label-md whitespace-nowrap flex-shrink-0 transition-colors">
+                        Giá thấp nhất
+                    </button>
+<button class="flex items-center gap-1 bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-outline hover:text-on-surface px-4 h-[32px] rounded-full text-label-md font-label-md whitespace-nowrap flex-shrink-0 transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+                        Thời gian di chuyển
+                    </button>
+</div>
+<!-- Result Cards List -->
+<div class="flex flex-col gap-stack-md w-full mt-2">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl ambient-shadow ambient-shadow-hover transition-all duration-200 overflow-hidden cursor-pointer group flex flex-col md:flex-row md:items-center">
+<div class="p-4 flex-1 flex flex-col sm:flex-row gap-4 sm:items-center border-b md:border-b-0 md:border-r border-surface-container-high">
+<!-- Logo / Transport Type -->
+<div class="flex items-center gap-3 sm:w-[120px] flex-shrink-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="train">train</span>
+</div>
+<div>
+<h3 class="text-title-sm font-title-sm text-on-surface">SE1</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Đường sắt VN</p>
+</div>
+</div>
+<!-- Journey Details -->
+<div class="flex items-center justify-between flex-1 gap-2">
+<div class="text-center">
+<p class="text-title-sm font-title-sm text-on-surface">08:00</p>
+<p class="text-label-md font-label-md text-on-surface-variant">TP.HCM</p>
+</div>
+<div class="flex flex-col items-center flex-1 px-2">
+<p class="text-label-sm font-label-sm text-slate-text mb-1">15h 15m</p>
+<div class="w-full h-[1px] bg-outline-variant relative flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-outline-variant absolute left-0"></div>
+<span class="material-symbols-outlined text-outline text-[16px] bg-surface-container-lowest px-1" data-icon="directions_transit">directions_transit</span>
+<div class="w-1.5 h-1.5 rounded-full bg-outline-variant absolute right-0"></div>
+</div>
+<p class="text-label-sm font-label-sm text-success mt-1">Trực tiếp</p>
+</div>
+<div class="text-center">
+<p class="text-title-sm font-title-sm text-on-surface">23:15</p>
+<p class="text-label-md font-label-md text-on-surface-variant">Đà Nẵng</p>
+</div>
+</div>
+</div>
+<!-- Price & CTA -->
+<div class="p-4 md:w-[180px] flex flex-row md:flex-col items-center justify-between md:justify-center gap-2 bg-surface-bright">
+<div class="flex flex-col md:items-end">
+<span class="text-title-sm font-title-sm text-primary">1.250.000₫</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Ghế mềm điều hòa</span>
+</div>
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary text-label-md font-label-md px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap w-auto md:w-full">
+                                Chọn vé
+                            </button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl ambient-shadow ambient-shadow-hover transition-all duration-200 overflow-hidden cursor-pointer group flex flex-col md:flex-row md:items-center">
+<div class="p-4 flex-1 flex flex-col sm:flex-row gap-4 sm:items-center border-b md:border-b-0 md:border-r border-surface-container-high">
+<div class="flex items-center gap-3 sm:w-[120px] flex-shrink-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="train">train</span>
+</div>
+<div>
+<h3 class="text-title-sm font-title-sm text-on-surface">SE3</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Đường sắt VN</p>
+</div>
+</div>
+<div class="flex items-center justify-between flex-1 gap-2">
+<div class="text-center">
+<p class="text-title-sm font-title-sm text-on-surface">10:30</p>
+<p class="text-label-md font-label-md text-on-surface-variant">TP.HCM</p>
+</div>
+<div class="flex flex-col items-center flex-1 px-2">
+<p class="text-label-sm font-label-sm text-slate-text mb-1">16h 15m</p>
+<div class="w-full h-[1px] bg-outline-variant relative flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-outline-variant absolute left-0"></div>
+<span class="material-symbols-outlined text-outline text-[16px] bg-surface-container-lowest px-1" data-icon="directions_transit">directions_transit</span>
+<div class="w-1.5 h-1.5 rounded-full bg-outline-variant absolute right-0"></div>
+</div>
+<p class="text-label-sm font-label-sm text-success mt-1">Trực tiếp</p>
+</div>
+<div class="text-center">
+<p class="text-title-sm font-title-sm text-on-surface">02:45</p>
+<p class="text-label-md font-label-md text-on-surface-variant text-error">+1 ngày</p>
+</div>
+</div>
+</div>
+<div class="p-4 md:w-[180px] flex flex-row md:flex-col items-center justify-between md:justify-center gap-2 bg-surface-bright">
+<div class="flex flex-col md:items-end">
+<span class="text-title-sm font-title-sm text-primary">1.100.000₫</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Ghế mềm điều hòa</span>
+</div>
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary text-label-md font-label-md px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap w-auto md:w-full">
+                                Chọn vé
+                            </button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl ambient-shadow ambient-shadow-hover transition-all duration-200 overflow-hidden cursor-pointer group flex flex-col md:flex-row md:items-center">
+<div class="p-4 flex-1 flex flex-col sm:flex-row gap-4 sm:items-center border-b md:border-b-0 md:border-r border-surface-container-high">
+<div class="flex items-center gap-3 sm:w-[120px] flex-shrink-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="train">train</span>
+</div>
+<div>
+<h3 class="text-title-sm font-title-sm text-on-surface">SE5</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Đường sắt VN</p>
+</div>
+</div>
+<div class="flex items-center justify-between flex-1 gap-2">
+<div class="text-center">
+<p class="text-title-sm font-title-sm text-on-surface">15:00</p>
+<p class="text-label-md font-label-md text-on-surface-variant">TP.HCM</p>
+</div>
+<div class="flex flex-col items-center flex-1 px-2">
+<p class="text-label-sm font-label-sm text-slate-text mb-1">16h 30m</p>
+<div class="w-full h-[1px] bg-outline-variant relative flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-outline-variant absolute left-0"></div>
+<span class="material-symbols-outlined text-outline text-[16px] bg-surface-container-lowest px-1" data-icon="directions_transit">directions_transit</span>
+<div class="w-1.5 h-1.5 rounded-full bg-outline-variant absolute right-0"></div>
+</div>
+<p class="text-label-sm font-label-sm text-success mt-1">Trực tiếp</p>
+</div>
+<div class="text-center">
+<p class="text-title-sm font-title-sm text-on-surface">07:30</p>
+<p class="text-label-md font-label-md text-on-surface-variant text-error">+1 ngày</p>
+</div>
+</div>
+</div>
+<div class="p-4 md:w-[180px] flex flex-row md:flex-col items-center justify-between md:justify-center gap-2 bg-surface-bright">
+<div class="flex flex-col md:items-end">
+<span class="text-title-sm font-title-sm text-primary">1.050.000₫</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Ghế ngồi cứng</span>
+</div>
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary text-label-md font-label-md px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap w-auto md:w-full">
+                                Chọn vé
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Input Area Overlay -->
+<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background to-transparent pt-10 pb-6 px-4 md:px-8 pointer-events-none flex justify-center z-20">
+<div class="w-full max-w-[800px] pointer-events-auto bg-surface-container-lowest rounded-full border border-outline-variant shadow-[0px_12px_24px_rgba(15,41,77,0.12)] flex items-center p-2 pr-3">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-secondary-fixed-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-body-md font-body-md text-on-surface placeholder-outline px-2 h-full outline-none" placeholder="Yêu cầu thay đổi giờ hoặc hạng vé..." type="text"/>
+<button class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary hover:bg-on-primary-fixed-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</main>
+</body></html>

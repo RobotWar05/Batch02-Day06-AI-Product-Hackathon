@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trip Assistant - Chọn phương tiện</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#f0f1f3",
+                      "background": "#f8f9fb",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#aec6ff",
+                      "tertiary-fixed": "#dce1ff",
+                      "on-tertiary-container": "#fffbff",
+                      "on-surface-variant": "#414754",
+                      "secondary": "#485f86",
+                      "surface-dim": "#d9dadc",
+                      "surface": "#f8f9fb",
+                      "on-secondary-fixed-variant": "#30476d",
+                      "on-surface": "#191c1e",
+                      "tertiary-fixed-dim": "#b7c4ff",
+                      "secondary-fixed": "#d6e3ff",
+                      "on-tertiary-fixed": "#001552",
+                      "surface-container-low": "#f2f4f6",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#e1e2e4",
+                      "slate-text": "#455873",
+                      "primary": "#0058be",
+                      "on-primary-fixed-variant": "#004395",
+                      "surface-container-high": "#e7e8ea",
+                      "inverse-primary": "#aec6ff",
+                      "secondary-container": "#bbd2ff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#b0c7f4",
+                      "tertiary": "#004ae7",
+                      "on-primary-container": "#fefcff",
+                      "on-error-container": "#93000a",
+                      "success": "#12B76A",
+                      "warning": "#F79009",
+                      "outline-variant": "#c1c6d7",
+                      "primary-container": "#0570ec",
+                      "on-background": "#191c1e",
+                      "on-secondary-container": "#435a81",
+                      "inverse-surface": "#2e3132",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#d8e2ff",
+                      "on-secondary-fixed": "#001b3d",
+                      "surface-container-highest": "#e1e2e4",
+                      "surface-container": "#edeef0",
+                      "surface-tint": "#005ac2",
+                      "outline": "#727786",
+                      "on-primary-fixed": "#001a42",
+                      "on-tertiary-fixed-variant": "#0038b6",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#3666ff",
+                      "on-secondary": "#ffffff",
+                      "surface-bright": "#f8f9fb",
+                      "error": "#F04438"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px",
+                      "2xl": "1rem",
+                      "3xl": "1.5rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "unit": "4px",
+                      "container-margin-mobile": "16px",
+                      "container-margin-desktop": "32px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "stack-lg": "24px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "title-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md-mobile": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+              },
+              "boxShadow": {
+                  "level-1": "0px 4px 12px rgba(15, 41, 77, 0.05)",
+                  "level-2": "0px 12px 24px rgba(15, 41, 77, 0.12)"
+              },
+              "animation": {
+                  "slide-up": "slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
+                  "fade-in": "fadeIn 0.2s ease-out forwards"
+              },
+              "keyframes": {
+                  "slideUp": {
+                      "0%": { transform: "translateY(100%)", opacity: "0" },
+                      "100%": { transform: "translateY(0)", opacity: "1" }
+                  },
+                  "fadeIn": {
+                      "0%": { opacity: "0" },
+                      "100%": { opacity: "1" }
+                  }
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen overflow-hidden">
+<!-- TopNavBar (Mobile Only) -->
+<header class="md:hidden flex justify-between items-center w-full px-container-margin-desktop h-16 bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline fixed top-0 left-0 z-30">
+<div class="text-title-sm font-title-sm font-bold text-primary dark:text-primary-fixed-dim">
+            Trip Assistant
+        </div>
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar (Desktop Only) -->
+<aside class="hidden md:flex fixed left-0 top-0 h-screen flex-col z-40 bg-surface-container-lowest dark:bg-inverse-surface border-r border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked left h-full w-64 pt-6 pb-6">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">
+<span class="material-symbols-outlined" data-icon="robot_2">robot_2</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md text-primary dark:text-primary-fixed-dim">Trip Assistant</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Personal Concierge</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-xl px-4 py-3 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-label-md font-label-md">History</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-3 hover:bg-surface-container dark:hover:bg-surface-container-highest transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant px-4 py-3 hover:bg-surface-container dark:hover:bg-surface-container-highest transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-label-md font-label-md">Profile</span>
+</a>
+</nav>
+</aside>
+<!-- Main Chat Canvas (Background) -->
+<main class="flex-1 w-full max-w-[800px] mx-auto pt-20 md:pt-6 pb-24 px-container-margin-mobile md:px-container-margin-desktop flex flex-col gap-6 md:ml-64 overflow-y-auto">
+<!-- Dummy chat content to provide context behind the modal -->
+<div class="flex flex-col gap-4 w-full">
+<!-- User Bubble -->
+<div class="self-end max-w-[85%] bg-primary text-on-primary rounded-2xl rounded-tr-sm px-4 py-3 shadow-level-1">
+<p class="text-body-md font-body-md">Tìm vé máy bay đi Đà Nẵng tuần sau nhé.</p>
+</div>
+<!-- AI Bubble -->
+<div class="self-start max-w-[85%] bg-surface-container-lowest border border-outline-variant/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-level-1">
+<p class="text-body-md font-body-md text-on-surface mb-3">Tôi đã tìm thấy một số chuyến bay. Tuy nhiên, nếu bạn muốn tiết kiệm chi phí, tàu hỏa cũng là một lựa chọn tốt.</p>
+<div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="flight">flight</span>
+<div>
+<p class="text-title-sm font-title-sm text-on-surface">Chuyến bay đang chọn</p>
+<p class="text-body-md font-body-md text-on-surface-variant">SGN - DAD • 22/10</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="edit" style="font-size: 20px;">edit</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Overlay & Modal / Bottom Sheet -->
+<div class="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-on-surface/40 backdrop-blur-[2px] animate-fade-in p-0 md:p-6">
+<!-- Modal Container -->
+<div class="w-full max-w-[480px] bg-surface-container-lowest rounded-t-3xl md:rounded-2xl shadow-level-2 animate-slide-up md:animate-fade-in flex flex-col max-h-[921px]">
+<!-- Mobile Handle -->
+<div class="w-full flex justify-center pt-3 pb-1 md:hidden">
+<div class="w-10 h-1 bg-outline-variant/50 rounded-full"></div>
+</div>
+<!-- Header -->
+<div class="px-6 py-4 flex items-center justify-between border-b border-outline-variant/30">
+<h2 class="text-title-sm font-title-sm text-on-surface">Chọn phương tiện</h2>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors flex items-center justify-center -mr-2">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Body (Options) -->
+<div class="p-6 flex flex-col gap-3 overflow-y-auto">
+<!-- Option 1: Máy bay (Unselected) -->
+<label class="group relative flex items-center p-4 rounded-xl border border-outline-variant bg-surface hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mr-4 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="flight">flight</span>
+</div>
+<div class="flex-1">
+<span class="block text-body-lg font-body-lg text-on-surface font-medium">Máy bay</span>
+<span class="block text-label-md font-label-md text-on-surface-variant">Nhanh chóng, tiện lợi</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors">
+<!-- Empty radio -->
+</div>
+<input class="hidden" name="transport" type="radio" value="flight"/>
+</label>
+<!-- Option 2: Tàu hỏa (Selected) -->
+<label class="group relative flex items-center p-4 rounded-xl border-2 border-primary bg-primary/5 cursor-pointer shadow-sm">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center mr-4">
+<span class="material-symbols-outlined" data-icon="train">train</span>
+</div>
+<div class="flex-1">
+<span class="block text-body-lg font-body-lg text-primary font-semibold">Tàu hỏa</span>
+<span class="block text-label-md font-label-md text-primary/80">Trải nghiệm ngắm cảnh</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center bg-primary">
+<span class="block w-2 h-2 bg-on-primary rounded-full"></span>
+</div>
+<input checked="" class="hidden" name="transport" type="radio" value="train"/>
+</label>
+<!-- Option 3: Xe khách (Unselected) -->
+<label class="group relative flex items-center p-4 rounded-xl border border-outline-variant bg-surface hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mr-4 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
+</div>
+<div class="flex-1">
+<span class="block text-body-lg font-body-lg text-on-surface font-medium">Xe khách</span>
+<span class="block text-label-md font-label-md text-on-surface-variant">Tiết kiệm chi phí</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors">
+<!-- Empty radio -->
+</div>
+<input class="hidden" name="transport" type="radio" value="bus"/>
+</label>
+</div>
+<!-- Footer (Action) -->
+<div class="p-6 pt-2 pb-8 md:pb-6 border-t border-outline-variant/30">
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary py-3.5 rounded-xl text-body-lg font-body-lg font-semibold shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+                    Cập nhật
+                </button>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trip Assistant - Updated Widget</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#f0f1f3",
+                      "background": "#f8f9fb",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#aec6ff",
+                      "tertiary-fixed": "#dce1ff",
+                      "on-tertiary-container": "#fffbff",
+                      "on-surface-variant": "#414754",
+                      "secondary": "#485f86",
+                      "surface-dim": "#d9dadc",
+                      "surface": "#f8f9fb",
+                      "on-secondary-fixed-variant": "#30476d",
+                      "on-surface": "#191c1e",
+                      "tertiary-fixed-dim": "#b7c4ff",
+                      "secondary-fixed": "#d6e3ff",
+                      "on-tertiary-fixed": "#001552",
+                      "surface-container-low": "#f2f4f6",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#e1e2e4",
+                      "slate-text": "#455873",
+                      "primary": "#0058be",
+                      "on-primary-fixed-variant": "#004395",
+                      "surface-container-high": "#e7e8ea",
+                      "inverse-primary": "#aec6ff",
+                      "secondary-container": "#bbd2ff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#b0c7f4",
+                      "tertiary": "#004ae7",
+                      "on-primary-container": "#fefcff",
+                      "on-error-container": "#93000a",
+                      "success": "#12B76A",
+                      "warning": "#F79009",
+                      "outline-variant": "#c1c6d7",
+                      "primary-container": "#0570ec",
+                      "on-background": "#191c1e",
+                      "on-secondary-container": "#435a81",
+                      "inverse-surface": "#2e3132",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#d8e2ff",
+                      "on-secondary-fixed": "#001b3d",
+                      "surface-container-highest": "#e1e2e4",
+                      "surface-container": "#edeef0",
+                      "surface-tint": "#005ac2",
+                      "outline": "#727786",
+                      "on-primary-fixed": "#001a42",
+                      "on-tertiary-fixed-variant": "#0038b6",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#3666ff",
+                      "on-secondary": "#ffffff",
+                      "surface-bright": "#f8f9fb",
+                      "error": "#F04438"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "unit": "4px",
+                      "container-margin-mobile": "16px",
+                      "container-margin-desktop": "32px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "stack-lg": "24px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "title-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md-mobile": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fb; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ambient-shadow-level-1 { box-shadow: 0px 4px 12px rgba(15, 41, 77, 0.05); }
+        .ambient-shadow-level-2 { box-shadow: 0px 12px 24px rgba(15, 41, 77, 0.12); }
+        .toast-enter { animation: slideUp 0.3s ease-out forwards; }
+        @keyframes slideUp { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    </style>
+</head>
+<body class="text-on-surface bg-background flex h-screen overflow-hidden">
+<!-- SideNavBar (Desktop) -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col z-40 bg-surface-container-lowest border-r border-outline-variant shadow-sm w-64 hidden md:flex">
+<div class="p-6 border-b border-outline-variant flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-title-sm">
+                TA
+            </div>
+<div>
+<h1 class="text-headline-md font-headline-md text-primary">Trip Assistant</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">Personal Concierge</p>
+</div>
+</div>
+<nav class="flex-1 p-4 space-y-2">
+<!-- Inactive by default as this is a specific functional view -->
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container transition-all rounded-xl text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                History
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container transition-all rounded-xl text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container transition-all rounded-xl text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                Profile
+            </a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col md:ml-64 relative overflow-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-container-margin-desktop h-16 bg-surface border-b border-outline-variant flat no shadows md:hidden">
+<div class="flex items-center gap-3">
+<span class="text-title-sm font-title-sm font-bold text-primary">Trip Assistant</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full p-2 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 overflow-y-auto p-container-margin-mobile md:p-container-margin-desktop bg-background flex flex-col items-center">
+<div class="w-full max-w-[800px] flex flex-col gap-stack-lg mt-4 md:mt-8">
+<!-- Updated Trip Widget -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant ambient-shadow-level-1 p-6 relative group transition-transform hover:-translate-y-1 hover:shadow-lg">
+<!-- Edit Action -->
+<button class="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<div class="flex flex-col gap-stack-md">
+<div class="flex items-center gap-2">
+<span class="bg-tertiary-container text-on-tertiary-container text-label-sm font-label-sm px-2 py-1 rounded-full uppercase tracking-wider">
+                                Đã cập nhật
+                            </span>
+</div>
+<h2 class="text-headline-md font-headline-md md:text-display-lg md:font-display-lg text-on-surface">
+                            Hà Nội → Sài Gòn
+                        </h2>
+<div class="flex flex-wrap items-center gap-x-6 gap-y-3 mt-2">
+<div class="flex items-center gap-2 text-body-lg font-body-lg text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="calendar_today">calendar_today</span>
+                                15/10/2023 - 20/10/2023
+                            </div>
+<div class="flex items-center gap-2 text-body-lg font-body-lg text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="group">group</span>
+                                2 Người lớn
+                            </div>
+<div class="flex items-center gap-2 text-body-lg font-body-lg text-primary font-medium bg-primary-fixed px-3 py-1.5 rounded-lg border border-primary-fixed-dim">
+                                🚆 Tàu hỏa
+                            </div>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="flex justify-end mt-4">
+<button class="bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-colors rounded-full px-6 py-3 flex items-center gap-2 text-label-md font-label-md shadow-sm">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+                        Tìm lại kết quả
+                    </button>
+</div>
+<!-- Skeleton Data Area to show context -->
+<div class="mt-8 flex flex-col gap-stack-md opacity-60">
+<h3 class="text-title-sm font-title-sm text-on-surface mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined animate-spin" data-icon="progress_activity">progress_activity</span>
+                        Đang tìm chuyến tàu phù hợp...
+                    </h3>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant h-24 w-full animate-pulse"></div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant h-24 w-full animate-pulse"></div>
+</div>
+</div>
+</div>
+<!-- Toast Notification (Level 2 Elevation) -->
+<div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-success text-on-error px-4 py-3 rounded-xl flex items-center gap-3 ambient-shadow-level-2 z-50 toast-enter">
+<span class="material-symbols-outlined" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body-md font-body-md font-medium">Đã cập nhật thông tin.</span>
+</div>
+</main>
+</body></html>
