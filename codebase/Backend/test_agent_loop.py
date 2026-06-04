@@ -84,6 +84,76 @@ def run_tests():
     assert "Từ chối hỗ trợ" in res_safety["message"]
     assert res_safety["next_action"] == "blocked"
 
+    print("\n=== CHẠY KIỂM THỬ CHUỖI HỘI THOẠI (CHAIN OF SESSION PROMPTS) ===")
+    
+    chain_session_id = "test-session-888"
+    
+    # Turn 1: User indicates intent to travel
+    print("\n[User]: Tôi muốn đặt vé đi du lịch")
+    t1 = trip_agent.process_user_message(chain_session_id, "Tôi muốn đặt vé đi du lịch")
+    print(f"Bot response_type: {t1['response_type']}")
+    print(f"Bot message: {t1['message']}")
+    print(f"Next action: {t1['next_action']}")
+    assert t1["response_type"] == "slot_filling"
+    assert t1["next_action"] == "awaiting_departure"
+
+    # Turn 2: User answers departure only
+    print("\n[User]: Hà Nội")
+    t2 = trip_agent.process_user_message(chain_session_id, "Hà Nội")
+    print(f"Bot message: {t2['message']}")
+    print(f"Current slots: {json.dumps(t2['payload'], ensure_ascii=False)}")
+    print(f"Next action: {t2['next_action']}")
+    assert t2["payload"]["departure"] == "Hà Nội"
+    assert t2["next_action"] == "awaiting_destination"
+
+    # Turn 3: User answers destination only
+    print("\n[User]: Phú Quốc")
+    t3 = trip_agent.process_user_message(chain_session_id, "Phú Quốc")
+    print(f"Bot message: {t3['message']}")
+    print(f"Current slots: {json.dumps(t3['payload'], ensure_ascii=False)}")
+    print(f"Next action: {t3['next_action']}")
+    assert t3["payload"]["destination"] == "Phú Quốc"
+    assert t3["next_action"] == "awaiting_date"
+
+    # Turn 4: User answers date only
+    print("\n[User]: ngày mai")
+    t4 = trip_agent.process_user_message(chain_session_id, "ngày mai")
+    print(f"Bot message: {t4['message']}")
+    print(f"Current slots: {json.dumps(t4['payload'], ensure_ascii=False)}")
+    print(f"Next action: {t4['next_action']}")
+    assert t4["payload"]["date"] == "2026-06-05"
+    assert t4["next_action"] == "awaiting_transport"
+
+    # Turn 5: User answers transport mode -> HITS BREAKPOINT / CONFIRMATION GATE
+    print("\n[User]: Máy bay")
+    t5 = trip_agent.process_user_message(chain_session_id, "Máy bay")
+    print("\n>>> [BREAKPOINT / CONFIRMATION GATE] <<<")
+    print(f"Bot response_type: {t5['response_type']}")
+    print(f"Bot message: {t5['message']}")
+    print(f"Compiled slots for review: {json.dumps(t5['payload'], ensure_ascii=False)}")
+    print(f"Next action: {t5['next_action']}")
+    assert t5["response_type"] == "trip_widget"
+    assert t5["payload"]["departure"] == "Hà Nội"
+    assert t5["payload"]["destination"] == "Phú Quốc"
+    assert t5["payload"]["date"] == "2026-06-05"
+    assert t5["payload"]["transport"] == "plane"
+    assert t5["next_action"] == "ready_to_search"
+
+    # Turn 6: User corrects transport to train (manually updates slot)
+    print("\n[User]: Đổi phương tiện sang tàu hỏa (PATCH State)")
+    t6 = trip_agent.patch_trip_state(chain_session_id, {"transport": "train"})
+    print(f"Bot response: {t6['message']}")
+    print(f"Updated slots: {json.dumps(t6['payload'], ensure_ascii=False)}")
+    assert t6["payload"]["transport"] == "train"
+    assert t6["next_action"] == "ready_to_search"
+
+    # Turn 7: User confirms and searches
+    print("\n[User]: Tìm kiếm chuyến đi (Confirm Search)")
+    t7 = trip_agent.search_trips(chain_session_id)
+    print(f"Search message: {t7['message']}")
+    print(f"Results list size: {len(t7['payload']['results'])}")
+    assert t7["response_type"] == "trip_results"
+
     print("\n==========================================")
     print("=> TẤT CẢ KIỂM THỬ CHO AGENT LOOP ĐỀU THÀNH CÔNG!")
 
