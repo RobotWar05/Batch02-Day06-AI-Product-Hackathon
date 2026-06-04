@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "prompt": "Tôi muốn tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6",
+    "expected_path": "Happy Path",
+    "expected_output": {
+      "intent": "search_trip",
+      "departure": "TP.HCM",
+      "destination": "Đà Nẵng",
+      "date": "2026-06-10",
+      "transport": "train",
+      "passengers": 2
+    }
+  },
+  {
+    "id": 2,
+    "prompt": "Đặt cho anh vé máy bay từ Hà Nội đi Phú Quốc cuối tuần này",
+    "expected_path": "Happy Path (Ngày tương đối)",
+    "expected_output": {
+      "intent": "search_trip",
+      "departure": "Hà Nội",
+      "destination": "Phú Quốc",
+      "date": "2026-06-06",
+      "transport": "plane",
+      "passengers": 1
+    }
+  },
+  {
+    "id": 3,
+    "prompt": "Tìm vé đi Đà Nẵng ngày 10/6",
+    "expected_path": "Low-confidence (Khuyết Điểm đi)",
+    "expected_output": {
+      "intent": "search_trip",
+      "departure": null,
+      "destination": "Đà Nẵng",
+      "date": "2026-06-10",
+      "transport": null
+    }
+  },
+  {
+    "id": 4,
+    "prompt": "Vé đi Đà Nẵng từ Hà Nội",
+    "expected_path": "Failure/Correction (Thiếu Ngày và Dễ nhầm chiều)",
+    "expected_output": {
+      "intent": "search_trip",
+      "departure": "Hà Nội",
+      "destination": "Đà Nẵng",
+      "date": null
+    }
+  },
+  {
+    "id": 5,
+    "prompt": "Cho hỏi chính sách hủy vé máy bay của Trip.com như thế nào?",
+    "expected_path": "FAQ Path (Không kích hoạt tìm kiếm)",
+    "expected_output": {
+      "intent": "other"
+    }
+  },
+  {
+    "id": 6,
+    "prompt": "Mai có xe khách nào đi từ Hải Phòng lên Hà Nội không em?",
+    "expected_path": "Happy Path (Xe khách)",
+    "expected_output": {
+      "intent": "search_trip",
+      "departure": "Hải Phòng",
+      "destination": "Hà Nội",
+      "date": "2026-06-05",
+      "transport": "coach"
+    }
+  },
+  {
+    "id": 7,
+    "prompt": "Hello bot, tư vấn cho mình lịch trình du lịch Đà Lạt 3 ngày 2 đêm",
+    "expected_path": "FAQ/Other Path",
+    "expected_output": {
+      "intent": "other"
+    }
+  },
+  {
+    "id": 8,
+    "prompt": "Vé đi Huế ngày mai từ Sài Gòn",
+    "expected_path": "Happy Path",
+    "expected_output": {
+      "intent": "search_trip",
+      "departure": "TP.HCM",
+      "destination": "Huế",
+      "date": "2026-06-05"
+    }
+  },
+  {
+    "id": 9,
+    "prompt": "Tìm vé tàu từ Sài Gòn đi Nha Trang thứ 6 tuần sau",
+    "expected_path": "Happy Path (Ngày tương đối xa)",
+    "expected_output": {
+      "intent": "search_trip",
+      "departure": "TP.HCM",
+      "destination": "Nha Trang",
+      "date": "2026-06-12",
+      "transport": "train"
+    }
+  },
+  {
+    "id": 10,
+    "prompt": "Tôi muốn đi Hà Nội bằng máy bay",
+    "expected_path": "Low-confidence (Thiếu Điểm đi và Ngày)",
+    "expected_output": {
+      "intent": "search_trip",
+      "departure": null,
+      "destination": "Hà Nội",
+      "date": null,
+      "transport": "plane"
+    }
+  }
+]

@@ -2,12 +2,23 @@
 
 Đây là nơi nhóm nộp toàn bộ phần code của prototype. Mục tiêu là để giảng viên và các nhóm khác nhìn được sản phẩm chạy như thế nào, và mỗi thành viên đã đóng góp ra sao.
 
-## Nhóm cần làm
+## Cấu trúc Prototype hiện tại
+- **[codebase/Backend/](file:///D:/projects/Batch02-Day06-AI-Product-Hackathon/codebase/Backend)**: Chứa lõi xử lý NLP trích xuất thực thể từ prompt Tiếng Việt.
+  - [extractor.py](file:///D:/projects/Batch02-Day06-AI-Product-Hackathon/codebase/Backend/extractor.py): AI Engine kết nối Gemini API (hoặc fallback offline) để bóc tách thông tin chuyến đi & chuẩn hóa dữ liệu.
+  - [cli.py](file:///D:/projects/Batch02-Day06-AI-Product-Hackathon/codebase/Backend/cli.py): Công cụ chạy kiểm thử qua dòng lệnh CLI.
+- **[codebase/Data/](file:///D:/projects/Batch02-Day06-AI-Product-Hackathon/codebase/Data)**: Chứa bộ dữ liệu kiểm thử.
+  - [test-cases.json](file:///D:/projects/Batch02-Day06-AI-Product-Hackathon/codebase/Data/test-cases.json): 10 mẫu test-case đại diện cho Happy Path, Low-confidence Path, Failure Path và FAQ.
 
-- Đưa mã nguồn của prototype vào folder này. Nếu prototype được deploy hoặc host ở nơi khác, hãy để lại đường link kèm hướng dẫn truy cập.
-- Trong file `README.md` của nhóm, ghi rõ ba điều: cách chạy prototype (các bước cài đặt và biến môi trường nếu cần), những công cụ và API đã dùng (model AI, framework, công cụ dựng giao diện…), và phần phân công ai làm gì.
-- Mỗi thành viên nên có ít nhất một commit thực chất trong repo — đây là căn cứ để ghi nhận đóng góp của từng người.
+## Cách chạy thử nhanh công cụ trích xuất
+1. Đảm bảo bạn đã cài đặt Python 3.
+2. Di chuyển vào thư mục dự án và chạy dòng lệnh CLI tương tác:
+   ```bash
+   $env:PYTHONIOENCODING="utf-8"
+   python codebase/Backend/cli.py
+   ```
+3. Nhập một câu lệnh bất kỳ (ví dụ: *"Đặt cho anh vé máy bay từ Hà Nội đi Phú Quốc cuối tuần này"* hoặc *"tìm vé đi Đà Nẵng ngày 10/6"*) để xem cấu trúc dữ liệu JSON được trích xuất tự động.
 
-## Lưu ý
+## Công cụ và API đã dùng
+- **Model AI:** Google Gemini (thông qua thư viện `google-generativeai`).
+- **Framework & Ngôn ngữ:** Python 3, JSON.
 
-Đừng commit những thông tin nhạy cảm như API key hay file `.env`. Nếu prototype cần các biến môi trường, hãy dùng một file `.env.example` để mô tả các biến đó thay vì để lộ giá trị thật.
