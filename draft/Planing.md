@@ -1,4 +1,4 @@
-## Các bước thực hiện cải thiện Chatbot Trip.com
+## Các bước thực hiện cải thiện Chatbot
 
 ### Bước 1: Phân tích tin nhắn người dùng và nhận diện Intent
 
