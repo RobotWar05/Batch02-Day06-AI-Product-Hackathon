@@ -1,9 +1,10 @@
 import json
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
+from app.core.trace import trace_event
 from app.core.env import load_local_env
 from app.models.session import CurrentTripState
 from app.models.trip_search import SearchQuery
@@ -94,6 +95,7 @@ class FAQAgentResult:
     message: str
     payload: dict[str, Any]
     tool_calls: list[dict[str, Any]]
+    trace: list[dict[str, Any]] = field(default_factory=list)
 
 
 class FAQReActService:
@@ -134,11 +136,25 @@ class FAQReActService:
     ) -> FAQAgentResult:
         scratchpad: list[str] = []
         tool_calls: list[dict[str, Any]] = []
+        trace: list[dict[str, Any]] = [
+            trace_event(
+                "faq.mode",
+                mode="legacy_loop",
+                query=query.model_dump(mode="json"),
+                message=message,
+            )
+        ]
         parse_failures = 0
         last_observation: dict[str, Any] | None = None
 
         for _ in range(self._MAX_STEPS):
-            step_text = self._generate_step(message=message, query=query, scratchpad=scratchpad, last_observation=last_observation)
+            step_text = self._generate_step(
+                message=message,
+                query=query,
+                scratchpad=scratchpad,
+                last_observation=last_observation,
+                trace=trace,
+            )
             parsed = self._parse_step(step_text)
             if parsed is None:
                 parse_failures += 1
@@ -150,8 +166,9 @@ class FAQReActService:
             if parsed["type"] == "final":
                 return FAQAgentResult(
                     message=parsed["final_answer"],
-                    payload={"query": query.model_dump(mode="json"), "comparison": last_observation},
+                    payload={"query": query.model_dump(mode="json"), "comparison": last_observation, "trace": trace},
                     tool_calls=tool_calls,
+                    trace=trace,
                 )
 
             action_name = parsed["action"]
@@ -166,6 +183,14 @@ class FAQReActService:
 
             observation = tool(action_input)
             tool_calls.append({"tool": action_name, "input": action_input, "observation": observation})
+            trace.append(
+                trace_event(
+                    "faq.tool_call",
+                    tool=action_name,
+                    input=action_input,
+                    observation=observation,
+                )
+            )
             last_observation = observation
             scratchpad.append(step_text.strip())
             scratchpad.append(f"Observation: {json.dumps(observation, ensure_ascii=False)}")
@@ -173,24 +198,44 @@ class FAQReActService:
         fallback = "Tôi chưa thể hoàn tất phép so sánh này từ dữ liệu demo hiện có."
         return FAQAgentResult(
             message=fallback,
-            payload={"query": query.model_dump(mode="json"), "comparison": last_observation},
+            payload={"query": query.model_dump(mode="json"), "comparison": last_observation, "trace": trace},
             tool_calls=tool_calls,
+            trace=trace,
         )
 
     def _run_with_langchain(self, message: str, query: SearchQuery) -> FAQAgentResult:
         assert self._agent is not None
+        user_message = self._build_langchain_user_message(message=message, query=query)
+        trace: list[dict[str, Any]] = [
+            trace_event(
+                "faq.prompt",
+                mode="langchain_agent",
+                prompt=user_message,
+                query=query.model_dump(mode="json"),
+            )
+        ]
         response = self._agent.invoke(
             {
                 "messages": [
                     {
                         "role": "user",
-                        "content": self._build_langchain_user_message(message=message, query=query),
+                        "content": user_message,
                     }
                 ]
             }
         )
         messages = response["messages"] if isinstance(response, dict) else response
         tool_calls = self._extract_langchain_tool_calls(messages)
+        for record in tool_calls:
+            trace.append(
+                trace_event(
+                    "faq.tool_call",
+                    mode="langchain_agent",
+                    tool=record.get("tool"),
+                    input=record.get("input"),
+                    observation=record.get("observation"),
+                )
+            )
         final_answer = self._extract_langchain_final_answer(messages)
         last_observation = self._last_tool_observation(tool_calls)
 
@@ -199,8 +244,9 @@ class FAQReActService:
 
         return FAQAgentResult(
             message=final_answer,
-            payload={"query": query.model_dump(mode="json"), "comparison": last_observation},
+            payload={"query": query.model_dump(mode="json"), "comparison": last_observation, "trace": trace},
             tool_calls=tool_calls,
+            trace=trace,
         )
 
     def _build_langchain_agent(self):
@@ -392,9 +438,10 @@ class FAQReActService:
         query: SearchQuery,
         scratchpad: list[str],
         last_observation: dict[str, Any] | None,
+        trace: list[dict[str, Any]],
     ) -> str:
         if HAS_GEMINI and self._api_key:
-            llm_step = self._generate_step_with_gemini(message=message, query=query, scratchpad=scratchpad)
+            llm_step = self._generate_step_with_gemini(message=message, query=query, scratchpad=scratchpad, trace=trace)
             if llm_step:
                 return llm_step
 
@@ -425,7 +472,13 @@ class FAQReActService:
             answer = "Tôi đã kiểm tra dữ liệu demo nhưng chưa tìm thấy đủ thông tin để so sánh sâu hơn."
         return f"Final Answer: {answer}"
 
-    def _generate_step_with_gemini(self, message: str, query: SearchQuery, scratchpad: list[str]) -> str | None:
+    def _generate_step_with_gemini(
+        self,
+        message: str,
+        query: SearchQuery,
+        scratchpad: list[str],
+        trace: list[dict[str, Any]],
+    ) -> str | None:
         try:
             model = genai.GenerativeModel(
                 model_name="gemini-1.5-flash",
@@ -436,6 +489,14 @@ class FAQReActService:
                 f"Normalized query: {query.model_dump(mode='json')}\n"
                 "Available tools: search_trips, compare_modes, rank_options\n"
                 f"Scratchpad:\n{chr(10).join(scratchpad)}"
+            )
+            trace.append(
+                trace_event(
+                    "faq.prompt",
+                    mode="react_step_llm",
+                    prompt=prompt,
+                    scratchpad=scratchpad,
+                )
             )
             response = model.generate_content(prompt)
             return response.text if response.text else None

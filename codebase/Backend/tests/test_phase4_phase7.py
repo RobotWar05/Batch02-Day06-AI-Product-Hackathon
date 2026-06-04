@@ -3,7 +3,9 @@ from httpx import ASGITransport, AsyncClient
 
 from app.main import app
 from app.services.auth_service import auth_service
+from app.services.intent_classifier_service import intent_classifier_service
 from app.services.session_service import session_service
+from app.services.slot_extractor_service import slot_extractor_service
 
 
 def reset_data_files() -> None:
@@ -19,6 +21,8 @@ async def create_user_and_session(client: AsyncClient, username: str, title: str
 @pytest.mark.anyio
 async def test_faq_react_flow_returns_tool_grounded_answer_and_trace() -> None:
     reset_data_files()
+    intent_classifier_service._api_key = ""
+    slot_extractor_service._api_key = ""
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
         session = await create_user_and_session(client, "faq-react")
@@ -35,6 +39,7 @@ async def test_faq_react_flow_returns_tool_grounded_answer_and_trace() -> None:
     assert payload["session"]["current_trip_state"]["intent"] == "faq"
     assert payload["session"]["current_trip_state"]["last_tool_calls"]
     assert payload["session"]["current_trip_state"]["last_tool_calls"][0]["tool"] == "compare_modes"
+    assert any(event["event"] == "faq.tool_call" for event in payload["session"]["current_trip_state"]["debug_trace"])
 
 
 @pytest.mark.anyio

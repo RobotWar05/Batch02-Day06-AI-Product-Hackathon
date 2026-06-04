@@ -15,6 +15,7 @@
     }
   },
   "counts": {
+<<<<<<< HEAD
     "total": 70,
     "flight": {
       "Vietnam Airlines": 14,
@@ -24,6 +25,18 @@
     },
     "train": {
       "Vietnam Railways": 16
+=======
+    "total": 436,
+    "flights": {
+      "Vietnam Airlines": 85,
+      "Vietjet Air": 94,
+      "Bamboo Airways": 52,
+      "Vietravel Airlines": 41,
+      "Sun PhuQuoc Airways": 20
+    },
+    "trains": {
+      "Vietnam Railways": 144
+>>>>>>> ac97775 (feat: added alot of debugs)
     }
   },
   "route_policy": {

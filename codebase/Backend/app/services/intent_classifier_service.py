@@ -1,7 +1,9 @@
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
+from app.core.trace import trace_event
 from app.core.env import load_local_env
 from app.models.session import CurrentTripState
 
@@ -71,6 +73,7 @@ class IntentClassification:
     intent: str
     confidence: float
     is_unsafe: bool = False
+    trace: list[dict[str, Any]] = field(default_factory=list)
 
 
 class IntentClassifierService:
@@ -120,17 +123,40 @@ class IntentClassifierService:
 
     def classify(self, message: str, session_state: CurrentTripState | None = None) -> IntentClassification:
         normalized = self._normalize_text(message)
+        trace: list[dict[str, Any]] = []
 
         if self._is_unsafe(normalized):
-            return IntentClassification(intent="unrelated", confidence=1.0, is_unsafe=True)
+            trace.append(
+                trace_event(
+                    "intent_classifier.mode",
+                    mode="heuristic",
+                    intent="unrelated",
+                    reason="unsafe_content_or_prompt_injection",
+                    message=message,
+                )
+            )
+            return IntentClassification(intent="unrelated", confidence=1.0, is_unsafe=True, trace=trace)
 
         if HAS_GEMINI and self._api_key:
-            llm_result = self._classify_with_gemini(message=message, session_state=session_state)
+            try:
+                llm_result = self._classify_with_gemini(message=message, session_state=session_state, trace=trace)
+            except TypeError:
+                llm_result = self._classify_with_gemini(message=message, session_state=session_state)
             if llm_result is not None:
+                llm_result.trace = trace + llm_result.trace
                 return llm_result
 
         if self._is_out_of_scope(normalized):
-            return IntentClassification(intent="unrelated", confidence=0.93)
+            trace.append(
+                trace_event(
+                    "intent_classifier.mode",
+                    mode="heuristic",
+                    intent="unrelated",
+                    reason="out_of_scope_policy_question",
+                    message=message,
+                )
+            )
+            return IntentClassification(intent="unrelated", confidence=0.93, trace=trace)
 
         has_search_hint = any(hint in normalized for hint in self._SEARCH_HINTS)
         has_faq_hint = any(hint in normalized for hint in self._FAQ_HINTS)
@@ -138,17 +164,22 @@ class IntentClassifierService:
         has_pending_slot = session_state is not None and session_state.pending_slot is not None
 
         if has_faq_hint and self._contains_route_context(normalized):
-            return IntentClassification(intent="faq", confidence=0.88)
+            trace.append(trace_event("intent_classifier.mode", mode="heuristic", intent="faq", message=message))
+            return IntentClassification(intent="faq", confidence=0.88, trace=trace)
         if has_search_hint or has_pending_slot:
-            return IntentClassification(intent="search_trip", confidence=0.84)
+            trace.append(trace_event("intent_classifier.mode", mode="heuristic", intent="search_trip", message=message))
+            return IntentClassification(intent="search_trip", confidence=0.84, trace=trace)
         if has_trip_context and self._looks_like_follow_up(normalized):
-            return IntentClassification(intent="search_trip", confidence=0.74)
-        return IntentClassification(intent="unrelated", confidence=0.82)
+            trace.append(trace_event("intent_classifier.mode", mode="heuristic", intent="search_trip", reason="session_follow_up", message=message))
+            return IntentClassification(intent="search_trip", confidence=0.74, trace=trace)
+        trace.append(trace_event("intent_classifier.mode", mode="heuristic", intent="unrelated", reason="default_fallback", message=message))
+        return IntentClassification(intent="unrelated", confidence=0.82, trace=trace)
 
     def _classify_with_gemini(
         self,
         message: str,
         session_state: CurrentTripState | None,
+        trace: list[dict[str, Any]],
     ) -> IntentClassification | None:
         try:
             model = genai.GenerativeModel(
@@ -159,6 +190,13 @@ class IntentClassifierService:
             prompt = build_intent_classifier_user_prompt(
                 message=message,
                 session_state=session_state,
+            )
+            trace.append(
+                trace_event(
+                    "intent_classifier.prompt",
+                    prompt=prompt,
+                    session_state=session_state.model_dump(mode="json") if session_state else None,
+                )
             )
             response = model.generate_content(prompt)
             payload = response.text
@@ -174,6 +212,7 @@ class IntentClassifierService:
                 intent=intent,
                 confidence=float(data.get("confidence", 0.7)),
                 is_unsafe=bool(data.get("is_unsafe", False)),
+                trace=[trace_event("intent_classifier.mode", mode="llm", intent=intent, message=message)],
             )
         except Exception:
             return None

@@ -22,6 +22,7 @@ class CurrentTripState(BaseModel):
     is_unsafe: bool = False
     system_warning: str | None = None
     last_tool_calls: list[dict[str, Any]] = Field(default_factory=list)
+    debug_trace: list[dict[str, Any]] = Field(default_factory=list)
     raw_message: str
 
 

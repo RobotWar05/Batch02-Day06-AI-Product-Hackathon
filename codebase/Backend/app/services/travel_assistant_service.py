@@ -25,6 +25,7 @@ class TravelAssistantService:
                 is_unsafe=True,
                 system_warning=None,
                 last_tool_calls=[],
+                debug_trace=classification.trace,
                 raw_message=message.strip(),
             )
 
@@ -40,6 +41,7 @@ class TravelAssistantService:
                 is_unsafe=False,
                 system_warning=extracted.system_warning,
                 last_tool_calls=[],
+                debug_trace=classification.trace + extracted.trace,
                 raw_message=message.strip(),
             )
 
@@ -55,6 +57,7 @@ class TravelAssistantService:
                 is_unsafe=False,
                 system_warning=None,
                 last_tool_calls=[],
+                debug_trace=classification.trace,
                 raw_message=message.strip(),
             )
 
@@ -68,6 +71,7 @@ class TravelAssistantService:
             is_unsafe=False,
             system_warning=None,
             last_tool_calls=[],
+            debug_trace=classification.trace,
             raw_message=message.strip(),
         )
 
@@ -97,6 +101,7 @@ class TravelAssistantService:
                         "pending_slot": state.pending_slot,
                         "question": question.model_dump(mode="json"),
                         "system_warning": state.system_warning,
+                        "debug_trace": state.debug_trace,
                     },
                     next_action=f"awaiting_{state.pending_slot}",
                 )
@@ -109,6 +114,7 @@ class TravelAssistantService:
                 payload={
                     **search_payload.model_dump(mode="json"),
                     "system_warning": state.system_warning,
+                    "debug_trace": state.debug_trace,
                 },
                 next_action="search_completed",
             )
@@ -116,10 +122,14 @@ class TravelAssistantService:
         if state.intent == "faq":
             faq_result = faq_react_service.run(message=state.raw_message, session_state=session_state)
             state.last_tool_calls = faq_result.tool_calls
+            state.debug_trace.extend(faq_result.trace)
             return state, AssistantTurnResponse(
                 response_type="text",
                 message=faq_result.message,
-                payload=faq_result.payload,
+                payload={
+                    **faq_result.payload,
+                    "debug_trace": state.debug_trace,
+                },
                 next_action="answered",
             )
 
@@ -141,6 +151,7 @@ class TravelAssistantService:
             search_status="collecting" if missing_slots else "ready",
             is_unsafe=False,
             last_tool_calls=[],
+            debug_trace=[],
             raw_message=raw_message,
         )
 

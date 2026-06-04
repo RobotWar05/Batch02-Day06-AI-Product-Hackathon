@@ -194,9 +194,15 @@ class TripSearchService:
         for mode in ("flight", "train"):
             mode_trips = [trip for trip in ranked if trip["transport_mode"] == mode]
             visible_count = self._ranking_rules["default_visibility"][mode]
+            default_trips = [trip for trip in mode_trips if trip.get("default_visible", False)][:visible_count]
+            see_more_trips = [trip for trip in mode_trips if not trip.get("default_visible", False)]
+            if not default_trips and see_more_trips:
+                # Always surface at least one option per mode when results exist.
+                default_trips = [see_more_trips[0]]
+                see_more_trips = see_more_trips[1:]
             grouped[mode] = GroupedTrips(
-                default=[trip for trip in mode_trips if trip.get("default_visible", False)][:visible_count],
-                see_more=[trip for trip in mode_trips if not trip.get("default_visible", False)],
+                default=default_trips,
+                see_more=see_more_trips,
             )
         return grouped
 

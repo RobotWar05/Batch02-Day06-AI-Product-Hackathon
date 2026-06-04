@@ -8,7 +8,8 @@ from pathlib import Path
 
 DATA_ROOT = Path(__file__).resolve().parents[1]
 TRIPS_ROOT = DATA_ROOT / "trips"
-DATE_POOL = [date(2026, 6, 5) + timedelta(days=offset) for offset in range(5)]
+DATE_POOL = [date(2026, 6, 5) + timedelta(days=offset) for offset in range(10)]
+SPECIAL_DENSE_DATE = date(2026, 6, 6)
 
 
 AIRPORTS = {
@@ -118,6 +119,36 @@ TRAIN_CONFIG = {
         {"origin": "TP.HCM", "destination": "Nha Trang", "departure_time": "06:50", "duration": 480, "price": 430000, "code": "SNT2"},
     ],
 }
+
+SPECIAL_DENSE_FLIGHTS = {
+    "vietnam_airlines.json": [
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "06:10", "duration": 85, "price": 1450000},
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "08:35", "duration": 80, "price": 1520000},
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "12:50", "duration": 85, "price": 1580000},
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "15:15", "duration": 90, "price": 1495000},
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "20:40", "duration": 85, "price": 1540000},
+    ],
+    "vietjet_air.json": [
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "05:55", "duration": 85, "price": 1090000},
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "10:20", "duration": 90, "price": 1160000},
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "13:45", "duration": 90, "price": 1125000},
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "18:10", "duration": 95, "price": 1180000},
+    ],
+    "bamboo_airways.json": [
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "07:25", "duration": 85, "price": 1340000},
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "16:35", "duration": 85, "price": 1375000},
+    ],
+    "vietravel_airlines.json": [
+        {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "11:30", "duration": 90, "price": 1260000},
+    ],
+}
+
+SPECIAL_DENSE_TRAINS = [
+    {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "06:00", "duration": 930, "price": 690000, "code": "SE7"},
+    {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "09:00", "duration": 920, "price": 710000, "code": "SE5"},
+    {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "14:20", "duration": 900, "price": 760000, "code": "SE9"},
+    {"origin": "Hà Nội", "destination": "Đà Nẵng", "departure_time": "19:25", "duration": 910, "price": 780000, "code": "SE3"},
+]
 
 
 def format_currency(value: int) -> str:
@@ -251,6 +282,23 @@ def generate_flights() -> tuple[dict[str, int], list[dict]]:
                 provider_records.append(item)
                 variant_index += 1
 
+            if travel_date == SPECIAL_DENSE_DATE:
+                for dense_index, template in enumerate(SPECIAL_DENSE_FLIGHTS.get(file_name, []), start=1):
+                    item = build_flight_record(
+                        provider=config["provider"],
+                        provider_tag=config["provider_tag"],
+                        template=deepcopy(template),
+                        travel_date=travel_date,
+                        variant_index=variant_index,
+                        default_visible=dense_index <= config["default_visible_count"],
+                    )
+                    item["display_rank"] = dense_index
+                    item["recommendation_reason"] = (
+                        "Tuyến Hà Nội - Đà Nẵng ngày 06/06 được bổ sung thêm nhiều khung giờ để bạn dễ chọn chuyến phù hợp."
+                    )
+                    provider_records.append(item)
+                    variant_index += 1
+
         write_json(flights_root / file_name, provider_records)
         counts[config["provider"]] = len(provider_records)
         aggregate.extend(provider_records)
@@ -274,6 +322,23 @@ def generate_trains() -> tuple[dict[str, int], list[dict]]:
                 )
             )
             variant_index += 1
+
+        if travel_date == SPECIAL_DENSE_DATE:
+            for dense_index, template in enumerate(SPECIAL_DENSE_TRAINS, start=1):
+                item = build_train_record(
+                    provider=TRAIN_CONFIG["provider"],
+                    provider_tag=TRAIN_CONFIG["provider_tag"],
+                    template=deepcopy(template),
+                    travel_date=travel_date,
+                    variant_index=variant_index,
+                    default_visible=dense_index <= TRAIN_CONFIG["default_visible_count"],
+                )
+                item["display_rank"] = dense_index
+                item["recommendation_reason"] = (
+                    "Tuyến Hà Nội - Đà Nẵng ngày 06/06 có thêm nhiều chuyến tàu để so sánh giờ đi và mức giá."
+                )
+                train_records.append(item)
+                variant_index += 1
 
     write_json(TRIPS_ROOT / "trains" / "vietnam_railways.json", train_records)
     return {TRAIN_CONFIG["provider"]: len(train_records)}, train_records

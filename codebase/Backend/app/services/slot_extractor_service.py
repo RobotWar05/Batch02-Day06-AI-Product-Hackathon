@@ -1,11 +1,13 @@
 import os
 import re
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, timedelta
+from typing import Any
 
 from fastapi import HTTPException, status
 
+from app.core.trace import trace_event
 from app.core.env import load_local_env
 from app.models.session import CurrentTripState, TripSlots
 
@@ -73,6 +75,96 @@ Ràng buộc đầu ra:
 """.strip()
 
 
+def build_targeted_slot_extractor_system_prompt(target_slot: str) -> str:
+    slot_guides = {
+        "departure": """
+Bạn đang ở chế độ follow-up để điền riêng slot `departure`.
+
+Ưu tiên suy luận:
+- Nếu tin nhắn chỉ là tên địa điểm hoặc câu trả lời ngắn, coi đó là nơi khởi hành.
+- Nếu người dùng nêu rõ hành trình mới như `từ A đi B`, được phép điền cả `departure` và `destination`.
+- Nếu người dùng chỉ nhắc một thành phố và không đủ chắc để đổi cả route, chỉ điền `departure`, các field khác để null.
+
+Chuẩn hóa địa điểm:
+- Chỉ dùng một trong các giá trị: Hà Nội, Hải Phòng, TP.HCM, Cần Thơ, Đà Nẵng, Huế, Đà Lạt, Nha Trang, Quy Nhơn, Phú Quốc.
+- Các alias như `Sài Gòn`, `SG`, `HCM`, `Hồ Chí Minh`, `TP HCM`, `TP.HCM` đều phải chuẩn hóa thành `TP.HCM`.
+""".strip(),
+        "destination": """
+Bạn đang ở chế độ follow-up để điền riêng slot `destination`.
+
+Ưu tiên suy luận:
+- Nếu tin nhắn chỉ là tên địa điểm hoặc câu trả lời ngắn, coi đó là điểm đến.
+- Nếu người dùng nêu rõ hành trình mới như `từ A đi B`, được phép điền cả `departure` và `destination`.
+- Nếu người dùng chỉ nhắc một thành phố và không đủ chắc để đổi cả route, chỉ điền `destination`, các field khác để null.
+
+Chuẩn hóa địa điểm:
+- Chỉ dùng một trong các giá trị: Hà Nội, Hải Phòng, TP.HCM, Cần Thơ, Đà Nẵng, Huế, Đà Lạt, Nha Trang, Quy Nhơn, Phú Quốc.
+- Các alias như `Sài Gòn`, `SG`, `HCM`, `Hồ Chí Minh`, `TP HCM`, `TP.HCM` đều phải chuẩn hóa thành `TP.HCM`.
+""".strip(),
+        "date": f"""
+Bạn đang ở chế độ follow-up để điền riêng slot `date`.
+
+Ưu tiên suy luận:
+- Chỉ cố gắng trích xuất ngày đi từ câu trả lời mới nhất.
+- Nếu người dùng nói ngày tương đối, phải quy đổi theo mốc {REFERENCE_DATE.isoformat()}.
+- Nếu người dùng nói `ngày nào cũng được`, `date không quan trọng`, chọn ngày gần nhất khả dụng là {DEFAULT_FLEXIBLE_DATE.isoformat()}.
+- Nếu không chắc ngày, để `date=null`.
+
+Chuẩn hóa:
+- Chỉ trả `date` ở dạng YYYY-MM-DD.
+- Các field khác giữ null trừ khi người dùng nêu rõ route mới hoàn chỉnh.
+""".strip(),
+        "transport": """
+Bạn đang ở chế độ follow-up để điền riêng slot `transport`.
+
+Ưu tiên suy luận:
+- Chỉ trích xuất phương tiện người dùng vừa chọn.
+- `máy bay`, `vé bay`, `flight`, `plane` -> `flight`
+- `tàu`, `tàu hỏa`, `train` -> `train`
+- `cả hai`, `đều được`, `gì cũng được` -> `both`
+- Nếu không chắc, để `transport=null`.
+
+Chuẩn hóa:
+- `transport` chỉ được là `flight`, `train`, `both`, hoặc null.
+- Các field khác giữ null trừ khi người dùng nêu rõ route mới hoàn chỉnh.
+""".strip(),
+        "passengers": """
+Bạn đang ở chế độ follow-up để điền riêng slot `passengers`.
+
+Ưu tiên suy luận:
+- Chỉ trích xuất số hành khách từ câu trả lời mới nhất.
+- `một mình`, `chỉ mình tôi` -> 1
+- `đi với vợ`, `đi với chồng`, `vợ chồng` -> 2
+- `đi với vợ và con`, `đi với chồng và con` -> 3
+- Nếu thấy số rõ ràng như `2 người`, `3 vé`, dùng trực tiếp số đó.
+- Nếu không chắc, để `passengers=null`.
+
+Chuẩn hóa:
+- `passengers` phải là số nguyên dương.
+- Các field khác giữ null trừ khi người dùng nêu rõ route mới hoàn chỉnh.
+""".strip(),
+    }
+    slot_guide = slot_guides.get(target_slot, slot_guides["destination"])
+    return f"""
+Bạn là bộ trích xuất slot follow-up cho trợ lý tìm chuyến đi.
+Hôm nay là {REFERENCE_DATE.isoformat()}.
+
+Mục tiêu:
+- Đọc câu trả lời mới nhất của người dùng trong ngữ cảnh hội thoại đang thu thập slot.
+- Ưu tiên điền đúng slot đang được hỏi.
+- Vẫn phải tôn trọng ngữ cảnh `current_slots`, `pending_slot`, và khả năng người dùng đổi hành trình.
+- Không suy diễn nếu thiếu tín hiệu chắc chắn.
+
+{slot_guide}
+
+Ràng buộc đầu ra:
+- Chỉ trả về đúng một JSON object.
+- JSON chỉ có các field: `departure`, `destination`, `date`, `transport`, `passengers`.
+- Khi chỉ xác định chắc slot đang hỏi, hãy để các field còn lại là null.
+- Không thêm giải thích, không markdown, không text ngoài JSON.
+""".strip()
+
+
 def build_slot_extractor_user_prompt(
     *,
     pending_slot: str | None,
@@ -93,6 +185,37 @@ def build_slot_extractor_user_prompt(
     )
 
 
+def build_targeted_slot_extractor_user_prompt(
+    *,
+    target_slot: str,
+    pending_slot: str | None,
+    base_slots: TripSlots,
+    message: str,
+) -> str:
+    slot_labels = {
+        "departure": "điểm khởi hành",
+        "destination": "điểm đến",
+        "date": "ngày đi",
+        "transport": "phương tiện",
+        "passengers": "số hành khách",
+    }
+    target_label = slot_labels.get(target_slot, target_slot)
+    return (
+        "Ngữ cảnh phiên hiện tại:\n"
+        f"- pending_slot: {pending_slot}\n"
+        f"- slot_dang_can_dien: {target_slot} ({target_label})\n"
+        f"- current_slots: {base_slots.model_dump(mode='json')}\n"
+        f"- reference_date: {REFERENCE_DATE.isoformat()}\n"
+        f"- latest_user_message: {message}\n\n"
+        "Yêu cầu:\n"
+        f"- Ưu tiên cao nhất là trích xuất đúng `{target_slot}` từ câu trả lời mới nhất.\n"
+        "- Nếu người dùng chỉ trả lời ngắn, hãy hiểu đó là câu trả lời cho câu hỏi bot vừa hỏi.\n"
+        "- Nếu người dùng nói rõ một hành trình mới hoàn chỉnh, được phép cập nhật route liên quan.\n"
+        "- Nếu không chắc field nào, trả field đó là null.\n"
+        "- Trả về duy nhất JSON object hợp lệ."
+    )
+
+
 @dataclass(slots=True)
 class SlotExtractionResult:
     slots: TripSlots
@@ -100,6 +223,7 @@ class SlotExtractionResult:
     pending_slot: str | None
     confidence: float
     system_warning: str | None = None
+    trace: list[dict[str, Any]] = field(default_factory=list)
 
 
 class SlotExtractorService:
@@ -184,17 +308,62 @@ class SlotExtractorService:
         normalized = self._normalize_text(message)
         llm_slots = None
         system_warning: str | None = None
+        trace: list[dict[str, Any]] = []
 
         if HAS_GEMINI and self._api_key:
+            target_slot = pending_slot if pending_slot in ASK_ORDER else None
+            if target_slot is not None:
+                system_prompt = build_targeted_slot_extractor_system_prompt(target_slot)
+                prompt = build_targeted_slot_extractor_user_prompt(
+                    target_slot=target_slot,
+                    pending_slot=pending_slot,
+                    base_slots=existing_slots,
+                    message=message,
+                )
+            else:
+                system_prompt = build_slot_extractor_system_prompt()
+                prompt = build_slot_extractor_user_prompt(
+                    pending_slot=pending_slot,
+                    base_slots=existing_slots,
+                    message=message,
+                )
+            trace.append(
+                trace_event(
+                    "slot_extractor.prompt",
+                    prompt_type="targeted" if target_slot is not None else "full",
+                    pending_slot=pending_slot,
+                    current_slots=existing_slots.model_dump(mode="json"),
+                    prompt=prompt,
+                )
+            )
             llm_slots = self._extract_with_gemini(
                 message=message,
                 base_slots=existing_slots,
                 pending_slot=pending_slot,
+                prompt=prompt,
+                system_prompt=system_prompt,
+                target_slot=target_slot,
             )
         else:
             system_warning = LLM_FALLBACK_WARNING
+            trace.append(
+                trace_event(
+                    "slot_extractor.mode",
+                    mode="heuristic",
+                    reason="missing_gemini_dependency_or_api_key",
+                    pending_slot=pending_slot,
+                    message=message,
+                )
+            )
 
         if llm_slots is not None:
+            trace.append(
+                trace_event(
+                    "slot_extractor.mode",
+                    mode="llm",
+                    pending_slot=pending_slot,
+                )
+            )
             route_slots = {
                 "departure": llm_slots.departure,
                 "destination": llm_slots.destination,
@@ -209,6 +378,16 @@ class SlotExtractorService:
                 pending_slot=None if route_changed else pending_slot,
             )
         else:
+            if HAS_GEMINI and self._api_key:
+                trace.append(
+                    trace_event(
+                        "slot_extractor.mode",
+                        mode="heuristic",
+                        reason="llm_returned_empty_or_failed",
+                        pending_slot=pending_slot,
+                        message=message,
+                    )
+                )
             route_slots = self._extract_route(normalized)
             route_changed = self._route_changed(existing_slots=existing_slots, route_slots=route_slots)
             base_slots = TripSlots() if route_changed else existing_slots.model_copy(deep=True)
@@ -246,6 +425,7 @@ class SlotExtractorService:
             pending_slot=next_pending,
             confidence=confidence,
             system_warning=system_warning,
+            trace=trace,
         )
 
     def extract_faq_slots(
@@ -477,6 +657,33 @@ class SlotExtractorService:
         if not matches:
             return None
 
+        # Plain first-person intent like "toi muon..." should not imply 1 passenger.
+        non_self_markers = {
+            "bo",
+            "bố",
+            "ba",
+            "me",
+            "mẹ",
+            "má",
+            "ma",
+            "vo",
+            "vợ",
+            "chong",
+            "chồng",
+            "con",
+            "anh",
+            "chị",
+            "chi",
+            "em",
+            "ong",
+            "ông",
+            "bà",
+        }
+        if all(token in {"toi", "mình", "minh"} for token in matches) and not any(
+            marker in matches for marker in non_self_markers
+        ):
+            return None
+
         normalized_roles = {
             "toi": "self",
             "mình": "self",
@@ -532,17 +739,15 @@ class SlotExtractorService:
         message: str,
         base_slots: TripSlots,
         pending_slot: str | None,
+        prompt: str,
+        system_prompt: str,
+        target_slot: str | None,
     ) -> TripSlots | None:
         try:
             model = genai.GenerativeModel(
                 model_name="gemini-1.5-flash",
                 generation_config={"response_mime_type": "application/json"},
-                system_instruction=build_slot_extractor_system_prompt(),
-            )
-            prompt = build_slot_extractor_user_prompt(
-                pending_slot=pending_slot,
-                base_slots=base_slots,
-                message=message,
+                system_instruction=system_prompt,
             )
             response = model.generate_content(prompt)
             if not response.text:

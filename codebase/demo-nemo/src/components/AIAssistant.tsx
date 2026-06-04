@@ -40,6 +40,27 @@ interface RouteDeckData {
   savingTime: string;
 }
 
+interface AssistantPayloadLike {
+  query?: Record<string, any>;
+  grouped_results?: BackendSearchResultSet["grouped_results"];
+  recommendation?: {
+    reason?: string;
+  };
+  comparison?: {
+    summary?: string;
+    price_delta_vnd?: number | null;
+    duration_delta_minutes?: number | null;
+    cheapest_flight?: BackendTripOption | null;
+    cheapest_train?: BackendTripOption | null;
+    grouped_results?: BackendSearchResultSet["grouped_results"];
+    recommendation?: {
+      reason?: string;
+    };
+    message?: string;
+  } | null;
+  message?: string;
+}
+
 export function getRouteComparison(dep: string, dest: string): RouteDeckData {
   const d = (dep || "").trim();
   const a = (dest || "").trim();
@@ -189,6 +210,42 @@ function flattenTrips(group: { default: BackendTripOption[]; see_more: BackendTr
   return [...group.default, ...group.see_more].map(mapTripOption);
 }
 
+function buildRouteDataFromAssistantPayload(payload: AssistantPayloadLike, fallbackMessage: string): RouteDeckData | null {
+  const groupedResults = payload.grouped_results || payload.comparison?.grouped_results;
+  if (!groupedResults) {
+    return null;
+  }
+
+  const comparison = payload.comparison;
+  return {
+    flights: flattenTrips(groupedResults.flight),
+    trains: flattenTrips(groupedResults.train),
+    recommendation:
+      comparison?.summary ||
+      comparison?.recommendation?.reason ||
+      comparison?.message ||
+      payload.recommendation?.reason ||
+      payload.message ||
+      fallbackMessage,
+    savingCost: formatSavingsCost(comparison?.price_delta_vnd ?? null),
+    savingTime: formatSavingsTime(comparison?.duration_delta_minutes ?? null),
+  };
+}
+
+function mapQueryToSlots(query: Record<string, any> | undefined, fallback: SearchSlots): SearchSlots {
+  if (!query) {
+    return fallback;
+  }
+
+  return {
+    departure: query.origin ?? fallback.departure,
+    destination: query.destination ?? fallback.destination,
+    travelDate: query.effective_date ?? query.date ?? fallback.travelDate,
+    transportType: query.transport_mode ?? fallback.transportType,
+    passengerCount: query.passengers ?? fallback.passengerCount ?? 1,
+  };
+}
+
 function mapStateToSlots(state: BackendTripState | null, fallback: SearchSlots): SearchSlots {
   if (!state) {
     return fallback;
@@ -331,19 +388,33 @@ export default function AIAssistant({ onTriggerSearch, onUpdateSearchDest }: AIA
       const data = await postChatMessage(sessionId, textToSend);
       const state = data.session.current_trip_state;
       const nextSlots = mapStateToSlots(state, currentSlots);
+      const assistantPayload = data.response.payload as AssistantPayloadLike;
       const shouldShowWidget =
         data.response.response_type === "search_results" &&
         state?.intent === "search_trip" &&
         state?.search_status === "searched";
+      const faqRouteData = buildRouteDataFromAssistantPayload(assistantPayload, data.response.message);
+      const faqSlots = mapQueryToSlots(assistantPayload.query, nextSlots);
       const widgetData =
         shouldShowWidget
           ? await enrichSlotsWithRouteData(nextSlots)
-          : null;
+          : faqRouteData
+            ? {
+                slots: faqSlots,
+                routeData: faqRouteData,
+                isComplete: !!(
+                  faqSlots.departure &&
+                  faqSlots.destination &&
+                  faqSlots.travelDate &&
+                  (faqRouteData.flights.length > 0 || faqRouteData.trains.length > 0)
+                ),
+              }
+            : null;
 
-      setCurrentSlots(nextSlots);
+      setCurrentSlots(widgetData?.slots || nextSlots);
 
-      if (nextSlots.destination && onUpdateSearchDest) {
-        onUpdateSearchDest(nextSlots.destination);
+      if ((widgetData?.slots.destination || nextSlots.destination) && onUpdateSearchDest) {
+        onUpdateSearchDest(widgetData?.slots.destination || nextSlots.destination || "");
       }
 
       const newMsg: ChatMessage = {
