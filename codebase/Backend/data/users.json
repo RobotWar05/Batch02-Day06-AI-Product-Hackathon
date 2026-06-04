@@ -1,9 +1,16 @@
 [
   {
-    "id": "3898b3dc-e8c3-45a5-a7c9-bd77c31f8fbb",
-    "username": "Frank",
-    "username_normalized": "frank",
-    "created_at": "2026-06-04T03:53:50.501229Z",
-    "updated_at": "2026-06-04T03:53:50.501229Z"
+    "id": "22b78a7e-027d-4d3d-9eef-e0671d3acd78",
+    "username": "phase4-user",
+    "username_normalized": "phase4-user",
+    "created_at": "2026-06-04T08:58:39.881108Z",
+    "updated_at": "2026-06-04T08:58:39.881108Z"
+  },
+  {
+    "id": "dd238e37-4600-4796-a465-b73bb77038f7",
+    "username": "Demo Nemo",
+    "username_normalized": "demo nemo",
+    "created_at": "2026-06-04T09:02:37.766280Z",
+    "updated_at": "2026-06-04T09:02:37.766280Z"
   }
 ]

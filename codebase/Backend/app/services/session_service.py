@@ -5,9 +5,11 @@ from fastapi import HTTPException, status
 
 from app.core.config import CHAT_SESSIONS_FILE
 from app.models.auth import UserRecord
-from app.models.session import ChatSessionRecord, SessionMessage
+from app.models.session import AssistantTurnResponse, ChatSessionRecord, CurrentTripState, SessionMessage
 from app.services.auth_service import auth_service
+from app.services.ai_parser_service import ai_parser_service
 from app.services.json_store import JsonStore
+from app.services.trip_state_service import trip_state_service
 
 
 class SessionService:
@@ -23,6 +25,7 @@ class SessionService:
             user_id=user_id,
             title=self._normalize_title(title),
             messages=[],
+            current_trip_state=None,
             created_at=now,
             updated_at=now,
         )
@@ -51,7 +54,11 @@ class SessionService:
             detail="Session not found.",
         )
 
-    def post_message(self, session_id: str, content: str) -> tuple[ChatSessionRecord, SessionMessage, SessionMessage]:
+    def post_message(
+        self,
+        session_id: str,
+        content: str,
+    ) -> tuple[ChatSessionRecord, SessionMessage, SessionMessage, AssistantTurnResponse]:
         message_content = content.strip()
         if not message_content:
             raise HTTPException(
@@ -65,6 +72,14 @@ class SessionService:
                 continue
 
             now = datetime.now(timezone.utc)
+            parsed_state = ai_parser_service.parse_message(
+                message=message_content,
+                session_state=session.current_trip_state,
+            )
+            persisted_state, response = trip_state_service.build_decision(
+                trip_state=parsed_state,
+                session_state=session.current_trip_state,
+            )
             user_message = SessionMessage(
                 id=str(uuid4()),
                 role="user",
@@ -74,17 +89,83 @@ class SessionService:
             assistant_message = SessionMessage(
                 id=str(uuid4()),
                 role="assistant",
-                content=self._build_mock_assistant_reply(message_content),
+                content=response.message,
                 created_at=now,
+                response_type=response.response_type,
+                payload={
+                    **persisted_state.model_dump(mode="json"),
+                    "assistant_response": response.model_dump(mode="json"),
+                },
+                next_action=response.next_action,
             )
 
             session.messages.extend([user_message, assistant_message])
+            session.current_trip_state = persisted_state
             session.updated_at = now
             sessions[index] = session
             self.session_store.write(
                 [stored_session.model_dump(mode="json") for stored_session in sessions]
             )
-            return session, user_message, assistant_message
+            return session, user_message, assistant_message, response
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found.",
+        )
+
+    def patch_trip_state(
+        self,
+        session_id: str,
+        updates: dict[str, object],
+    ) -> tuple[ChatSessionRecord, CurrentTripState, SessionMessage, AssistantTurnResponse]:
+        sessions = self._read_sessions()
+        for index, session in enumerate(sessions):
+            if session.id != session_id:
+                continue
+
+            if session.current_trip_state is None or session.current_trip_state.intent != "search_trip":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Session does not have an active trip state.",
+                )
+
+            normalized_updates = ai_parser_service.normalize_slot_updates(updates)
+            merged_slots = session.current_trip_state.slots.model_copy(
+                update=normalized_updates.model_dump(exclude_none=True)
+            )
+            updated_state = trip_state_service.rebuild_state_from_slots(
+                slots=merged_slots,
+                raw_message="[correction] " + ", ".join(
+                    f"{field_name}={value}"
+                    for field_name, value in normalized_updates.model_dump(exclude_none=True).items()
+                ),
+            )
+            persisted_state, response = trip_state_service.build_decision(
+                trip_state=updated_state,
+                session_state=session.current_trip_state,
+            )
+            now = datetime.now(timezone.utc)
+            assistant_message = SessionMessage(
+                id=str(uuid4()),
+                role="assistant",
+                content=response.message,
+                created_at=now,
+                response_type=response.response_type,
+                payload={
+                    **persisted_state.model_dump(mode="json"),
+                    "assistant_response": response.model_dump(mode="json"),
+                },
+                next_action=response.next_action,
+            )
+
+            session.current_trip_state = persisted_state
+            session.messages.append(assistant_message)
+            session.updated_at = now
+            sessions[index] = session
+            self.session_store.write(
+                [stored_session.model_dump(mode="json") for stored_session in sessions]
+            )
+            return session, persisted_state, assistant_message, response
 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -127,13 +208,5 @@ class SessionService:
         if title is None or not title.strip():
             return "New chat"
         return title.strip()
-
-    @staticmethod
-    def _build_mock_assistant_reply(message_content: str) -> str:
-        return (
-            "Mock assistant response: "
-            f'I saved your message "{message_content}" and will use it in next phases.'
-        )
-
 
 session_service = SessionService()

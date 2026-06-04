@@ -1,1 +1,910 @@
-{bad json
+[
+  {
+    "id": "828331b3-0b72-4af8-b769-7b732e70f8ba",
+    "user_id": "22b78a7e-027d-4d3d-9eef-e0671d3acd78",
+    "title": "Agent",
+    "messages": [
+      {
+        "id": "66e19c80-2672-4529-9024-a25ecc44b43f",
+        "role": "user",
+        "content": "Tìm vé đi Đà Nẵng ngày 10/6",
+        "created_at": "2026-06-04T08:58:39.885268Z",
+        "response_type": null,
+        "payload": null,
+        "next_action": null
+      },
+      {
+        "id": "2a472eb4-4783-44b4-90e4-f995d3c260f5",
+        "role": "assistant",
+        "content": "Bạn muốn khởi hành từ đâu?",
+        "created_at": "2026-06-04T08:58:39.885268Z",
+        "response_type": "slot_filling",
+        "payload": {
+          "intent": "search_trip",
+          "slots": {
+            "departure": null,
+            "destination": "Đà Nẵng",
+            "date": "2026-06-10",
+            "transport": null,
+            "passengers": null
+          },
+          "confidence": 0.57,
+          "missing_slots": [
+            "departure",
+            "transport",
+            "passengers"
+          ],
+          "pending_slot": "departure",
+          "search_status": "collecting",
+          "is_unsafe": false,
+          "system_warning": null,
+          "last_tool_calls": [],
+          "raw_message": "Tìm vé đi Đà Nẵng ngày 10/6",
+          "assistant_response": {
+            "response_type": "slot_filling",
+            "message": "Bạn muốn khởi hành từ đâu?",
+            "payload": {
+              "current_slots": {
+                "departure": null,
+                "destination": "Đà Nẵng",
+                "date": "2026-06-10",
+                "transport": null,
+                "passengers": null
+              },
+              "missing_slots": [
+                "departure",
+                "transport",
+                "passengers"
+              ],
+              "pending_slot": "departure",
+              "question": {
+                "slot": "departure",
+                "question": "Bạn muốn khởi hành từ đâu?",
+                "options": [
+                  "Hà Nội",
+                  "TP.HCM",
+                  "Đà Nẵng"
+                ]
+              },
+              "system_warning": null
+            },
+            "next_action": "awaiting_departure"
+          }
+        },
+        "next_action": "awaiting_departure"
+      }
+    ],
+    "current_trip_state": {
+      "intent": "search_trip",
+      "slots": {
+        "departure": null,
+        "destination": "Đà Nẵng",
+        "date": "2026-06-10",
+        "transport": null,
+        "passengers": null
+      },
+      "confidence": 0.57,
+      "missing_slots": [
+        "departure",
+        "transport",
+        "passengers"
+      ],
+      "pending_slot": "departure",
+      "search_status": "collecting",
+      "is_unsafe": false,
+      "system_warning": null,
+      "last_tool_calls": [],
+      "raw_message": "Tìm vé đi Đà Nẵng ngày 10/6"
+    },
+    "created_at": "2026-06-04T08:58:39.883463Z",
+    "updated_at": "2026-06-04T08:58:39.885268Z"
+  },
+  {
+    "id": "62f3e88a-ad34-43ed-8ab7-3e2b5de92451",
+    "user_id": "dd238e37-4600-4796-a465-b73bb77038f7",
+    "title": "Neo frontend session",
+    "messages": [
+      {
+        "id": "2fc51b92-63e7-42a4-8b3b-113f93eb3beb",
+        "role": "user",
+        "content": "tôi muốn đi sài gòn tới hà nội thì vé tàu rẻ hơn bao nhiêu",
+        "created_at": "2026-06-04T09:02:51.699522Z",
+        "response_type": null,
+        "payload": null,
+        "next_action": null
+      },
+      {
+        "id": "84d8c2a2-a5a1-4ff1-b053-dad09327b712",
+        "role": "assistant",
+        "content": "Cho 1 người, tàu hỏa rẻ hơn 686.000đ. Chênh lệch thời gian di chuyển khoảng 31h 5m. Chuyến bay rẻ nhất là Vietjet Air VJ-SGNHAN-1845, còn tàu rẻ nhất là Vietnam Railways SE4.",
+        "created_at": "2026-06-04T09:02:51.699522Z",
+        "response_type": "text",
+        "payload": {
+          "intent": "faq",
+          "slots": {
+            "departure": "TP.HCM",
+            "destination": "Hà Nội",
+            "date": null,
+            "transport": "train",
+            "passengers": 1
+          },
+          "confidence": 0.88,
+          "missing_slots": [],
+          "pending_slot": null,
+          "search_status": "not_applicable",
+          "is_unsafe": false,
+          "system_warning": null,
+          "last_tool_calls": [
+            {
+              "tool": "compare_modes",
+              "input": {
+                "origin": "TP.HCM",
+                "destination": "Hà Nội",
+                "date": null,
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "balanced"
+              },
+              "observation": {
+                "query": {
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": null,
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "balanced",
+                  "requested_date": null,
+                  "effective_date": null,
+                  "date_fallback_used": false
+                },
+                "cheaper_mode": "train",
+                "cheapest_flight": {
+                  "id": "flight_sgn_han_vj_1845_20260606",
+                  "provider": "Vietjet Air",
+                  "code": "VJ-SGNHAN-1845",
+                  "transport_mode": "flight",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "18:45",
+                  "arrival_time": "20:55",
+                  "duration_minutes": 130,
+                  "duration_label": "2h10m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1876000,
+                  "round_trip_price_vnd": 3752000,
+                  "price_label_one_way": "1.876.000đ",
+                  "price_label_round_trip": "3.752.000đ",
+                  "available_seats": 16,
+                  "pickup_location": "Sân bay Tân Sơn Nhất",
+                  "dropoff_location": "Sân bay Nội Bài",
+                  "baggage_policy": "Hành lý xách tay cơ bản",
+                  "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                  "comfort_score": 7,
+                  "reliability_score": 8,
+                  "time_score": 10,
+                  "price_score": 8,
+                  "best_for": "Người ưu tiên giá tốt trong nhóm bay thẳng",
+                  "pros": [
+                    "Bay thẳng",
+                    "Giá tốt trong nhóm",
+                    "Phù hợp để hiển thị mặc định khi người dùng chưa chọn hãng"
+                  ],
+                  "cons": [
+                    "Có thể hết chỗ nhanh",
+                    "Cần tính thêm thời gian ra sân bay"
+                  ],
+                  "recommendation_reason": "Đây là lựa chọn nên hiện trong nhóm giá tốt cho tuyến TP.HCM đi Hà Nội nếu người dùng không chỉ định hãng.",
+                  "data_source_type": "mock",
+                  "display_group": "flight_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietjet_air",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "cheapest_train": {
+                  "id": "train_sgn_han_se4_20260606",
+                  "provider": "Vietnam Railways",
+                  "code": "SE4",
+                  "transport_mode": "train",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "19:00",
+                  "arrival_time": "04:15+2",
+                  "duration_minutes": 1995,
+                  "duration_label": "33h15m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1190000,
+                  "round_trip_price_vnd": 2380000,
+                  "price_label_one_way": "1.190.000đ",
+                  "price_label_round_trip": "2.380.000đ",
+                  "available_seats": 24,
+                  "pickup_location": "Ga Sài Gòn",
+                  "dropoff_location": "Ga Hà Nội",
+                  "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+                  "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+                  "comfort_score": 6,
+                  "reliability_score": 7,
+                  "time_score": 3,
+                  "price_score": 10,
+                  "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+                  "pros": [
+                    "Đi thẳng từ ga",
+                    "Giá thường thấp hơn máy bay",
+                    "Phù hợp nếu không cần đến quá gấp"
+                  ],
+                  "cons": [
+                    "Thời gian di chuyển dài",
+                    "Không phù hợp với lịch trình gấp"
+                  ],
+                  "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến TP.HCM đi Hà Nội.",
+                  "data_source_type": "mock",
+                  "display_group": "train_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietnam_railways",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "flight_total_price_vnd": 1876000,
+                "train_total_price_vnd": 1190000,
+                "price_delta_vnd": 686000,
+                "duration_delta_minutes": 1865,
+                "summary": "Tàu hỏa rẻ hơn 686.000đ cho 1 người."
+              }
+            }
+          ],
+          "raw_message": "tôi muốn đi sài gòn tới hà nội thì vé tàu rẻ hơn bao nhiêu",
+          "assistant_response": {
+            "response_type": "text",
+            "message": "Cho 1 người, tàu hỏa rẻ hơn 686.000đ. Chênh lệch thời gian di chuyển khoảng 31h 5m. Chuyến bay rẻ nhất là Vietjet Air VJ-SGNHAN-1845, còn tàu rẻ nhất là Vietnam Railways SE4.",
+            "payload": {
+              "query": {
+                "origin": "TP.HCM",
+                "destination": "Hà Nội",
+                "date": null,
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "balanced"
+              },
+              "comparison": {
+                "query": {
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": null,
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "balanced",
+                  "requested_date": null,
+                  "effective_date": null,
+                  "date_fallback_used": false
+                },
+                "cheaper_mode": "train",
+                "cheapest_flight": {
+                  "id": "flight_sgn_han_vj_1845_20260606",
+                  "provider": "Vietjet Air",
+                  "code": "VJ-SGNHAN-1845",
+                  "transport_mode": "flight",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "18:45",
+                  "arrival_time": "20:55",
+                  "duration_minutes": 130,
+                  "duration_label": "2h10m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1876000,
+                  "round_trip_price_vnd": 3752000,
+                  "price_label_one_way": "1.876.000đ",
+                  "price_label_round_trip": "3.752.000đ",
+                  "available_seats": 16,
+                  "pickup_location": "Sân bay Tân Sơn Nhất",
+                  "dropoff_location": "Sân bay Nội Bài",
+                  "baggage_policy": "Hành lý xách tay cơ bản",
+                  "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                  "comfort_score": 7,
+                  "reliability_score": 8,
+                  "time_score": 10,
+                  "price_score": 8,
+                  "best_for": "Người ưu tiên giá tốt trong nhóm bay thẳng",
+                  "pros": [
+                    "Bay thẳng",
+                    "Giá tốt trong nhóm",
+                    "Phù hợp để hiển thị mặc định khi người dùng chưa chọn hãng"
+                  ],
+                  "cons": [
+                    "Có thể hết chỗ nhanh",
+                    "Cần tính thêm thời gian ra sân bay"
+                  ],
+                  "recommendation_reason": "Đây là lựa chọn nên hiện trong nhóm giá tốt cho tuyến TP.HCM đi Hà Nội nếu người dùng không chỉ định hãng.",
+                  "data_source_type": "mock",
+                  "display_group": "flight_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietjet_air",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "cheapest_train": {
+                  "id": "train_sgn_han_se4_20260606",
+                  "provider": "Vietnam Railways",
+                  "code": "SE4",
+                  "transport_mode": "train",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "19:00",
+                  "arrival_time": "04:15+2",
+                  "duration_minutes": 1995,
+                  "duration_label": "33h15m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1190000,
+                  "round_trip_price_vnd": 2380000,
+                  "price_label_one_way": "1.190.000đ",
+                  "price_label_round_trip": "2.380.000đ",
+                  "available_seats": 24,
+                  "pickup_location": "Ga Sài Gòn",
+                  "dropoff_location": "Ga Hà Nội",
+                  "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+                  "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+                  "comfort_score": 6,
+                  "reliability_score": 7,
+                  "time_score": 3,
+                  "price_score": 10,
+                  "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+                  "pros": [
+                    "Đi thẳng từ ga",
+                    "Giá thường thấp hơn máy bay",
+                    "Phù hợp nếu không cần đến quá gấp"
+                  ],
+                  "cons": [
+                    "Thời gian di chuyển dài",
+                    "Không phù hợp với lịch trình gấp"
+                  ],
+                  "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến TP.HCM đi Hà Nội.",
+                  "data_source_type": "mock",
+                  "display_group": "train_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietnam_railways",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "flight_total_price_vnd": 1876000,
+                "train_total_price_vnd": 1190000,
+                "price_delta_vnd": 686000,
+                "duration_delta_minutes": 1865,
+                "summary": "Tàu hỏa rẻ hơn 686.000đ cho 1 người."
+              }
+            },
+            "next_action": "answered"
+          }
+        },
+        "next_action": "answered"
+      },
+      {
+        "id": "e546c242-a3a1-42ca-a569-a6eaf07a725b",
+        "role": "user",
+        "content": "đi sài gòn tới hà nội ngày mai thì tàu rẻ hơn bao nhiêu",
+        "created_at": "2026-06-04T09:03:24.801467Z",
+        "response_type": null,
+        "payload": null,
+        "next_action": null
+      },
+      {
+        "id": "46dd89c0-2973-44b5-81b4-3745db93954a",
+        "role": "assistant",
+        "content": "Cho 1 người, tàu hỏa rẻ hơn 686.000đ. Chênh lệch thời gian di chuyển khoảng 31h 5m. Chuyến bay rẻ nhất là Vietjet Air VJ-SGNHAN-1845, còn tàu rẻ nhất là Vietnam Railways SE4.",
+        "created_at": "2026-06-04T09:03:24.801467Z",
+        "response_type": "text",
+        "payload": {
+          "intent": "faq",
+          "slots": {
+            "departure": "TP.HCM",
+            "destination": "Hà Nội",
+            "date": "2026-06-05",
+            "transport": "train",
+            "passengers": 1
+          },
+          "confidence": 0.88,
+          "missing_slots": [],
+          "pending_slot": null,
+          "search_status": "not_applicable",
+          "is_unsafe": false,
+          "system_warning": null,
+          "last_tool_calls": [
+            {
+              "tool": "compare_modes",
+              "input": {
+                "origin": "TP.HCM",
+                "destination": "Hà Nội",
+                "date": "2026-06-05",
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "balanced"
+              },
+              "observation": {
+                "query": {
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "balanced",
+                  "requested_date": "2026-06-05",
+                  "effective_date": "2026-06-06",
+                  "date_fallback_used": true
+                },
+                "cheaper_mode": "train",
+                "cheapest_flight": {
+                  "id": "flight_sgn_han_vj_1845_20260606",
+                  "provider": "Vietjet Air",
+                  "code": "VJ-SGNHAN-1845",
+                  "transport_mode": "flight",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "18:45",
+                  "arrival_time": "20:55",
+                  "duration_minutes": 130,
+                  "duration_label": "2h10m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1876000,
+                  "round_trip_price_vnd": 3752000,
+                  "price_label_one_way": "1.876.000đ",
+                  "price_label_round_trip": "3.752.000đ",
+                  "available_seats": 16,
+                  "pickup_location": "Sân bay Tân Sơn Nhất",
+                  "dropoff_location": "Sân bay Nội Bài",
+                  "baggage_policy": "Hành lý xách tay cơ bản",
+                  "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                  "comfort_score": 7,
+                  "reliability_score": 8,
+                  "time_score": 10,
+                  "price_score": 8,
+                  "best_for": "Người ưu tiên giá tốt trong nhóm bay thẳng",
+                  "pros": [
+                    "Bay thẳng",
+                    "Giá tốt trong nhóm",
+                    "Phù hợp để hiển thị mặc định khi người dùng chưa chọn hãng"
+                  ],
+                  "cons": [
+                    "Có thể hết chỗ nhanh",
+                    "Cần tính thêm thời gian ra sân bay"
+                  ],
+                  "recommendation_reason": "Đây là lựa chọn nên hiện trong nhóm giá tốt cho tuyến TP.HCM đi Hà Nội nếu người dùng không chỉ định hãng.",
+                  "data_source_type": "mock",
+                  "display_group": "flight_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietjet_air",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "cheapest_train": {
+                  "id": "train_sgn_han_se4_20260606",
+                  "provider": "Vietnam Railways",
+                  "code": "SE4",
+                  "transport_mode": "train",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "19:00",
+                  "arrival_time": "04:15+2",
+                  "duration_minutes": 1995,
+                  "duration_label": "33h15m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1190000,
+                  "round_trip_price_vnd": 2380000,
+                  "price_label_one_way": "1.190.000đ",
+                  "price_label_round_trip": "2.380.000đ",
+                  "available_seats": 24,
+                  "pickup_location": "Ga Sài Gòn",
+                  "dropoff_location": "Ga Hà Nội",
+                  "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+                  "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+                  "comfort_score": 6,
+                  "reliability_score": 7,
+                  "time_score": 3,
+                  "price_score": 10,
+                  "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+                  "pros": [
+                    "Đi thẳng từ ga",
+                    "Giá thường thấp hơn máy bay",
+                    "Phù hợp nếu không cần đến quá gấp"
+                  ],
+                  "cons": [
+                    "Thời gian di chuyển dài",
+                    "Không phù hợp với lịch trình gấp"
+                  ],
+                  "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến TP.HCM đi Hà Nội.",
+                  "data_source_type": "mock",
+                  "display_group": "train_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietnam_railways",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "flight_total_price_vnd": 1876000,
+                "train_total_price_vnd": 1190000,
+                "price_delta_vnd": 686000,
+                "duration_delta_minutes": 1865,
+                "summary": "Tàu hỏa rẻ hơn 686.000đ cho 1 người."
+              }
+            }
+          ],
+          "raw_message": "đi sài gòn tới hà nội ngày mai thì tàu rẻ hơn bao nhiêu",
+          "assistant_response": {
+            "response_type": "text",
+            "message": "Cho 1 người, tàu hỏa rẻ hơn 686.000đ. Chênh lệch thời gian di chuyển khoảng 31h 5m. Chuyến bay rẻ nhất là Vietjet Air VJ-SGNHAN-1845, còn tàu rẻ nhất là Vietnam Railways SE4.",
+            "payload": {
+              "query": {
+                "origin": "TP.HCM",
+                "destination": "Hà Nội",
+                "date": "2026-06-05",
+                "transport_mode": null,
+                "preferred_provider": null,
+                "trip_type": "one_way",
+                "passengers": 1,
+                "priority": "balanced"
+              },
+              "comparison": {
+                "query": {
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "transport_mode": null,
+                  "preferred_provider": null,
+                  "trip_type": "one_way",
+                  "passengers": 1,
+                  "priority": "balanced",
+                  "requested_date": "2026-06-05",
+                  "effective_date": "2026-06-06",
+                  "date_fallback_used": true
+                },
+                "cheaper_mode": "train",
+                "cheapest_flight": {
+                  "id": "flight_sgn_han_vj_1845_20260606",
+                  "provider": "Vietjet Air",
+                  "code": "VJ-SGNHAN-1845",
+                  "transport_mode": "flight",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "18:45",
+                  "arrival_time": "20:55",
+                  "duration_minutes": 130,
+                  "duration_label": "2h10m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1876000,
+                  "round_trip_price_vnd": 3752000,
+                  "price_label_one_way": "1.876.000đ",
+                  "price_label_round_trip": "3.752.000đ",
+                  "available_seats": 16,
+                  "pickup_location": "Sân bay Tân Sơn Nhất",
+                  "dropoff_location": "Sân bay Nội Bài",
+                  "baggage_policy": "Hành lý xách tay cơ bản",
+                  "refund_policy": "Đổi/hủy tùy điều kiện vé",
+                  "comfort_score": 7,
+                  "reliability_score": 8,
+                  "time_score": 10,
+                  "price_score": 8,
+                  "best_for": "Người ưu tiên giá tốt trong nhóm bay thẳng",
+                  "pros": [
+                    "Bay thẳng",
+                    "Giá tốt trong nhóm",
+                    "Phù hợp để hiển thị mặc định khi người dùng chưa chọn hãng"
+                  ],
+                  "cons": [
+                    "Có thể hết chỗ nhanh",
+                    "Cần tính thêm thời gian ra sân bay"
+                  ],
+                  "recommendation_reason": "Đây là lựa chọn nên hiện trong nhóm giá tốt cho tuyến TP.HCM đi Hà Nội nếu người dùng không chỉ định hãng.",
+                  "data_source_type": "mock",
+                  "display_group": "flight_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietjet_air",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "cheapest_train": {
+                  "id": "train_sgn_han_se4_20260606",
+                  "provider": "Vietnam Railways",
+                  "code": "SE4",
+                  "transport_mode": "train",
+                  "trip_type_supported": [
+                    "one_way",
+                    "round_trip"
+                  ],
+                  "origin": "TP.HCM",
+                  "destination": "Hà Nội",
+                  "date": "2026-06-06",
+                  "return_date": "2026-06-08",
+                  "departure_time": "19:00",
+                  "arrival_time": "04:15+2",
+                  "duration_minutes": 1995,
+                  "duration_label": "33h15m",
+                  "is_direct": true,
+                  "one_way_price_vnd": 1190000,
+                  "round_trip_price_vnd": 2380000,
+                  "price_label_one_way": "1.190.000đ",
+                  "price_label_round_trip": "2.380.000đ",
+                  "available_seats": 24,
+                  "pickup_location": "Ga Sài Gòn",
+                  "dropoff_location": "Ga Hà Nội",
+                  "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+                  "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+                  "comfort_score": 6,
+                  "reliability_score": 7,
+                  "time_score": 3,
+                  "price_score": 10,
+                  "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+                  "pros": [
+                    "Đi thẳng từ ga",
+                    "Giá thường thấp hơn máy bay",
+                    "Phù hợp nếu không cần đến quá gấp"
+                  ],
+                  "cons": [
+                    "Thời gian di chuyển dài",
+                    "Không phù hợp với lịch trình gấp"
+                  ],
+                  "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến TP.HCM đi Hà Nội.",
+                  "data_source_type": "mock",
+                  "display_group": "train_options",
+                  "directness_label": "Đi thẳng",
+                  "provider_preference_tags": [
+                    "vietnam_railways",
+                    "cheap"
+                  ],
+                  "display_rank": 1,
+                  "default_visible": true,
+                  "reveal_group": "default"
+                },
+                "flight_total_price_vnd": 1876000,
+                "train_total_price_vnd": 1190000,
+                "price_delta_vnd": 686000,
+                "duration_delta_minutes": 1865,
+                "summary": "Tàu hỏa rẻ hơn 686.000đ cho 1 người."
+              }
+            },
+            "next_action": "answered"
+          }
+        },
+        "next_action": "answered"
+      }
+    ],
+    "current_trip_state": {
+      "intent": "faq",
+      "slots": {
+        "departure": "TP.HCM",
+        "destination": "Hà Nội",
+        "date": "2026-06-05",
+        "transport": "train",
+        "passengers": 1
+      },
+      "confidence": 0.88,
+      "missing_slots": [],
+      "pending_slot": null,
+      "search_status": "not_applicable",
+      "is_unsafe": false,
+      "system_warning": null,
+      "last_tool_calls": [
+        {
+          "tool": "compare_modes",
+          "input": {
+            "origin": "TP.HCM",
+            "destination": "Hà Nội",
+            "date": "2026-06-05",
+            "transport_mode": null,
+            "preferred_provider": null,
+            "trip_type": "one_way",
+            "passengers": 1,
+            "priority": "balanced"
+          },
+          "observation": {
+            "query": {
+              "origin": "TP.HCM",
+              "destination": "Hà Nội",
+              "date": "2026-06-06",
+              "transport_mode": null,
+              "preferred_provider": null,
+              "trip_type": "one_way",
+              "passengers": 1,
+              "priority": "balanced",
+              "requested_date": "2026-06-05",
+              "effective_date": "2026-06-06",
+              "date_fallback_used": true
+            },
+            "cheaper_mode": "train",
+            "cheapest_flight": {
+              "id": "flight_sgn_han_vj_1845_20260606",
+              "provider": "Vietjet Air",
+              "code": "VJ-SGNHAN-1845",
+              "transport_mode": "flight",
+              "trip_type_supported": [
+                "one_way",
+                "round_trip"
+              ],
+              "origin": "TP.HCM",
+              "destination": "Hà Nội",
+              "date": "2026-06-06",
+              "return_date": "2026-06-08",
+              "departure_time": "18:45",
+              "arrival_time": "20:55",
+              "duration_minutes": 130,
+              "duration_label": "2h10m",
+              "is_direct": true,
+              "one_way_price_vnd": 1876000,
+              "round_trip_price_vnd": 3752000,
+              "price_label_one_way": "1.876.000đ",
+              "price_label_round_trip": "3.752.000đ",
+              "available_seats": 16,
+              "pickup_location": "Sân bay Tân Sơn Nhất",
+              "dropoff_location": "Sân bay Nội Bài",
+              "baggage_policy": "Hành lý xách tay cơ bản",
+              "refund_policy": "Đổi/hủy tùy điều kiện vé",
+              "comfort_score": 7,
+              "reliability_score": 8,
+              "time_score": 10,
+              "price_score": 8,
+              "best_for": "Người ưu tiên giá tốt trong nhóm bay thẳng",
+              "pros": [
+                "Bay thẳng",
+                "Giá tốt trong nhóm",
+                "Phù hợp để hiển thị mặc định khi người dùng chưa chọn hãng"
+              ],
+              "cons": [
+                "Có thể hết chỗ nhanh",
+                "Cần tính thêm thời gian ra sân bay"
+              ],
+              "recommendation_reason": "Đây là lựa chọn nên hiện trong nhóm giá tốt cho tuyến TP.HCM đi Hà Nội nếu người dùng không chỉ định hãng.",
+              "data_source_type": "mock",
+              "display_group": "flight_options",
+              "directness_label": "Đi thẳng",
+              "provider_preference_tags": [
+                "vietjet_air",
+                "cheap"
+              ],
+              "display_rank": 1,
+              "default_visible": true,
+              "reveal_group": "default"
+            },
+            "cheapest_train": {
+              "id": "train_sgn_han_se4_20260606",
+              "provider": "Vietnam Railways",
+              "code": "SE4",
+              "transport_mode": "train",
+              "trip_type_supported": [
+                "one_way",
+                "round_trip"
+              ],
+              "origin": "TP.HCM",
+              "destination": "Hà Nội",
+              "date": "2026-06-06",
+              "return_date": "2026-06-08",
+              "departure_time": "19:00",
+              "arrival_time": "04:15+2",
+              "duration_minutes": 1995,
+              "duration_label": "33h15m",
+              "is_direct": true,
+              "one_way_price_vnd": 1190000,
+              "round_trip_price_vnd": 2380000,
+              "price_label_one_way": "1.190.000đ",
+              "price_label_round_trip": "2.380.000đ",
+              "available_seats": 24,
+              "pickup_location": "Ga Sài Gòn",
+              "dropoff_location": "Ga Hà Nội",
+              "baggage_policy": "Hành lý cá nhân theo quy định đường sắt",
+              "refund_policy": "Đổi/trả vé theo quy định đường sắt",
+              "comfort_score": 6,
+              "reliability_score": 7,
+              "time_score": 3,
+              "price_score": 10,
+              "best_for": "Người muốn tiết kiệm chi phí và có thời gian linh hoạt",
+              "pros": [
+                "Đi thẳng từ ga",
+                "Giá thường thấp hơn máy bay",
+                "Phù hợp nếu không cần đến quá gấp"
+              ],
+              "cons": [
+                "Thời gian di chuyển dài",
+                "Không phù hợp với lịch trình gấp"
+              ],
+              "recommendation_reason": "Phù hợp nếu người dùng muốn tiết kiệm hoặc muốn trải nghiệm tàu cho tuyến TP.HCM đi Hà Nội.",
+              "data_source_type": "mock",
+              "display_group": "train_options",
+              "directness_label": "Đi thẳng",
+              "provider_preference_tags": [
+                "vietnam_railways",
+                "cheap"
+              ],
+              "display_rank": 1,
+              "default_visible": true,
+              "reveal_group": "default"
+            },
+            "flight_total_price_vnd": 1876000,
+            "train_total_price_vnd": 1190000,
+            "price_delta_vnd": 686000,
+            "duration_delta_minutes": 1865,
+            "summary": "Tàu hỏa rẻ hơn 686.000đ cho 1 người."
+          }
+        }
+      ],
+      "raw_message": "đi sài gòn tới hà nội ngày mai thì tàu rẻ hơn bao nhiêu"
+    },
+    "created_at": "2026-06-04T09:02:37.784616Z",
+    "updated_at": "2026-06-04T09:03:24.801467Z"
+  }
+]

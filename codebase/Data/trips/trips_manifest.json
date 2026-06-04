@@ -1,7 +1,7 @@
 {
   "version": 2,
   "generated_at": "2026-06-04",
-  "note": "Dữ liệu mock không phụ thuộc ngày, chỉ gồm máy bay và tàu hỏa. Nếu tuyến trực tiếp không có dữ liệu thì backend nên trả no_results.",
+  "note": "D? li?u mock kh?ng ph? thu?c ng?y, ch? g?m m?y bay v? t?u h?a. N?u tuy?n tr?c ti?p kh?ng c? d? li?u th? backend n?n tr? no_results.",
   "aggregate_file": "../trips.json",
   "files": {
     "flight": {
