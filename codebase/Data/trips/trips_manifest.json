@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-04",
+  "note": "Split mock trip data by transport mode and provider. trips.json remains as a legacy aggregate for current frontend/backend compatibility.",
+  "aggregate_file": "../trips.json",
+  "files": {
+    "flights": {
+      "Vietnam Airlines": "flights/vietnam_airlines.json",
+      "Vietjet Air": "flights/vietjet_air.json",
+      "Bamboo Airways": "flights/bamboo_airways.json",
+      "Vietravel Airlines": "flights/vietravel_airlines.json",
+      "Sun PhuQuoc Airways": "flights/sun_phuquoc_airways.json"
+    },
+    "trains": {
+      "Vietnam Railways": "trains/vietnam_railways.json"
+    }
+  },
+  "counts": {
+    "total": 42,
+    "flights": {
+      "Vietravel Airlines": 2,
+      "Vietjet Air": 14,
+      "Bamboo Airways": 6,
+      "Vietnam Airlines": 7,
+      "Sun PhuQuoc Airways": 1
+    },
+    "trains": {
+      "Vietnam Railways": 12
+    }
+  }
+}

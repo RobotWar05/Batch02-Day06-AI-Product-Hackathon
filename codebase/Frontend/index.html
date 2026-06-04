@@ -178,7 +178,11 @@
       currentSlots: null,
       selectedEditField: null,
       pendingValue: null,
-      resultVisible: false
+      resultVisible: false,
+      expandedResults: {
+        flight: false,
+        train: false
+      }
     };
 
     const trainResults = [
@@ -295,6 +299,63 @@
       }
     ];
 
+    flightResults.push(
+      {
+        id: "flight_vu211_004",
+        provider: "Vietravel Airlines",
+        code: "VU211",
+        transport_mode: "flight",
+        origin: "Hà Nội",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
+        departure_time: "08:25",
+        arrival_time: "09:55",
+        duration_minutes: 90,
+        duration: "1h30m",
+        total_price_vnd: 1316500,
+        price: "1.316.500đ",
+        available_seats: 13,
+        booking_url: "#",
+        reason: "Giá tốt, phù hợp nếu muốn bay thẳng buổi sáng"
+      },
+      {
+        id: "flight_vj611_005",
+        provider: "Vietjet Air",
+        code: "VJ611",
+        transport_mode: "flight",
+        origin: "Hà Nội",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
+        departure_time: "22:35",
+        arrival_time: "23:55",
+        duration_minutes: 80,
+        duration: "1h20m",
+        total_price_vnd: 1322500,
+        price: "1.322.500đ",
+        available_seats: 17,
+        booking_url: "#",
+        reason: "Rẻ trong nhóm bay thẳng, nhưng đến khá muộn"
+      },
+      {
+        id: "flight_sp301_006",
+        provider: "Sun PhuQuoc Airways",
+        code: "SP301",
+        transport_mode: "flight",
+        origin: "Hà Nội",
+        destination: "Đà Nẵng",
+        date: "2026-06-10",
+        departure_time: "15:10",
+        arrival_time: "16:35",
+        duration_minutes: 85,
+        duration: "1h25m",
+        total_price_vnd: 1650000,
+        price: "1.650.000đ",
+        available_seats: 7,
+        booking_url: "#",
+        reason: "Một lựa chọn hãng khác để tham khảo sau khi bấm xem thêm"
+      }
+    );
+
     const scenarios = {
       happy: "Tìm 2 vé tàu hỏa từ Sài Gòn đi Đà Nẵng ngày 10/6",
       low: "Tìm vé đi Đà Nẵng ngày 10/6",
@@ -320,7 +381,8 @@
         passengers: raw.match(/\b2\b|2 ve|hai ve/) ? 2 : 1,
         confidence: 0.96,
         missing_fields: [],
-        warning: ""
+        warning: "",
+        preferred_provider: null
       };
 
       if (raw.includes("sai gon") || raw.includes("tp.hcm") || raw.includes("tphcm") || raw.includes("ho chi minh")) {
@@ -336,6 +398,26 @@
         slots.transport_mode = "train";
       }
       if (raw.includes("may bay") || raw.includes("bay")) {
+        slots.transport_mode = "flight";
+      }
+      if (raw.includes("vietnam airline") || raw.includes("vietnam airlines")) {
+        slots.preferred_provider = "Vietnam Airlines";
+        slots.transport_mode = "flight";
+      }
+      if (raw.includes("vietjet")) {
+        slots.preferred_provider = "Vietjet Air";
+        slots.transport_mode = "flight";
+      }
+      if (raw.includes("bamboo")) {
+        slots.preferred_provider = "Bamboo Airways";
+        slots.transport_mode = "flight";
+      }
+      if (raw.includes("vietravel")) {
+        slots.preferred_provider = "Vietravel Airlines";
+        slots.transport_mode = "flight";
+      }
+      if (raw.includes("sun phuquoc") || raw.includes("sun phu quoc")) {
+        slots.preferred_provider = "Sun PhuQuoc Airways";
         slots.transport_mode = "flight";
       }
 
@@ -557,20 +639,66 @@
     }
 
     function renderResults(slots) {
-      const results = slots.transport_mode === "flight" ? flightResults : trainResults;
+      const flights = prioritizeResults(flightResults, slots.preferred_provider);
+      const trains = prioritizeResults(trainResults, null);
+      const visibleFlights = state.expandedResults.flight ? flights : flights.slice(0, 3);
+      const visibleTrains = state.expandedResults.train ? trains : trains.slice(0, 2);
+      const cheapestFlight = [...flightResults].sort((a, b) => a.total_price_vnd - b.total_price_vnd)[0];
+      const preferredBest = slots.preferred_provider ? flights.find((item) => item.provider === slots.preferred_provider) : null;
+      const cheaperHint = preferredBest && cheapestFlight && cheapestFlight.total_price_vnd < preferredBest.total_price_vnd
+        ? `<div class="mb-3 rounded-2xl border border-primary/20 bg-secondary-container px-4 py-3 text-sm text-text">
+            Tôi đã ưu tiên ${escapeHtml(slots.preferred_provider)} theo yêu cầu của bạn. Có chuyến rẻ hơn của ${escapeHtml(cheapestFlight.provider)} (${cheapestFlight.price}). Bạn muốn xem chuyến rẻ hơn không?
+            <button class="show-more-btn ml-2 font-bold text-primary underline" data-mode="flight">Có, xem thêm</button>
+          </div>`
+        : "";
       return `
         <div class="ml-0 md:ml-11 max-w-[720px]">
           <div class="mb-3 flex items-center justify-between">
             <div>
               <h3 class="text-lg font-bold text-text">Kết quả phù hợp</h3>
-              <p class="text-sm text-muted">${slots.origin} -> ${slots.destination} · ${slots.date_label} · ${labelForTransport(slots.transport_mode)}</p>
+              <p class="text-sm text-muted">${slots.origin} -> ${slots.destination} · ${slots.date_label} · ưu tiên chuyến rẻ nếu chưa chọn hãng</p>
             </div>
             <span class="rounded-full bg-secondary-container px-3 py-1 text-xs font-bold text-secondary">Dữ liệu demo</span>
           </div>
-          <div class="grid gap-3">
-            ${results.map(renderResultCard).join("")}
-          </div>
+          ${cheaperHint}
+          ${renderResultSection("flight", "Máy bay", "Hiển thị 3 chuyến rẻ nhất trước. Bấm xem thêm để tham khảo hãng khác.", visibleFlights, flights.length)}
+          ${renderResultSection("train", "Tàu hỏa", "Hiển thị 2 chuyến tàu đi thẳng để so sánh chi phí và thời gian.", visibleTrains, trains.length)}
         </div>
+      `;
+    }
+
+    function prioritizeResults(results, preferredProvider) {
+      return [...results].sort((a, b) => {
+        if (preferredProvider) {
+          const aPreferred = a.provider === preferredProvider ? 0 : 1;
+          const bPreferred = b.provider === preferredProvider ? 0 : 1;
+          if (aPreferred !== bPreferred) return aPreferred - bPreferred;
+        }
+        return a.total_price_vnd - b.total_price_vnd || a.duration_minutes - b.duration_minutes;
+      });
+    }
+
+    function renderResultSection(mode, title, subtitle, items, total) {
+      const expanded = state.expandedResults[mode];
+      const hiddenCount = Math.max(total - items.length, 0);
+      const hasExtraItems = total > (mode === "flight" ? 3 : 2);
+      return `
+        <section class="mb-4 rounded-2xl border border-outline bg-surface-low p-3">
+          <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h4 class="flex items-center gap-2 font-bold text-text">
+                <span class="material-symbols-outlined text-[18px] text-primary">${iconForTransport(mode)}</span>
+                ${title}
+              </h4>
+              <p class="text-xs text-muted">${subtitle}</p>
+            </div>
+            ${hiddenCount > 0 ? `<button class="show-more-btn rounded-xl border border-outline bg-surface px-3 py-2 text-xs font-bold text-primary transition hover:border-primary" data-mode="${mode}">Xem thêm ${hiddenCount} chuyến</button>` : ""}
+            ${expanded && hasExtraItems ? `<button class="show-less-btn rounded-xl border border-outline bg-surface px-3 py-2 text-xs font-bold text-muted transition hover:border-primary" data-mode="${mode}">Thu gọn</button>` : ""}
+          </div>
+          <div class="grid gap-3">
+            ${items.map(renderResultCard).join("")}
+          </div>
+        </section>
       `;
     }
 
@@ -634,6 +762,20 @@
       if (searchBtn) {
         searchBtn.addEventListener("click", showResults);
       }
+
+      document.querySelectorAll(".show-more-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.expandedResults[button.dataset.mode] = true;
+          render();
+        });
+      });
+
+      document.querySelectorAll(".show-less-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.expandedResults[button.dataset.mode] = false;
+          render();
+        });
+      });
     }
 
     function handleUserMessage(message) {
@@ -710,6 +852,7 @@
 
     function showResults() {
       state.resultVisible = true;
+      state.expandedResults = { flight: false, train: false };
       state.messages = state.messages.filter((msg) => msg.type !== "results");
       addMessage("results", "", { slots: state.currentSlots });
     }
