@@ -65,10 +65,12 @@ async def test_phase2_session_persistence_is_scoped_per_user() -> None:
         "user_id",
         "title",
         "messages",
+        "current_trip_state",
         "created_at",
         "updated_at",
     }
     assert session_response.json()["session"]["messages"] == []
+    assert session_response.json()["session"]["current_trip_state"] is None
     assert session_response.json()["session"]["title"] == "Weekend in Da Nang"
     assert len(read_sessions()) == 3
 
@@ -111,7 +113,9 @@ async def test_phase3_message_storage_appends_user_and_mock_assistant_messages()
     assert set(first_payload) == {"status", "session", "user_message", "assistant_message"}
     assert first_payload["user_message"]["role"] == "user"
     assert first_payload["assistant_message"]["role"] == "assistant"
-    assert "Mock assistant response:" in first_payload["assistant_message"]["content"]
+    assert "Mock parser response:" in first_payload["assistant_message"]["content"]
+    assert first_payload["assistant_message"]["payload"]["intent"] == "search_trip"
+    assert reloaded_session.json()["session"]["current_trip_state"]["intent"] == "search_trip"
     assert [message["role"] for message in messages] == [
         "user",
         "assistant",

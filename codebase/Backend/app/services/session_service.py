@@ -5,8 +5,9 @@ from fastapi import HTTPException, status
 
 from app.core.config import CHAT_SESSIONS_FILE
 from app.models.auth import UserRecord
-from app.models.session import ChatSessionRecord, SessionMessage
+from app.models.session import ChatSessionRecord, CurrentTripState, SessionMessage
 from app.services.auth_service import auth_service
+from app.services.ai_parser_service import ai_parser_service
 from app.services.json_store import JsonStore
 
 
@@ -23,6 +24,7 @@ class SessionService:
             user_id=user_id,
             title=self._normalize_title(title),
             messages=[],
+            current_trip_state=None,
             created_at=now,
             updated_at=now,
         )
@@ -65,20 +67,29 @@ class SessionService:
                 continue
 
             now = datetime.now(timezone.utc)
+            parsed_state = ai_parser_service.parse_message(
+                message=message_content,
+                session_state=session.current_trip_state,
+            )
             user_message = SessionMessage(
                 id=str(uuid4()),
                 role="user",
                 content=message_content,
                 created_at=now,
             )
+            assistant_payload = parsed_state.model_dump(mode="json")
             assistant_message = SessionMessage(
                 id=str(uuid4()),
                 role="assistant",
-                content=self._build_mock_assistant_reply(message_content),
+                content=self._build_mock_assistant_reply(parsed_state),
                 created_at=now,
+                response_type="text",
+                payload=assistant_payload,
+                next_action="save_trip_state",
             )
 
             session.messages.extend([user_message, assistant_message])
+            session.current_trip_state = parsed_state
             session.updated_at = now
             sessions[index] = session
             self.session_store.write(
@@ -129,10 +140,19 @@ class SessionService:
         return title.strip()
 
     @staticmethod
-    def _build_mock_assistant_reply(message_content: str) -> str:
+    def _build_mock_assistant_reply(parsed_state: CurrentTripState) -> str:
+        slots = parsed_state.slots
+        if parsed_state.intent != "search_trip":
+            return (
+                "Mock parser response: "
+                f"intent={parsed_state.intent}, confidence={parsed_state.confidence}."
+            )
+
         return (
-            "Mock assistant response: "
-            f'I saved your message "{message_content}" and will use it in next phases.'
+            "Mock parser response: "
+            f"intent=search_trip, departure={slots.departure}, destination={slots.destination}, "
+            f"date={slots.date}, transport={slots.transport}, passengers={slots.passengers}, "
+            f"missing_slots={parsed_state.missing_slots}."
         )
 
 
