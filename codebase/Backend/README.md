@@ -9,8 +9,8 @@ Tài liệu này mô tả công cụ trích xuất thực thể Tiếng Việt, 
 Thư mục này chứa công cụ trích xuất thực thể chuyến đi từ câu nói tự nhiên của người dùng bằng Tiếng Việt. Công cụ này xử lý phân loại Intent, trích xuất thực thể chính xác và giải quyết thời gian tương đối dựa trên mốc tham chiếu thực tế của hệ thống.
 
 ### 1.1. Cấu trúc thư mục
-- [extractor.py](file:///D:/projects/Batch02-Day06-AI-Product-Hackathon/codebase/Backend/extractor.py): Module lõi thực hiện trích xuất dữ liệu bằng LLM (Gemini API) với cơ chế fallback heuristic và mocking nếu chạy offline.
-- [cli.py](file:///D:/projects/Batch02-Day06-AI-Product-Hackathon/codebase/Backend/cli.py): Giao diện dòng lệnh tương tác trực tiếp để kiểm thử nhanh.
+- [extractor.py](extractor.py): Module lõi thực hiện trích xuất dữ liệu bằng LLM (Gemini API) với cơ chế fallback heuristic và mocking nếu chạy offline.
+- [cli.py](cli.py): Giao diện dòng lệnh tương tác trực tiếp để kiểm thử nhanh.
 
 ### 1.2. Cách thức hoạt động
 1. **Phân loại Intent:** Phân loại yêu cầu thành `search_trip` (tìm kiếm chuyến đi) hoặc `other` (câu chào hỏi, FAQ chính sách...).
