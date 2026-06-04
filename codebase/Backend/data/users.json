@@ -5,5 +5,12 @@
     "username_normalized": "search-ranked",
     "created_at": "2026-06-04T08:43:50.053344Z",
     "updated_at": "2026-06-04T08:43:50.053344Z"
+  },
+  {
+    "id": "4bd6ccd1-3b26-411b-985c-7d0a0c43494e",
+    "username": "Demo Nemo",
+    "username_normalized": "demo nemo",
+    "created_at": "2026-06-04T08:47:44.600860Z",
+    "updated_at": "2026-06-04T08:47:44.600860Z"
   }
 ]

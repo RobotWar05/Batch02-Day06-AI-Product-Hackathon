@@ -21,6 +21,10 @@ except ImportError:
 
 REFERENCE_DATE = date(2026, 6, 4)
 ASK_ORDER = ("departure", "destination", "date", "transport", "passengers")
+LLM_FALLBACK_WARNING = (
+    "Loi extractor: thieu `google-generativeai` hoac `GEMINI_API_KEY`, "
+    "he thong dang fallback sang heuristic parser."
+)
 
 
 @dataclass(slots=True)
@@ -29,6 +33,7 @@ class SlotExtractionResult:
     missing_slots: list[str]
     pending_slot: str | None
     confidence: float
+    system_warning: str | None = None
 
 
 class SlotExtractorService:
@@ -74,6 +79,7 @@ class SlotExtractorService:
         pending_slot = session_state.pending_slot if session_state else None
         normalized = self._normalize_text(message)
         llm_slots = None
+        system_warning: str | None = None
 
         if HAS_GEMINI and self._api_key:
             llm_slots = self._extract_with_gemini(
@@ -81,6 +87,8 @@ class SlotExtractorService:
                 base_slots=existing_slots,
                 pending_slot=pending_slot,
             )
+        else:
+            system_warning = LLM_FALLBACK_WARNING
 
         if llm_slots is not None:
             route_slots = {
@@ -131,6 +139,7 @@ class SlotExtractorService:
             missing_slots=missing_slots,
             pending_slot=next_pending,
             confidence=confidence,
+            system_warning=system_warning,
         )
 
     def extract_faq_slots(

@@ -20,6 +20,7 @@ class CurrentTripState(BaseModel):
     pending_slot: Literal["departure", "destination", "date", "transport", "passengers"] | None = None
     search_status: Literal["collecting", "ready", "searched", "not_applicable"] = "not_applicable"
     is_unsafe: bool = False
+    system_warning: str | None = None
     last_tool_calls: list[dict[str, Any]] = Field(default_factory=list)
     raw_message: str
 

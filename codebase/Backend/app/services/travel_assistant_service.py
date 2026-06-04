@@ -23,6 +23,7 @@ class TravelAssistantService:
                 pending_slot=session_state.pending_slot if session_state else None,
                 search_status=session_state.search_status if session_state else "not_applicable",
                 is_unsafe=True,
+                system_warning=None,
                 last_tool_calls=[],
                 raw_message=message.strip(),
             )
@@ -37,6 +38,7 @@ class TravelAssistantService:
                 pending_slot=extracted.pending_slot,
                 search_status="collecting" if extracted.missing_slots else "ready",
                 is_unsafe=False,
+                system_warning=extracted.system_warning,
                 last_tool_calls=[],
                 raw_message=message.strip(),
             )
@@ -51,6 +53,7 @@ class TravelAssistantService:
                 pending_slot=None,
                 search_status="not_applicable",
                 is_unsafe=False,
+                system_warning=None,
                 last_tool_calls=[],
                 raw_message=message.strip(),
             )
@@ -63,6 +66,7 @@ class TravelAssistantService:
             pending_slot=session_state.pending_slot if session_state and session_state.intent == "search_trip" else None,
             search_status=session_state.search_status if session_state and session_state.intent == "search_trip" else "not_applicable",
             is_unsafe=False,
+            system_warning=None,
             last_tool_calls=[],
             raw_message=message.strip(),
         )
@@ -86,12 +90,13 @@ class TravelAssistantService:
                 state.search_status = "collecting"
                 return state, AssistantTurnResponse(
                     response_type="slot_filling",
-                    message=question.question,
+                    message=self._prepend_warning(state.system_warning, question.question),
                     payload={
                         "current_slots": state.slots.model_dump(mode="json"),
                         "missing_slots": state.missing_slots,
                         "pending_slot": state.pending_slot,
                         "question": question.model_dump(mode="json"),
+                        "system_warning": state.system_warning,
                     },
                     next_action=f"awaiting_{state.pending_slot}",
                 )
@@ -100,8 +105,11 @@ class TravelAssistantService:
             state.search_status = "searched"
             return state, AssistantTurnResponse(
                 response_type="search_results",
-                message=search_payload.message,
-                payload=search_payload.model_dump(mode="json"),
+                message=self._prepend_warning(state.system_warning, search_payload.message),
+                payload={
+                    **search_payload.model_dump(mode="json"),
+                    "system_warning": state.system_warning,
+                },
                 next_action="search_completed",
             )
 
@@ -146,6 +154,12 @@ class TravelAssistantService:
                 passengers=state.slots.passengers or 1,
             )
         )
+
+    @staticmethod
+    def _prepend_warning(system_warning: str | None, message: str) -> str:
+        if not system_warning:
+            return message
+        return f"[Canh bao] {system_warning}\n\n{message}"
 
     @staticmethod
     def _build_question(slot_name: str | None) -> SlotQuestion:
